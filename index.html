@@ -620,53 +620,52 @@
             showToast('星光 +' + add + '！');
         }
 
-        // ============================================================
-        // 博客加载
-        // ============================================================
-        (function loadBlog() {
-            var container = document.getElementById('blogContainer');
-            var REPO_OWNER = 'stellarcn2020';
-            var REPO_NAME = 'st';
-            var apiUrl = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues?labels=blog&state=open&sort=created&direction=desc&per_page=6';
+        // ===== 博客加载 =====
+(function loadBlog() {
+    var container = document.getElementById('blogContainer');
+    var REPO_OWNER = 'stellarcn2020';
+    var REPO_NAME = 'st';
+    var apiUrl = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues?labels=blog&state=open&sort=created&direction=desc&per_page=6';
 
-            fetch(apiUrl)
-                .then(function(res) {
-                    if (!res.ok) throw new Error('HTTP ' + res.status);
-                    return res.json();
-                })
-                .then(function(issues) {
-                    if (!issues || issues.length === 0) {
-                        container.innerHTML = '<div class="blog-loading"><i class="fas fa-inbox"></i>暂无博客文章<br><span style="font-size:.8rem;opacity:.6;">在 <a href="https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/issues" target="_blank" style="color:var(--accent);">GitHub Issues</a> 中创建带 blog 标签的文章</span></div>';
-                        return;
-                    }
+    fetch(apiUrl)
+        .then(function(res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+        })
+        .then(function(issues) {
+            if (!issues || issues.length === 0) {
+                container.innerHTML = '<div class="blog-loading"><i class="fas fa-inbox"></i>暂无博客文章<br><span style="font-size:.8rem;opacity:.6;">在 <a href="https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/issues" target="_blank" style="color:var(--accent);">GitHub Issues</a> 中创建带 blog 标签的文章</span></div>';
+                return;
+            }
 
-                    var html = '<div class="blog-grid">';
-                    issues.forEach(function(issue) {
-                        var titleMatch = issue.title.match(/^(\d{4}-\d{2}-\d{2})[- ]?(.*)/);
-                        var dateStr = titleMatch ? titleMatch[1] : '未知日期';
-                        var displayTitle = titleMatch ? titleMatch[2] || issue.title : issue.title;
-                        var body = issue.body || '';
-                        var plainText = body.replace(/[#*`>\[\]()]/g, '').trim();
-                        var summary = plainText.substring(0, 200) + (plainText.length > 200 ? '...' : '');
-                        var author = issue.user.login;
-                        var avatar = issue.user.avatar_url;
+            var html = '<div class="blog-grid">';
+            issues.forEach(function(issue) {
+                var titleMatch = issue.title.match(/^(\d{4}-\d{2}-\d{2})[- ]?(.*)/);
+                var dateStr = titleMatch ? titleMatch[1] : '未知日期';
+                var displayTitle = titleMatch ? titleMatch[2] || issue.title : issue.title;
+                var body = issue.body || '';
+                var plainText = body.replace(/[#*`>\[\]()]/g, '').trim();
+                var summary = plainText.substring(0, 200) + (plainText.length > 200 ? '...' : '');
+                var author = issue.user.login;
+                var avatar = issue.user.avatar_url;
 
-                        html += '<div class="blog-card">';
-                        html += '<div class="blog-date">' + dateStr + '</div>';
-                        html += '<div class="blog-title">' + displayTitle + '</div>';
-                        html += '<div class="blog-summary">' + summary + '</div>';
-                        html += '<div class="blog-author"><img src="' + avatar + '" alt="' + author + '"> ' + author + '</div>';
-                        html += '<a class="read-more" href="' + issue.html_url + '" target="_blank">阅读全文 →</a>';
-                        html += '</div>';
-                    });
-                    html += '</div>';
-                    container.innerHTML = html;
-                })
-                .catch(function(err) {
-                    console.warn('博客加载失败:', err);
-                    container.innerHTML = '<div class="blog-error"><i class="fas fa-exclamation-circle"></i>加载失败，请稍后重试<br><span style="font-size:.8rem;opacity:.6;">' + err.message + '</span></div>';
-                });
-        })();
+                html += '<div class="blog-card">';
+                html += '<div class="blog-date">' + dateStr + '</div>';
+                html += '<div class="blog-title">' + displayTitle + '</div>';
+                html += '<div class="blog-summary">' + summary + '</div>';
+                html += '<div class="blog-author"><img src="' + avatar + '" alt="' + author + '"> ' + author + '</div>';
+                // 修改此处：指向自建详情页
+                html += '<a class="read-more" href="blog/post.html?id=' + issue.number + '">阅读全文 →</a>';
+                html += '</div>';
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        })
+        .catch(function(err) {
+            console.warn('博客加载失败:', err);
+            container.innerHTML = '<div class="blog-error"><i class="fas fa-exclamation-circle"></i>加载失败，请稍后重试<br><span style="font-size:.8rem;opacity:.6;">' + err.message + '</span></div>';
+        });
+})();
 
         // ============================================================
         // 页面加载时强制显示首页
