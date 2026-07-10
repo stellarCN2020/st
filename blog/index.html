@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>星能博客 · 星能工作室</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #f5f7fc;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #4c6a9e;
+            --border-light: #e0e7f0;
+            --shadow-sm: 0 8px 20px rgba(0,0,0,0.05);
+            --shadow-hover: 0 20px 48px rgba(0,0,0,0.12);
+            --accent: #5f7fff;
+            --accent-glow: #a07aff;
+            --accent-light: #eef4ff;
+            --card-radius: 0px;
+        }
+        body.dark {
+            --bg-primary: #0b1120;
+            --bg-card: #162033;
+            --text-primary: #e8edf5;
+            --text-secondary: #8a9fc0;
+            --border-light: #2a3a5a;
+            --shadow-sm: 0 8px 20px rgba(0,0,0,0.4);
+            --shadow-hover: 0 20px 48px rgba(0,0,0,0.6);
+            --accent-light: #1a2a4a;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; cursor:default; }
+        a,button,.nav-link { cursor:pointer; }
+        :focus { outline:none; }
+        html { font-size:16px; scroll-behavior:smooth; }
+        body {
+            font-family:'Inter','Segoe UI',system-ui,-apple-system,'Microsoft YaHei',sans-serif;
+            background:var(--bg-primary); color:var(--text-primary);
+            padding-top:72px; line-height:1.7; overflow-x:hidden;
+            -webkit-font-smoothing:antialiased; transition:background .4s,color .4s; user-select:none;
+        }
+        .grid-bg { position:fixed; inset:0; z-index:-2; background:linear-gradient(135deg,var(--bg-primary) 0%,#e8edf8 100%); transition:background .4s; }
+        body.dark .grid-bg { background:linear-gradient(135deg,#0b1120 0%,#162033 100%); }
+        .grid-overlay {
+            position:fixed; inset:0; z-index:-1; pointer-events:none;
+            background-image:linear-gradient(to right,rgba(95,127,255,.04) 1px,transparent 1px),
+                           linear-gradient(to bottom,rgba(95,127,255,.04) 1px,transparent 1px);
+            background-size:30px 30px; transition:opacity .4s;
+        }
+        body.dark .grid-overlay {
+            background-image:linear-gradient(to right,rgba(95,127,255,.06) 1px,transparent 1px),
+                           linear-gradient(to bottom,rgba(95,127,255,.06) 1px,transparent 1px);
+        }
+        .tech-line { position:fixed; bottom:0; left:0; width:100%; height:2px; background:linear-gradient(90deg,#1a2a4f,var(--accent),#1a2a4f); z-index:99; }
+        #starfield { position:fixed; inset:0; z-index:-1; pointer-events:none; }
+        .container { max-width:1340px; margin:0 auto; padding:0 clamp(16px,3vw,40px); position:relative; }
+
+        .navbar {
+            position:fixed; top:0; left:0; width:100%; z-index:100;
+            display:flex; align-items:center; padding:.6rem clamp(1rem,3vw,2.5rem);
+            background:rgba(255,255,255,.92); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+            box-shadow:0 2px 8px rgba(0,0,0,.04); border-bottom:1px solid var(--border-light);
+            transition:background .3s,box-shadow .3s,border-color .3s; min-height:64px; flex-wrap:wrap;
+        }
+        body.dark .navbar { background:rgba(22,32,51,.92); border-bottom-color:var(--border-light); }
+        .navbar.transparent { background:transparent; box-shadow:none; border-bottom-color:transparent; }
+        .logo { display:flex; align-items:center; gap:10px; flex:1; min-width:120px; }
+        .logo-img { height:clamp(22px,3vw,28px); width:auto; filter:drop-shadow(0 2px 4px rgba(0,0,0,.06)); }
+        .logo-text { font-weight:700; font-size:clamp(.9rem,1.2vw,1.1rem); color:var(--text-primary); letter-spacing:.5px; white-space:nowrap; transition:color .3s; }
+        .logo-text span { color:var(--accent); }
+        .nav-links { display:flex; gap:clamp(.8rem,1.8vw,1.8rem); align-items:center; margin:0 auto; flex-wrap:wrap; }
+        .nav-link { color:var(--text-primary); text-decoration:none; font-weight:500; font-size:clamp(.8rem,.95vw,.95rem); transition:.2s; padding:.3rem 0; position:relative; white-space:nowrap; }
+        .nav-link::after { content:''; position:absolute; bottom:0; left:0; width:0; height:2px; background:var(--accent); transition:width .3s ease; }
+        .nav-link:hover::after,.nav-link.active::after { width:100%; }
+        .nav-link:hover,.nav-link.active { color:var(--accent); }
+        .menu-toggle { display:none; font-size:1.4rem; color:var(--text-primary); background:none; border:none; cursor:pointer; padding:4px 8px; transition:color .3s; }
+
+        .section-title {
+            font-size:clamp(1.5rem,2.8vw,2.2rem); font-weight:700; border-left:4px solid var(--accent);
+            padding-left:16px; margin-bottom:clamp(1.5rem,3vw,2.5rem);
+            display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; position:relative; z-index:2;
+            color:var(--text-primary); transition:color .3s;
+        }
+        .section-title .en { font-size:.8rem; font-weight:400; color:var(--text-secondary); letter-spacing:.5px; opacity:.6; }
+
+        .blog-section { padding:60px 0 40px; }
+        .blog-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:2rem; margin:2rem 0; }
+        .blog-card {
+            background:var(--bg-card); border:1px solid var(--border-light); box-shadow:var(--shadow-sm);
+            padding:1.8rem 2rem; transition:all .3s cubic-bezier(.34,1.56,.64,1);
+            border-radius:0; position:relative; overflow:hidden;
+        }
+        .blog-card::before {
+            content:''; position:absolute; inset:-1px; border:2px solid transparent;
+            border-image:linear-gradient(90deg,var(--accent),var(--accent-glow),var(--accent)); border-image-slice:1;
+            pointer-events:none; opacity:0; transition:opacity .4s;
+        }
+        .blog-card:hover::before { opacity:1; animation:borderFlow 2s linear infinite; }
+        @keyframes borderFlow { 0%{border-image-source:linear-gradient(90deg,var(--accent),var(--accent-glow),var(--accent));} 100%{border-image-source:linear-gradient(450deg,var(--accent),var(--accent-glow),var(--accent));} }
+        .blog-card:hover { box-shadow:var(--shadow-hover); transform:translateY(-4px); border-color:var(--accent); }
+        .blog-card .blog-date { font-size:.7rem; color:var(--text-secondary); opacity:.5; font-family:'JetBrains Mono',monospace; }
+        .blog-card .blog-title { font-size:1.2rem; font-weight:700; color:var(--text-primary); margin:6px 0 8px; }
+        .blog-card .blog-summary { color:var(--text-secondary); font-size:.9rem; line-height:1.8; }
+        .blog-card .blog-author { font-size:.7rem; color:var(--text-secondary); opacity:.4; margin-top:8px; display:flex; align-items:center; gap:6px; }
+        .blog-card .blog-author img { width:18px; height:18px; border-radius:50%; border:1px solid var(--border-light); }
+        .blog-card .read-more { display:inline-block; margin-top:10px; color:var(--accent); font-weight:600; font-size:.85rem; text-decoration:none; }
+        .blog-card .read-more:hover { text-decoration:underline; }
+        .blog-loading { text-align:center; padding:3rem 0; color:var(--text-secondary); font-size:1rem; }
+        .blog-loading i { font-size:1.8rem; color:var(--accent); margin-bottom:0.8rem; display:block; }
+        .blog-error { text-align:center; padding:3rem 0; color:var(--text-secondary); font-size:.9rem; }
+        .blog-error i { font-size:1.8rem; color:#ef4444; margin-bottom:0.8rem; display:block; }
+
+        .footer-new { margin-top:2rem; background:#0a0f2a; padding:1.8rem clamp(1rem,3vw,2.5rem); color:#eef5ff; position:relative; z-index:2; transition:background .4s; }
+        body.dark .footer-new { background:#0b1120; }
+        .footer-container { max-width:1260px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:2rem; }
+        .footer-col h4 { font-size:clamp(1rem,1.2vw,1.2rem); font-weight:700; border-left:3px solid var(--accent); padding-left:12px; margin-bottom:.8rem; color:#fff; }
+        .footer-col p,.footer-col a { font-size:clamp(.7rem,.8vw,.85rem); line-height:1.6; color:#b8d0ff; text-decoration:none; display:block; margin-bottom:.2rem; }
+        .footer-col a:hover { color:#fff; text-decoration:underline; }
+
+        @media(max-width:780px){
+            body{padding-top:60px;} .navbar{min-height:56px;padding:.4rem 1rem;}
+            .nav-links{display:none;width:100%;flex-direction:column;gap:0;margin:0;padding:.8rem 0;border-top:1px solid var(--border-light);order:3;}
+            .nav-links.open{display:flex;}
+            .nav-link{padding:.6rem 1.2rem;width:100%;text-align:center;font-size:.9rem;}
+            .menu-toggle{display:block;}
+            .blog-grid{grid-template-columns:1fr;}
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="starfield"></canvas>
+    <div class="grid-bg"></div>
+    <div class="grid-overlay"></div>
+    <div class="tech-line"></div>
+
+    <nav class="navbar" id="navbar">
+        <div class="logo">
+            <img class="logo-img" src="https://user-assets.sxlcdn.com/images/1138507/FnkoMkeJ40vIQkdFDyBwHQDTIWcI.png?imageMogr2/strip/auto-orient/thumbnail/300x300%3E/quality/90!/format/png" alt="星能工作室Logo" loading="lazy" onerror="this.style.display='none'">
+            <span class="logo-text"><span></span></span>
+        </div>
+        <button class="menu-toggle" id="menuToggle" aria-label="菜单"><i class="fas fa-bars"></i></button>
+        <div class="nav-links" id="navLinks">
+            <a class="nav-link" href="/st/">首页</a>
+            <a class="nav-link" href="/st/#values">星核价值</a>
+            <a class="nav-link" href="/st/#maps">创作星群</a>
+            <a class="nav-link" href="/st/#join">加入星能</a>
+            <a class="nav-link active" href="/st/blog/">星能博客</a>
+        </div>
+    </nav>
+
+    <section class="blog-section">
+        <div class="container">
+            <div class="section-title"><span>星能博客</span><span class="en">// 来自星能工作室的思考与分享</span></div>
+            <div id="blogContainer">
+                <div class="blog-loading"><i class="fas fa-spinner fa-pulse"></i>加载博客中...</div>
+            </div>
+            <div style="text-align:center;margin-top:1.5rem;font-size:.75rem;color:var(--text-secondary);opacity:.4;">
+                博客内容由 <a href="https://github.com/stellarcn2020/st/issues" target="_blank" style="color:var(--accent);text-decoration:none;">GitHub Issues</a> 驱动 · 在 Issues 中创建带 <code style="background:var(--bg-card);padding:0 6px;">blog</code> 标签的文章即可自动同步 · <a href="/st/" style="color:var(--accent);text-decoration:none;">返回首页 →</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer-new">
+        <div class="footer-container">
+            <div class="footer-col"><h4>星能工作室</h4><p>始于2021年，专注迷你世界地图创作与青少年技术交流。</p><p>星光点缀黑暗，用创意点亮彼此。</p><p>以热爱驱动创造，以勇气挑战未知。</p></div>
+            <div class="footer-col">
+                <h4>账号信息 &amp; 联系方式</h4>
+                <p><a href="https://space.bilibili.com/3493087561124092" target="_blank" rel="noopener noreferrer">B站空间：星能工作室</a></p>
+                <p>官方邮箱：stellarCN2020@outlook.com</p><p>星小蓝：3849876019</p><p>交流群：966926112</p><p>频道号：pd90272831</p><p>青少年服务热线：12355（24小时心理支持）</p>
+                <p style="margin-top:0.8rem;"><a href="https://github.com/stellarcn2020/st" target="_blank" rel="noopener noreferrer" style="color:#b8d0ff;">GitHub 仓库</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ===== 博客加载 =====
+        (function loadBlog() {
+            var container = document.getElementById('blogContainer');
+            var REPO_OWNER = 'stellarcn2020';
+            var REPO_NAME = 'st';
+            var apiUrl = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues?labels=blog&state=open&sort=created&direction=desc&per_page=50';
+
+            fetch(apiUrl)
+                .then(function(res) {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                })
+                .then(function(issues) {
+                    if (!issues || issues.length === 0) {
+                        container.innerHTML = '<div class="blog-loading"><i class="fas fa-inbox"></i>暂无博客文章<br><span style="font-size:.8rem;opacity:.6;">在 <a href="https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/issues" target="_blank" style="color:var(--accent);">GitHub Issues</a> 中创建带 blog 标签的文章</span></div>';
+                        return;
+                    }
+
+                    var html = '<div class="blog-grid">';
+                    issues.forEach(function(issue) {
+                        var titleMatch = issue.title.match(/^(\d{4}-\d{2}-\d{2})[- ]?(.*)/);
+                        var dateStr = titleMatch ? titleMatch[1] : '未知日期';
+                        var displayTitle = titleMatch ? titleMatch[2] || issue.title : issue.title;
+                        var body = issue.body || '';
+                        var plainText = body.replace(/[#*`>\[\]()]/g, '').trim();
+                        var summary = plainText.substring(0, 200) + (plainText.length > 200 ? '...' : '');
+                        var author = issue.user.login;
+                        var avatar = issue.user.avatar_url;
+
+                        html += '<div class="blog-card">';
+                        html += '<div class="blog-date">' + dateStr + '</div>';
+                        html += '<div class="blog-title">' + displayTitle + '</div>';
+                        html += '<div class="blog-summary">' + summary + '</div>';
+                        html += '<div class="blog-author"><img src="' + avatar + '" alt="' + author + '"> ' + author + '</div>';
+                        html += '<a class="read-more" href="' + issue.html_url + '" target="_blank">阅读全文 →</a>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                    container.innerHTML = html;
+                })
+                .catch(function(err) {
+                    console.warn('博客加载失败:', err);
+                    container.innerHTML = '<div class="blog-error"><i class="fas fa-exclamation-circle"></i>加载失败，请稍后重试<br><span style="font-size:.8rem;opacity:.6;">' + err.message + '</span></div>';
+                });
+        })();
+
+        // ============================================================
+        // 导航
+        // ============================================================
+        var navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 60) {
+                navbar.classList.remove('transparent');
+            } else {
+                navbar.classList.add('transparent');
+            }
+        });
+        navbar.classList.add('transparent');
+
+        var menuToggle = document.getElementById('menuToggle');
+        var navLinks = document.getElementById('navLinks');
+        menuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            navLinks.classList.toggle('open');
+        });
+        document.addEventListener('click', function(e) {
+            if (!navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
+                navLinks.classList.remove('open');
+            }
+        });
+        document.querySelectorAll('.nav-link').forEach(function(link) {
+            link.addEventListener('click', function() {
+                navLinks.classList.remove('open');
+            });
+        });
+
+        // ============================================================
+        // 星空粒子背景
+        // ============================================================
+        (function initStarfield() {
+            var canvas = document.getElementById('starfield');
+            var ctx = canvas.getContext('2d');
+            var w, h, stars = [],
+                count = 50;
+
+            function resize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            var Star = function() {
+                this.reset = function() {
+                    this.x = Math.random() * w;
+                    this.y = Math.random() * h;
+                    this.size = Math.random() * 1.6 + .3;
+                    this.speed = .03 + Math.random() * .1;
+                    this.opacity = Math.random() * .25 + .06;
+                    this.twinkle = Math.random() * Math.PI * 2;
+                };
+                this.update = function() {
+                    this.y += this.speed;
+                    this.twinkle += .02;
+                    if (this.y > h) { this.y = 0;
+                        this.x = Math.random() * w; }
+                };
+                this.draw = function() {
+                    var alpha = this.opacity * (.5 + .5 * Math.sin(this.twinkle));
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(95, 127, 255, ' + alpha + ')';
+                    ctx.shadowColor = 'rgba(95, 127, 255, .03)';
+                    ctx.shadowBlur = 2;
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                };
+                this.reset();
+            };
+            for (var i = 0; i < count; i++) stars.push(new Star());
+
+            function animate() {
+                ctx.clearRect(0, 0, w, h);
+                for (var i = 0; i < stars.length; i++) {
+                    stars[i].update();
+                    stars[i].draw();
+                }
+                requestAnimationFrame(animate);
+            }
+            animate();
+            window.addEventListener('resize', function() {
+                resize();
+                for (var i = 0; i < stars.length; i++) {
+                    stars[i].x = Math.random() * w;
+                    stars[i].y = Math.random() * h;
+                }
+            });
+        })();
+
+        console.log('>> 星能博客 · 由 GitHub Issues 驱动');
+        console.log('>> 博客地址: https://stellarcn2020.github.io/st/blog');
+    </script>
+</body>
+</html>
