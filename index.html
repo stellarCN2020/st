@@ -116,8 +116,6 @@
         .hero-wrap { position:relative; min-height:80vh; display:flex; align-items:center; padding:20px 0 40px; z-index:1; }
         .hero-grid { display:grid; grid-template-columns:1.2fr .8fr; gap:clamp(20px,4vw,50px); width:100%; position:relative; align-items:center; }
         .hero-content { position:relative; z-index:2; transform:translateX(-8px); }
-        .hero-content .badge { display:inline-block; background:var(--accent-light); border:1px solid rgba(95,127,255,.15); padding:4px 16px; font-size:.7rem; font-weight:600; color:var(--accent); letter-spacing:1px; margin-bottom:16px; transition:background .3s; }
-        body.dark .hero-content .badge { background:rgba(95,127,255,.1); }
         .hero-content h1 { font-size:clamp(2.4rem,8vw,5rem); font-weight:800; line-height:1.05; color:var(--text-primary); letter-spacing:-1px; transition:color .3s; }
         .hero-content h1 .hl { color:var(--accent); position:relative; display:inline-block; }
         .hero-content h1 .hl::after { content:''; position:absolute; bottom:2px; left:0; width:100%; height:4px; background:var(--accent); opacity:.2; border-radius:2px; }
@@ -304,6 +302,32 @@
         @media(max-width:780px){ .join-panel .float-card{display:none;} .join-panel .main-card{padding:1.5rem 1.2rem;border-radius:4px;} .join-panel .main-card .btn-group{gap:.8rem;} }
         @media(max-width:480px){ .join-panel .main-card .btn-group .mihoyo-btn{width:100%;max-width:200px;} .join-panel .main-card .social-links{flex-direction:column;align-items:center;gap:.3rem;} .join-panel .main-card{border-radius:4px;} }
 
+        .blog-section { padding:60px 0 20px; border-top:1px solid var(--border-light); }
+        .blog-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.8rem; margin:2rem 0; }
+        .blog-card {
+            background:var(--bg-card); border:1px solid var(--border-light); box-shadow:var(--shadow-sm);
+            padding:1.8rem 2rem; transition:all .3s cubic-bezier(.34,1.56,.64,1);
+            border-radius:var(--card-radius); position:relative; overflow:hidden;
+        }
+        .blog-card::before {
+            content:''; position:absolute; inset:-1px; border:2px solid transparent;
+            border-image:linear-gradient(90deg,var(--accent),var(--accent-glow),var(--accent)); border-image-slice:1;
+            pointer-events:none; opacity:0; transition:opacity .4s; border-radius:var(--card-radius);
+        }
+        .blog-card:hover::before { opacity:1; animation:borderFlow 2s linear infinite; }
+        .blog-card:hover { box-shadow:var(--shadow-hover); transform:translateY(-4px); border-color:var(--accent); }
+        .blog-card .blog-date { font-size:.7rem; color:var(--text-secondary); opacity:.5; font-family:'JetBrains Mono',monospace; }
+        .blog-card .blog-title { font-size:1.2rem; font-weight:700; color:var(--text-primary); margin:6px 0 8px; }
+        .blog-card .blog-summary { color:var(--text-secondary); font-size:.9rem; line-height:1.8; }
+        .blog-card .blog-author { font-size:.7rem; color:var(--text-secondary); opacity:.4; margin-top:8px; display:flex; align-items:center; gap:6px; }
+        .blog-card .blog-author img { width:18px; height:18px; border-radius:50%; border:1px solid var(--border-light); }
+        .blog-card .read-more { display:inline-block; margin-top:10px; color:var(--accent); font-weight:600; font-size:.85rem; text-decoration:none; }
+        .blog-card .read-more:hover { text-decoration:underline; }
+        .blog-loading { text-align:center; padding:3rem 0; color:var(--text-secondary); font-size:1rem; }
+        .blog-loading i { font-size:1.8rem; color:var(--accent); margin-bottom:0.8rem; display:block; }
+        .blog-error { text-align:center; padding:3rem 0; color:var(--text-secondary); font-size:.9rem; }
+        .blog-error i { font-size:1.8rem; color:#ef4444; margin-bottom:0.8rem; display:block; }
+
         .footer-new { margin-top:2rem; background:#0a0f2a; padding:1.8rem clamp(1rem,3vw,2.5rem); color:#eef5ff; position:relative; z-index:2; transition:background .4s; }
         body.dark .footer-new { background:#0b1120; }
         .footer-container { max-width:1260px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:2rem; }
@@ -348,6 +372,7 @@
             .nav-links.open{display:flex;}
             .nav-link{padding:.6rem 1.2rem;width:100%;text-align:center;font-size:.9rem;}
             .menu-toggle{display:block;} .section-title{padding-left:12px;}
+            .blog-grid{grid-template-columns:1fr;}
         }
         @media(max-width:480px){
             body{padding-top:54px;} .navbar{min-height:50px;padding:.3rem .8rem;}
@@ -379,7 +404,7 @@
             <a class="nav-link" href="#values">星核价值</a>
             <a class="nav-link" href="#maps">创作星群</a>
             <a class="nav-link" href="#join">加入星能</a>
-            <a class="nav-link" href="blog.html">星能博客</a>
+            <a class="nav-link" href="blog/">星能博客</a>
         </div>
     </nav>
 
@@ -516,6 +541,18 @@
         </div>
     </section>
 
+    <section id="blog" class="blog-section">
+        <div class="container">
+            <div class="section-title"><span>星能博客</span><span class="en">// 来自星能工作室的思考与分享</span></div>
+            <div id="blogContainer">
+                <div class="blog-loading"><i class="fas fa-spinner fa-pulse"></i>加载博客中...</div>
+            </div>
+            <div style="text-align:center;margin-top:1.5rem;font-size:.75rem;color:var(--text-secondary);opacity:.4;">
+                博客内容由 <a href="https://github.com/stellarcn2020/st/issues" target="_blank" style="color:var(--accent);text-decoration:none;">GitHub Issues</a> 驱动 · 在 Issues 中创建带 <code style="background:var(--bg-card);padding:0 6px;">blog</code> 标签的文章即可自动同步 · <a href="blog/" style="color:var(--accent);text-decoration:none;">查看全部博客 →</a>
+            </div>
+        </div>
+    </section>
+
     <section id="join" style="padding:40px 0 20px;">
         <div class="container">
             <div class="section-title"><span>加入星能</span><span class="en">// 成为星光的一部分</span></div>
@@ -544,18 +581,19 @@
                 <p><a href="https://space.bilibili.com/3493087561124092" target="_blank" rel="noopener noreferrer">B站空间：星能工作室</a></p>
                 <p>官方邮箱：stellarCN2020@outlook.com</p><p>星小蓝：3849876019</p><p>交流群：966926112</p><p>频道号：pd90272831</p><p>青少年服务热线：12355（24小时心理支持）</p>
                 <div class="update-log-btn"><button id="updateLogBtn">网站更新报告</button></div>
-                <p style="margin-top:0.8rem;"><a href="https://github.com/your-username/your-repo" target="_blank" rel="noopener noreferrer" style="color:#b8d0ff;">GitHub 仓库</a></p>
+                <p style="margin-top:0.8rem;"><a href="https://github.com/stellarcn2020/st" target="_blank" rel="noopener noreferrer" style="color:#b8d0ff;">GitHub 仓库</a></p>
             </div>
         </div>
     </footer>
 
     <div id="groupModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeGroupModal">&times;</button><h3>加入群聊</h3><div class="contact-line">QQ交流群：966926112</div><div class="contact-line">欢迎入群，与众多创作者一起交流地图心得。</div><div style="margin-top:1.2rem;text-align:center;"><button class="mihoyo-btn-simple" id="copyGroupBtn"><span class="simple-bg"></span><span class="simple-text">复制群号</span></button></div></div></div>
     <div id="channelModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeChannelModal">&times;</button><h3>加入频道</h3><div class="contact-line">官方频道号：pd90272831</div><div class="contact-line">在QQ频道中获取最新动态、活动资讯。</div><div style="margin-top:1.2rem;text-align:center;"><button class="mihoyo-btn-simple" id="copyChannelBtn"><span class="simple-bg"></span><span class="simple-text">复制频道号</span></button></div></div></div>
-    <div id="updateLogModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeUpdateLogModal">&times;</button><h3>网站更新报告</h3><div style="margin-top:1rem;"><p><strong>v17.0 (2026.07.07)</strong></p><ul style="list-style:none;padding:0;"><li>• 仅保留Hero区域按压倾斜</li><li>• 价值观：悬停发光边框 + 文字上浮</li><li>• 地图：悬停边框流光 + 轻微上浮</li><li>• 加入：悬停缩放 + 阴影加深</li></ul><p style="margin-top:1rem;">愿星光守护每一个创作者。</p></div></div></div>
+    <div id="updateLogModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeUpdateLogModal">&times;</button><h3>网站更新报告</h3><div style="margin-top:1rem;"><p><strong>v18.0 (2026.07.11)</strong></p><ul style="list-style:none;padding:0;"><li>• 新增博客模块，由 GitHub Issues 驱动</li><li>• 在 Issues 中创建带 blog 标签的文章即可同步</li><li>• 文章自动提取标题、日期、作者、摘要</li></ul><p style="margin-top:1rem;">愿星光守护每一个创作者。</p></div></div></div>
 
     <div class="toast-message" id="toastMessage"></div>
 
     <script>
+        // ===== Toast =====
         function showToast(msg, duration) {
             duration = duration || 2000;
             var t = document.getElementById('toastMessage');
@@ -567,6 +605,7 @@
             }, duration);
         }
 
+        // ===== 数字点击弹跳 =====
         function bounceNumber(el) {
             var numEl = el.querySelector('.num');
             if (!numEl) return;
@@ -581,6 +620,72 @@
             showToast('星光 +' + add + '！');
         }
 
+        // ============================================================
+        // 博客加载
+        // ============================================================
+        (function loadBlog() {
+            var container = document.getElementById('blogContainer');
+            var REPO_OWNER = 'stellarcn2020';
+            var REPO_NAME = 'st';
+            var apiUrl = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues?labels=blog&state=open&sort=created&direction=desc&per_page=6';
+
+            fetch(apiUrl)
+                .then(function(res) {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                })
+                .then(function(issues) {
+                    if (!issues || issues.length === 0) {
+                        container.innerHTML = '<div class="blog-loading"><i class="fas fa-inbox"></i>暂无博客文章<br><span style="font-size:.8rem;opacity:.6;">在 <a href="https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/issues" target="_blank" style="color:var(--accent);">GitHub Issues</a> 中创建带 blog 标签的文章</span></div>';
+                        return;
+                    }
+
+                    var html = '<div class="blog-grid">';
+                    issues.forEach(function(issue) {
+                        var titleMatch = issue.title.match(/^(\d{4}-\d{2}-\d{2})[- ]?(.*)/);
+                        var dateStr = titleMatch ? titleMatch[1] : '未知日期';
+                        var displayTitle = titleMatch ? titleMatch[2] || issue.title : issue.title;
+                        var body = issue.body || '';
+                        var plainText = body.replace(/[#*`>\[\]()]/g, '').trim();
+                        var summary = plainText.substring(0, 200) + (plainText.length > 200 ? '...' : '');
+                        var author = issue.user.login;
+                        var avatar = issue.user.avatar_url;
+
+                        html += '<div class="blog-card">';
+                        html += '<div class="blog-date">' + dateStr + '</div>';
+                        html += '<div class="blog-title">' + displayTitle + '</div>';
+                        html += '<div class="blog-summary">' + summary + '</div>';
+                        html += '<div class="blog-author"><img src="' + avatar + '" alt="' + author + '"> ' + author + '</div>';
+                        html += '<a class="read-more" href="' + issue.html_url + '" target="_blank">阅读全文 →</a>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                    container.innerHTML = html;
+                })
+                .catch(function(err) {
+                    console.warn('博客加载失败:', err);
+                    container.innerHTML = '<div class="blog-error"><i class="fas fa-exclamation-circle"></i>加载失败，请稍后重试<br><span style="font-size:.8rem;opacity:.6;">' + err.message + '</span></div>';
+                });
+        })();
+
+        // ============================================================
+        // 页面加载时强制显示首页
+        // ============================================================
+        (function initDefaultPage() {
+            window.scrollTo(0, 0);
+            var heroLink = document.querySelector('.nav-link[href="#hero"]');
+            var allNavLinks = document.querySelectorAll('.nav-link');
+            if (heroLink) {
+                allNavLinks.forEach(function(link) {
+                    link.classList.remove('active');
+                });
+                heroLink.classList.add('active');
+            }
+        })();
+
+        // ============================================================
+        // HERO 按压倾斜
+        // ============================================================
         (function initHeroPress() {
             var heroCard = document.getElementById('heroTiltCard');
             if (!heroCard) return;
@@ -656,6 +761,9 @@
             }, { passive: true });
         })();
 
+        // ============================================================
+        // 地图互动
+        // ============================================================
         (function initMapInteractions() {
             var mapItems = document.querySelectorAll('.map-item.map-clickable');
             mapItems.forEach(function(item) {
@@ -712,6 +820,9 @@
             });
         })();
 
+        // ============================================================
+        // 价值观
+        // ============================================================
         function toggleValue(e, el) {
             if (el.classList.contains('dragging')) return;
             e.stopPropagation();
@@ -735,6 +846,9 @@
             }
         }
 
+        // ============================================================
+        // 拖拽重组
+        // ============================================================
         (function initDragDrop() {
             var cards = document.querySelectorAll('.value-card.draggable-card');
             var dragEl = null,
@@ -833,6 +947,9 @@
             });
         })();
 
+        // ============================================================
+        // 星群连线 Canvas
+        // ============================================================
         (function initConstellation() {
             var canvas = document.getElementById('constellationCanvas');
             var ctx = canvas.getContext('2d');
@@ -951,6 +1068,9 @@
             });
         })();
 
+        // ============================================================
+        // 星空粒子背景
+        // ============================================================
         (function initStarfield() {
             var canvas = document.getElementById('starfield');
             var ctx = canvas.getContext('2d');
@@ -1015,6 +1135,9 @@
             });
         })();
 
+        // ============================================================
+        // 导航
+        // ============================================================
         var navbar = document.getElementById('navbar');
         window.addEventListener('scroll', function() {
             if (window.scrollY > 60) {
@@ -1056,6 +1179,38 @@
             });
         });
 
+        // ============================================================
+        // 导航高亮修复
+        // ============================================================
+        var sections = document.querySelectorAll('section[id]');
+        var navLinksAll = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', function() {
+            var current = '';
+            var scrollY = window.scrollY;
+
+            if (scrollY < 100) {
+                current = 'hero';
+            } else {
+                sections.forEach(function(sec) {
+                    var top = sec.offsetTop - 120;
+                    if (scrollY >= top) {
+                        current = sec.id;
+                    }
+                });
+            }
+
+            navLinksAll.forEach(function(link) {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // ============================================================
+        // Modals
+        // ============================================================
         var groupModal = document.getElementById('groupModal'),
             channelModal = document.getElementById('channelModal'),
             updateLogModal = document.getElementById('updateLogModal');
@@ -1097,6 +1252,9 @@
             });
         });
 
+        // ============================================================
+        // 入场动画
+        // ============================================================
         var items = document.querySelectorAll('.animate-item');
         var observer = new IntersectionObserver(function(entries) {
             entries.forEach(function(entry) {
@@ -1109,24 +1267,9 @@
             observer.observe(item);
         });
 
-        var sections = document.querySelectorAll('section[id]'),
-            navLinksAll = document.querySelectorAll('.nav-link');
-        window.addEventListener('scroll', function() {
-            var current = '';
-            sections.forEach(function(sec) {
-                var top = sec.offsetTop - 100;
-                if (window.scrollY >= top) current = sec.id;
-            });
-            navLinksAll.forEach(function(link) {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === '#' + current) {
-                    link.classList.add('active');
-                }
-            });
-        });
-
-        console.log('>> 星能工作室');
-        console.log('>> 无备注');
+        console.log('>> 星能博客由 GitHub Issues 驱动');
+        console.log('>> 主站: https://stellarcn2020.github.io/st');
+        console.log('>> 博客: https://stellarcn2020.github.io/st/blog');
     </script>
 </body>
 </html>
