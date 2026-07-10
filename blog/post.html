@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>文章详情</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- 引入 marked.js 用于 Markdown 渲染 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        /* ===== 完全复用主站样式 ===== */
+        :root {
+            --bg-primary: #f5f7fc;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #4c6a9e;
+            --border-light: #e0e7f0;
+            --shadow-sm: 0 8px 20px rgba(0,0,0,0.05);
+            --shadow-hover: 0 20px 48px rgba(0,0,0,0.12);
+            --shadow-xl: 0 32px 64px rgba(0,0,0,0.10);
+            --accent: #5f7fff;
+            --accent-glow: #a07aff;
+            --accent-light: #eef4ff;
+            --card-radius: 0px;
+        }
+        body.dark {
+            --bg-primary: #0b1120;
+            --bg-card: #162033;
+            --text-primary: #e8edf5;
+            --text-secondary: #8a9fc0;
+            --border-light: #2a3a5a;
+            --shadow-sm: 0 8px 20px rgba(0,0,0,0.4);
+            --shadow-hover: 0 20px 48px rgba(0,0,0,0.6);
+            --shadow-xl: 0 32px 64px rgba(0,0,0,0.5);
+            --accent-light: #1a2a4a;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; cursor:default; }
+        a,button,.nav-link { cursor:pointer; }
+        :focus { outline:none; }
+        html { font-size:16px; scroll-behavior:smooth; }
+        body {
+            font-family:'Inter','Segoe UI',system-ui,-apple-system,'Microsoft YaHei',sans-serif;
+            background:var(--bg-primary); color:var(--text-primary);
+            padding-top:72px; line-height:1.7; overflow-x:hidden;
+            -webkit-font-smoothing:antialiased; transition:background .4s,color .4s; user-select:none;
+        }
+        .grid-bg { position:fixed; inset:0; z-index:-2; background:linear-gradient(135deg,var(--bg-primary) 0%,#e8edf8 100%); transition:background .4s; }
+        body.dark .grid-bg { background:linear-gradient(135deg,#0b1120 0%,#162033 100%); }
+        .grid-overlay {
+            position:fixed; inset:0; z-index:-1; pointer-events:none;
+            background-image:linear-gradient(to right,rgba(95,127,255,.04) 1px,transparent 1px),
+                           linear-gradient(to bottom,rgba(95,127,255,.04) 1px,transparent 1px);
+            background-size:30px 30px; transition:opacity .4s;
+        }
+        body.dark .grid-overlay {
+            background-image:linear-gradient(to right,rgba(95,127,255,.06) 1px,transparent 1px),
+                           linear-gradient(to bottom,rgba(95,127,255,.06) 1px,transparent 1px);
+        }
+        .tech-line { position:fixed; bottom:0; left:0; width:100%; height:2px; background:linear-gradient(90deg,#1a2a4f,var(--accent),#1a2a4f); z-index:99; }
+        #starfield { position:fixed; inset:0; z-index:-1; pointer-events:none; }
+        .container { max-width:1340px; margin:0 auto; padding:0 clamp(16px,3vw,40px); position:relative; }
+
+        .navbar {
+            position:fixed; top:0; left:0; width:100%; z-index:100;
+            display:flex; align-items:center; padding:.6rem clamp(1rem,3vw,2.5rem);
+            background:rgba(255,255,255,.92); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+            box-shadow:0 2px 8px rgba(0,0,0,.04); border-bottom:1px solid var(--border-light);
+            transition:background .3s,box-shadow .3s,border-color .3s; min-height:64px; flex-wrap:wrap;
+        }
+        body.dark .navbar { background:rgba(22,32,51,.92); border-bottom-color:var(--border-light); }
+        .navbar.transparent { background:transparent; box-shadow:none; border-bottom-color:transparent; }
+        .logo { display:flex; align-items:center; gap:10px; flex:1; min-width:120px; }
+        .logo-img { height:clamp(22px,3vw,28px); width:auto; filter:drop-shadow(0 2px 4px rgba(0,0,0,.06)); }
+        .logo-text { font-weight:700; font-size:clamp(.9rem,1.2vw,1.1rem); color:var(--text-primary); letter-spacing:.5px; white-space:nowrap; transition:color .3s; }
+        .logo-text span { color:var(--accent); }
+        .nav-links { display:flex; gap:clamp(.8rem,1.8vw,1.8rem); align-items:center; margin:0 auto; flex-wrap:wrap; }
+        .nav-link { color:var(--text-primary); text-decoration:none; font-weight:500; font-size:clamp(.8rem,.95vw,.95rem); transition:.2s; padding:.3rem 0; position:relative; white-space:nowrap; }
+        .nav-link::after { content:''; position:absolute; bottom:0; left:0; width:0; height:2px; background:var(--accent); transition:width .3s ease; }
+        .nav-link:hover::after,.nav-link.active::after { width:100%; }
+        .nav-link:hover,.nav-link.active { color:var(--accent); }
+        .menu-toggle { display:none; font-size:1.4rem; color:var(--text-primary); background:none; border:none; cursor:pointer; padding:4px 8px; transition:color .3s; }
+
+        .section-title {
+            font-size:clamp(1.5rem,2.8vw,2.2rem); font-weight:700; border-left:4px solid var(--accent);
+            padding-left:16px; margin-bottom:clamp(1.5rem,3vw,2.5rem);
+            display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; position:relative; z-index:2;
+            color:var(--text-primary); transition:color .3s;
+        }
+        .section-title .en { font-size:.8rem; font-weight:400; color:var(--text-secondary); letter-spacing:.5px; opacity:.6; }
+
+        /* ===== 文章详情样式 ===== */
+        .post-detail {
+            padding: 60px 0 40px;
+        }
+        .post-header {
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 1.5rem;
+        }
+        .post-header h1 {
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+        .post-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            font-size: .9rem;
+            color: var(--text-secondary);
+            opacity: .7;
+        }
+        .post-meta .author {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .post-meta .author img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 1px solid var(--border-light);
+        }
+        .post-body {
+            font-size: 1.05rem;
+            line-height: 1.9;
+            color: var(--text-primary);
+        }
+        /* Markdown 渲染样式 */
+        .post-body h1 { font-size: 2rem; font-weight: 700; margin: 1.8rem 0 0.8rem; border-bottom: 2px solid var(--border-light); padding-bottom: 0.3rem; }
+        .post-body h2 { font-size: 1.6rem; font-weight: 700; margin: 1.6rem 0 0.6rem; }
+        .post-body h3 { font-size: 1.3rem; font-weight: 600; margin: 1.4rem 0 0.4rem; }
+        .post-body p { margin: 0.8rem 0; }
+        .post-body ul, .post-body ol { margin: 0.8rem 0 0.8rem 1.8rem; }
+        .post-body li { margin: 0.2rem 0; }
+        .post-body blockquote { border-left: 4px solid var(--accent); padding-left: 1.2rem; margin: 1rem 0; color: var(--text-secondary); font-style: italic; }
+        .post-body code { background: var(--bg-card); padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: .9em; border: 1px solid var(--border-light); }
+        .post-body pre { background: var(--bg-card); padding: 1rem; overflow-x: auto; border-radius: 4px; border: 1px solid var(--border-light); margin: 1rem 0; }
+        .post-body pre code { background: transparent; border: none; padding: 0; }
+        .post-body img { max-width: 100%; height: auto; border-radius: 4px; margin: 1rem 0; box-shadow: var(--shadow-sm); }
+        .post-body a { color: var(--accent); text-decoration: none; }
+        .post-body a:hover { text-decoration: underline; }
+        .post-body hr { margin: 2rem 0; border: none; border-top: 1px solid var(--border-light); }
+
+        .post-loading, .post-error {
+            text-align: center; padding: 4rem 0; color: var(--text-secondary);
+        }
+        .post-loading i, .post-error i { font-size: 2.5rem; display: block; margin-bottom: 1rem; }
+
+        .footer-new { margin-top: 2rem; background:#0a0f2a; padding:1.8rem clamp(1rem,3vw,2.5rem); color:#eef5ff; position:relative; z-index:2; transition:background .4s; }
+        body.dark .footer-new { background:#0b1120; }
+        .footer-container { max-width:1260px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:2rem; }
+        .footer-col h4 { font-size:clamp(1rem,1.2vw,1.2rem); font-weight:700; border-left:3px solid var(--accent); padding-left:12px; margin-bottom:.8rem; color:#fff; }
+        .footer-col p,.footer-col a { font-size:clamp(.7rem,.8vw,.85rem); line-height:1.6; color:#b8d0ff; text-decoration:none; display:block; margin-bottom:.2rem; }
+        .footer-col a:hover { color:#fff; text-decoration:underline; }
+
+        @media(max-width:780px){
+            body{padding-top:60px;} .navbar{min-height:56px;padding:.4rem 1rem;}
+            .nav-links{display:none;width:100%;flex-direction:column;gap:0;margin:0;padding:.8rem 0;border-top:1px solid var(--border-light);order:3;}
+            .nav-links.open{display:flex;}
+            .nav-link{padding:.6rem 1.2rem;width:100%;text-align:center;font-size:.9rem;}
+            .menu-toggle{display:block;}
+            .post-meta{flex-direction:column;gap:.5rem;}
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="starfield"></canvas>
+    <div class="grid-bg"></div>
+    <div class="grid-overlay"></div>
+    <div class="tech-line"></div>
+
+    <nav class="navbar" id="navbar">
+        <div class="logo">
+            <img class="logo-img" src="https://user-assets.sxlcdn.com/images/1138507/FnkoMkeJ40vIQkdFDyBwHQDTIWcI.png?imageMogr2/strip/auto-orient/thumbnail/300x300%3E/quality/90!/format/png" alt="星能工作室Logo" loading="lazy" onerror="this.style.display='none'">
+            <span class="logo-text"><span></span></span>
+        </div>
+        <button class="menu-toggle" id="menuToggle" aria-label="菜单"><i class="fas fa-bars"></i></button>
+        <div class="nav-links" id="navLinks">
+            <a class="nav-link" href="../">首页</a>
+            <a class="nav-link" href="../#values">星核价值</a>
+            <a class="nav-link" href="../#maps">创作星群</a>
+            <a class="nav-link" href="../#join">加入星能</a>
+            <a class="nav-link" href="./">星能博客</a>
+        </div>
+    </nav>
+
+    <section class="post-detail">
+        <div class="container">
+            <div id="postContainer">
+                <div class="post-loading"><i class="fas fa-spinner fa-pulse"></i>加载文章中...</div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer-new">
+        <div class="footer-container">
+            <div class="footer-col"><h4>星能工作室</h4><p>始于2021年，专注迷你世界地图创作与青少年技术交流。</p><p>星光点缀黑暗，用创意点亮彼此。</p><p>以热爱驱动创造，以勇气挑战未知。</p></div>
+            <div class="footer-col">
+                <h4>账号信息 &amp; 联系方式</h4>
+                <p><a href="https://space.bilibili.com/3493087561124092" target="_blank" rel="noopener noreferrer">B站空间：星能工作室</a></p>
+                <p>官方邮箱：stellarCN2020@outlook.com</p><p>星小蓝：3849876019</p><p>交流群：966926112</p><p>频道号：pd90272831</p><p>青少年服务热线：12355（24小时心理支持）</p>
+                <p style="margin-top:0.8rem;"><a href="https://github.com/stellarcn2020/st" target="_blank" rel="noopener noreferrer" style="color:#b8d0ff;">GitHub 仓库</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================================
+        // 获取文章编号
+        // ============================================================
+        function getQueryParam(name) {
+            var urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        var issueNumber = getQueryParam('id');
+        var container = document.getElementById('postContainer');
+
+        if (!issueNumber) {
+            container.innerHTML = '<div class="post-error"><i class="fas fa-exclamation-circle"></i>文章编号缺失</div>';
+        } else {
+            // ============================================================
+            // 加载文章详情
+            // ============================================================
+            var REPO_OWNER = 'stellarcn2020';
+            var REPO_NAME = 'st';
+            var apiUrl = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues/' + issueNumber;
+
+            fetch(apiUrl)
+                .then(function(res) {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                })
+                .then(function(issue) {
+                    // 解析标题
+                    var titleMatch = issue.title.match(/^(\d{4}-\d{2}-\d{2})[- ]?(.*)/);
+                    var dateStr = titleMatch ? titleMatch[1] : '未知日期';
+                    var displayTitle = titleMatch ? titleMatch[2] || issue.title : issue.title;
+
+                    // 解析自定义作者：支持在正文开头用 "作者：xxx" 或 "author: xxx" 提取
+                    var body = issue.body || '';
+                    var authorName = issue.user.login; // 默认使用 GitHub 用户名
+                    var authorAvatar = issue.user.avatar_url;
+
+                    // 尝试从正文提取自定义作者（支持中英文）
+                    var authorMatch = body.match(/^作者[：:]\s*(.+?)\s*[\n\r]/i);
+                    if (!authorMatch) {
+                        authorMatch = body.match(/^author[：:]\s*(.+?)\s*[\n\r]/i);
+                    }
+                    if (authorMatch && authorMatch[1]) {
+                        authorName = authorMatch[1].trim();
+                        // 移除作者行，以免在正文中重复显示
+                        body = body.replace(/^作者[：:]\s*.+?[\n\r]/, '');
+                        body = body.replace(/^author[：:]\s*.+?[\n\r]/, '');
+                    }
+
+                    // 渲染 Markdown
+                    var renderer = new marked.Renderer();
+                    // 对图片添加样式（已通过CSS）
+                    // 对代码块使用 <pre><code>
+                    var htmlContent = marked.parse(body, { renderer: renderer });
+
+                    // 组装页面
+                    var html = '';
+                    html += '<div class="post-header">';
+                    html += '<h1>' + displayTitle + '</h1>';
+                    html += '<div class="post-meta">';
+                    html += '<span>' + dateStr + '</span>';
+                    html += '<span class="author"><img src="' + authorAvatar + '" alt="' + authorName + '"> ' + authorName + '</span>';
+                    html += '</div></div>';
+                    html += '<div class="post-body">' + htmlContent + '</div>';
+
+                    container.innerHTML = html;
+
+                    // 更新页面标题
+                    document.title = displayTitle + ' · 星能博客';
+                })
+                .catch(function(err) {
+                    console.warn('文章加载失败:', err);
+                    container.innerHTML = '<div class="post-error"><i class="fas fa-exclamation-circle"></i>加载失败，请稍后重试<br><span style="font-size:.8rem;opacity:.6;">' + err.message + '</span></div>';
+                });
+        }
+
+        // ============================================================
+        // 导航菜单
+        // ============================================================
+        var navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 60) {
+                navbar.classList.remove('transparent');
+            } else {
+                navbar.classList.add('transparent');
+            }
+        });
+        navbar.classList.add('transparent');
+
+        var menuToggle = document.getElementById('menuToggle');
+        var navLinks = document.getElementById('navLinks');
+        menuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            navLinks.classList.toggle('open');
+        });
+        document.addEventListener('click', function(e) {
+            if (!navLinks.contains(e.target) && !menuToggle.contains(e.target)) {
+                navLinks.classList.remove('open');
+            }
+        });
+        document.querySelectorAll('.nav-link').forEach(function(link) {
+            link.addEventListener('click', function() {
+                navLinks.classList.remove('open');
+            });
+        });
+
+        // ============================================================
+        // 星空粒子背景 (精简版)
+        // ============================================================
+        (function initStarfield() {
+            var canvas = document.getElementById('starfield');
+            var ctx = canvas.getContext('2d');
+            var w, h, stars = [], count = 50;
+
+            function resize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            var Star = function() {
+                this.reset = function() {
+                    this.x = Math.random() * w;
+                    this.y = Math.random() * h;
+                    this.size = Math.random() * 1.6 + .3;
+                    this.speed = .03 + Math.random() * .1;
+                    this.opacity = Math.random() * .25 + .06;
+                    this.twinkle = Math.random() * Math.PI * 2;
+                };
+                this.update = function() {
+                    this.y += this.speed;
+                    this.twinkle += .02;
+                    if (this.y > h) { this.y = 0; this.x = Math.random() * w; }
+                };
+                this.draw = function() {
+                    var alpha = this.opacity * (.5 + .5 * Math.sin(this.twinkle));
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(95, 127, 255, ' + alpha + ')';
+                    ctx.shadowColor = 'rgba(95, 127, 255, .03)';
+                    ctx.shadowBlur = 2;
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                };
+                this.reset();
+            };
+            for (var i = 0; i < count; i++) stars.push(new Star());
+
+            function animate() {
+                ctx.clearRect(0, 0, w, h);
+                for (var i = 0; i < stars.length; i++) {
+                    stars[i].update();
+                    stars[i].draw();
+                }
+                requestAnimationFrame(animate);
+            }
+            animate();
+            window.addEventListener('resize', function() {
+                resize();
+                for (var i = 0; i < stars.length; i++) {
+                    stars[i].x = Math.random() * w;
+                    stars[i].y = Math.random() * h;
+                }
+            });
+        })();
+
+        console.log('>> 文章详情');
+    </script>
+</body>
+</html>
