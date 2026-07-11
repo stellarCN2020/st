@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>文章详情</title>
+    <title>星能博客 · 文章详情</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -77,53 +77,21 @@
         .nav-link:hover,.nav-link.active { color:var(--accent); }
         .menu-toggle { display:none; font-size:1.4rem; color:var(--text-primary); background:none; border:none; cursor:pointer; padding:4px 8px; transition:color .3s; }
 
-        /* ===== 文章详情 ===== */
+        .section-title {
+            font-size:clamp(1.5rem,2.8vw,2.2rem); font-weight:700; border-left:4px solid var(--accent);
+            padding-left:16px; margin-bottom:clamp(1.5rem,3vw,2.5rem);
+            display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; position:relative; z-index:2;
+            color:var(--text-primary); transition:color .3s;
+        }
+        .section-title .en { font-size:.8rem; font-weight:400; color:var(--text-secondary); letter-spacing:.5px; opacity:.6; }
+
         .post-detail { padding:60px 0 40px; }
-        .post-header {
-            margin-bottom:2rem;
-            border-bottom:1px solid var(--border-light);
-            padding-bottom:1.5rem;
-        }
-        .post-header .post-title {
-            font-size:clamp(2rem,4vw,2.8rem);
-            font-weight:800;
-            color:var(--text-primary);
-            line-height:1.2;
-            margin-bottom:.5rem;
-        }
-        .post-meta {
-            display:flex;
-            flex-wrap:wrap;
-            gap:.8rem 1.5rem;
-            font-size:.85rem;
-            color:var(--text-secondary);
-            opacity:.7;
-            align-items:center;
-        }
+        .post-header { margin-bottom:2rem; border-bottom:1px solid var(--border-light); padding-bottom:1.5rem; }
+        .post-header h1 { font-size:clamp(2rem,4vw,2.8rem); font-weight:800; color:var(--text-primary); line-height:1.2; margin-bottom:.5rem; }
+        .post-meta { display:flex; flex-wrap:wrap; gap:1.5rem; font-size:.9rem; color:var(--text-secondary); opacity:.7; }
         .post-meta .author { display:flex; align-items:center; gap:6px; }
         .post-meta .author img { width:24px; height:24px; border-radius:50%; border:1px solid var(--border-light); }
-        .post-categories { display:flex; flex-wrap:wrap; gap:4px 8px; margin:8px 0 0; }
-        .post-categories .cat {
-            font-size:.6rem;
-            padding:2px 12px;
-            border-radius:0;
-            color:#fff;
-            background:var(--accent);
-            font-family:'JetBrains Mono',monospace;
-            letter-spacing:.3px;
-        }
-        .post-categories .cat:nth-child(2) { background:#f59e0b; }
-        .post-categories .cat:nth-child(3) { background:#10b981; }
-        .post-categories .cat:nth-child(4) { background:#8b5cf6; }
-        .post-categories .cat:nth-child(5) { background:#ef4444; }
-        .post-categories .cat:nth-child(6) { background:#06b6d4; }
-        .post-categories .cat:nth-child(7) { background:#ec4899; }
-
-        .post-body {
-            font-size:1.05rem;
-            line-height:1.9;
-            color:var(--text-primary);
-        }
+        .post-body { font-size:1.05rem; line-height:1.9; color:var(--text-primary); }
         .post-body h1 { font-size:2rem; font-weight:700; margin:1.8rem 0 .8rem; border-bottom:2px solid var(--border-light); padding-bottom:.3rem; }
         .post-body h2 { font-size:1.6rem; font-weight:700; margin:1.6rem 0 .6rem; }
         .post-body h3 { font-size:1.3rem; font-weight:600; margin:1.4rem 0 .4rem; }
@@ -139,27 +107,8 @@
         .post-body a:hover { text-decoration:underline; }
         .post-body hr { margin:2rem 0; border:none; border-top:1px solid var(--border-light); }
 
-        /* ★★★ iframe 嵌入样式 ★★★ */
-        .post-body .html-embed-iframe {
-            width: 100%;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            margin: 1.2rem 0;
-            background: #ffffff;
-            box-shadow: var(--shadow-sm);
-            transition: box-shadow .3s ease;
-        }
-        .post-body .html-embed-iframe:hover {
-            box-shadow: var(--shadow-hover);
-        }
-
-        .post-body table { width:100%; border-collapse:collapse; margin:1rem 0; }
-        .post-body table th, .post-body table td { border:1px solid var(--border-light); padding:.5rem .8rem; text-align:left; }
-        .post-body table th { background:var(--bg-card); font-weight:600; }
-
         .post-loading, .post-error { text-align:center; padding:4rem 0; color:var(--text-secondary); }
         .post-loading i, .post-error i { font-size:2.5rem; display:block; margin-bottom:1rem; }
-        .post-error { color:#ef4444; }
 
         .footer-new { margin-top:2rem; background:#0a0f2a; padding:1.8rem clamp(1rem,3vw,2.5rem); color:#eef5ff; position:relative; z-index:2; transition:background .4s; }
         body.dark .footer-new { background:#0b1120; }
@@ -174,16 +123,7 @@
             .nav-links.open{display:flex;}
             .nav-link{padding:.6rem 1.2rem;width:100%;text-align:center;font-size:.9rem;}
             .menu-toggle{display:block;}
-            .post-meta{flex-direction:column;gap:.4rem;}
-            .post-body{font-size:.95rem;}
-            .post-body .html-embed-iframe { height: 350px; }
-        }
-        @media(max-width:480px){
-            body{padding-top:54px;} .navbar{min-height:50px;padding:.3rem .8rem;}
-            .logo-img{height:18px;} .logo-text{font-size:.8rem;}
-            .container{padding:0 12px;}
-            .post-header .post-title{font-size:1.6rem;}
-            .post-body .html-embed-iframe { height: 280px; }
+            .post-meta{flex-direction:column;gap:.5rem;}
         }
     </style>
 </head>
@@ -230,119 +170,12 @@
     </footer>
 
     <script>
-        // ============================================================
-        // 工具函数
-        // ============================================================
+        // ===== 获取文章编号 =====
         function getQueryParam(name) {
             var urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(name);
         }
 
-        // ============================================================
-        // ★★★ 核心：提取 HTML 嵌入块 ★★★
-        // 在 Markdown 渲染前，从原始 body 中提取所有 [html-embed] 块
-        // ============================================================
-        function extractHtmlEmbeds(body) {
-            var embeds = [];
-            var placeholderIndex = 0;
-
-            // 匹配 [html-embed]...[/html-embed]（支持多行）
-            var pattern = /\[html-embed\]([\s\S]*?)\[\/html-embed\]/g;
-            var match;
-
-            while ((match = pattern.exec(body)) !== null) {
-                var htmlContent = match[1].trim();
-                // 如果内容看起来像是一个完整的 HTML 文档，直接使用
-                // 否则可能是纯 HTML 片段，包裹成完整文档
-                var fullHtml = htmlContent;
-                // 检查是否已经包含 <html> 或 <body> 标签
-                if (!/<html/i.test(htmlContent) && !/<body/i.test(htmlContent)) {
-                    // 如果是片段，包裹成完整页面
-                    fullHtml = '<!DOCTYPE html>\n<html>\n<head>\n<meta charset="UTF-8">\n<style>\n' +
-                        'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; padding: 20px; line-height: 1.7; color: #1e293b; background: #f8f8f8; }\n' +
-                        '.container { max-width: 800px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }\n' +
-                        'h1 { color: #5f7fff; }\n' +
-                        '</style>\n</head>\n<body>\n<div class="container">\n' +
-                        htmlContent +
-                        '\n</div>\n</body>\n</html>';
-                }
-                // 生成占位符
-                var placeholder = '___HTML_EMBED_' + placeholderIndex + '___';
-                embeds.push({
-                    placeholder: placeholder,
-                    html: fullHtml
-                });
-                placeholderIndex++;
-
-                // 在 body 中用占位符替换原始内容
-                body = body.replace(match[0], placeholder);
-            }
-
-            return {
-                body: body,
-                embeds: embeds
-            };
-        }
-
-        // ============================================================
-        // ★★★ 渲染后替换占位符为 iframe ★★★
-        // ============================================================
-        function replaceEmbedsWithIframes(htmlContent, embeds) {
-            if (!embeds || embeds.length === 0) return htmlContent;
-
-            var result = htmlContent;
-            embeds.forEach(function(embed) {
-                // 转义 HTML 内容，防止破坏 iframe 属性
-                var escaped = embed.html
-                    .replace(/&/g, '&amp;')
-                    .replace(/"/g, '&quot;')
-                    .replace(/'/g, '&#39;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;');
-
-                var iframeHtml = '<iframe class="html-embed-iframe" srcdoc="' + escaped +
-                    '" width="100%" height="500" style="border: 1px solid #e0e7f0; border-radius: 8px; background: #fff; margin: 1.2rem 0;" ' +
-                    'sandbox="allow-scripts allow-same-origin allow-modals" loading="lazy"></iframe>';
-
-                // 替换占位符
-                result = result.replace(embed.placeholder, iframeHtml);
-            });
-
-            return result;
-        }
-
-        // ============================================================
-        // 解析文章元数据
-        // ============================================================
-        function parseMetadata(body) {
-            var result = {
-                author: null,
-                categories: [],
-                cleanBody: body
-            };
-
-            var authorMatch = body.match(/^作者[：:]\s*(.+?)\s*[\n\r]/i);
-            if (!authorMatch) authorMatch = body.match(/^author[：:]\s*(.+?)\s*[\n\r]/i);
-            if (authorMatch && authorMatch[1]) {
-                result.author = authorMatch[1].trim();
-                result.cleanBody = result.cleanBody.replace(/^作者[：:]\s*.+?[\n\r]/, '');
-                result.cleanBody = result.cleanBody.replace(/^author[：:]\s*.+?[\n\r]/, '');
-            }
-
-            var catMatch = result.cleanBody.match(/^分类[：:]\s*(.+?)\s*[\n\r]/i);
-            if (catMatch && catMatch[1]) {
-                result.categories = catMatch[1].split(/[,，、\s]+/).filter(function(c) {
-                    return c.trim().length > 0;
-                });
-                result.cleanBody = result.cleanBody.replace(/^分类[：:]\s*.+?[\n\r]/, '');
-            }
-
-            return result;
-        }
-
-        // ============================================================
-        // 加载文章
-        // ============================================================
         var issueNumber = getQueryParam('id');
         var container = document.getElementById('postContainer');
 
@@ -359,51 +192,32 @@
                     return res.json();
                 })
                 .then(function(issue) {
-                    // 解析标题
                     var titleMatch = issue.title.match(/^(\d{4}-\d{2}-\d{2})[- ]?(.*)/);
                     var dateStr = titleMatch ? titleMatch[1] : '未知日期';
                     var displayTitle = titleMatch ? titleMatch[2] || issue.title : issue.title;
 
-                    // 原始正文
                     var body = issue.body || '';
-
-                    // ★★★ 第一步：提取 [html-embed] 块 ★★★
-                    var extracted = extractHtmlEmbeds(body);
-                    var bodyWithoutEmbeds = extracted.body;
-                    var embeds = extracted.embeds;
-
-                    // ★★★ 第二步：解析元数据（作者、分类） ★★★
-                    var meta = parseMetadata(bodyWithoutEmbeds);
-                    var cleanBody = meta.cleanBody;
-                    var customAuthor = meta.author;
-                    var categories = meta.categories;
-
-                    // 作者信息
-                    var authorName = customAuthor || issue.user.login;
+                    var authorName = issue.user.login;
                     var authorAvatar = issue.user.avatar_url;
 
-                    // ★★★ 第三步：渲染 Markdown ★★★
-                    var htmlContent = marked.parse(cleanBody);
+                    // 自定义作者提取
+                    var authorMatch = body.match(/^作者[：:]\s*(.+?)\s*[\n\r]/i);
+                    if (!authorMatch) authorMatch = body.match(/^author[：:]\s*(.+?)\s*[\n\r]/i);
+                    if (authorMatch && authorMatch[1]) {
+                        authorName = authorMatch[1].trim();
+                        body = body.replace(/^作者[：:]\s*.+?[\n\r]/, '');
+                        body = body.replace(/^author[：:]\s*.+?[\n\r]/, '');
+                    }
 
-                    // ★★★ 第四步：替换占位符为 iframe ★★★
-                    htmlContent = replaceEmbedsWithIframes(htmlContent, embeds);
+                    var htmlContent = marked.parse(body);
 
-                    // 构建页面
                     var html = '';
                     html += '<div class="post-header">';
-                    html += '<div class="post-title">' + displayTitle + '</div>';
+                    html += '<h1>' + displayTitle + '</h1>';
                     html += '<div class="post-meta">';
                     html += '<span>' + dateStr + '</span>';
                     html += '<span class="author"><img src="' + authorAvatar + '" alt="' + authorName + '"> ' + authorName + '</span>';
-                    html += '</div>';
-                    if (categories.length > 0) {
-                        html += '<div class="post-categories">';
-                        categories.forEach(function(cat) {
-                            html += '<span class="cat">' + cat.trim() + '</span>';
-                        });
-                        html += '</div>';
-                    }
-                    html += '</div>';
+                    html += '</div></div>';
                     html += '<div class="post-body">' + htmlContent + '</div>';
 
                     container.innerHTML = html;
@@ -415,9 +229,7 @@
                 });
         }
 
-        // ============================================================
-        // 导航菜单
-        // ============================================================
+        // ===== 导航 =====
         var navbar = document.getElementById('navbar');
         window.addEventListener('scroll', function() {
             if (window.scrollY > 60) {
@@ -445,9 +257,7 @@
             });
         });
 
-        // ============================================================
-        // 星空粒子背景
-        // ============================================================
+        // ===== 星空粒子 =====
         (function initStarfield() {
             var canvas = document.getElementById('starfield');
             var ctx = canvas.getContext('2d');
@@ -506,8 +316,7 @@
             });
         })();
 
-        console.log('>> 文章详情;
-        console.log('>> 支持格式: [html-embed]...[/html-embed]');
+        console.log('>> 星能博客 · 文章详情页');
     </script>
 </body>
 </html>
