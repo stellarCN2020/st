@@ -33,7 +33,7 @@
             --accent-light: #1a2a4a;
         }
         * { margin:0; padding:0; box-sizing:border-box; cursor:default; }
-        a,button,.btn,.nav-link,.mihoyo-btn,.card-clickable,.draggable-card,.map-clickable { cursor:pointer; }
+        a,button,.btn,.nav-link,.mihoyo-btn { cursor:pointer; }
         :focus { outline:none; }
         html { font-size:16px; scroll-behavior:smooth; }
         body {
@@ -60,6 +60,7 @@
         body.dark #constellationCanvas { opacity:.28; }
         .container { max-width:1340px; margin:0 auto; padding:0 clamp(16px,3vw,40px); position:relative; }
 
+        /* ===== 导航 ===== */
         .navbar {
             position:fixed; top:0; left:0; width:100%; z-index:100;
             display:flex; align-items:center; padding:.6rem clamp(1rem,3vw,2.5rem);
@@ -93,18 +94,7 @@
         .mihoyo-btn .btn-bg { position:absolute; top:0; left:0; width:100%; height:100%; background:var(--accent); transform:translateX(-1rem) skewX(15deg); transition:transform .7s cubic-bezier(.215,.61,.355,1); z-index:1; }
         .mihoyo-btn:hover .btn-bg { transform:translateX(100%) skewX(30deg); transition-delay:.3s; }
         .mihoyo-btn:hover .btn-sub { transform:translateX(.4rem); transition-delay:.4s; }
-        .mihoyo-btn-simple {
-            position:relative; display:inline-flex; align-items:center; justify-content:center;
-            background:#3d3d3d; clip-path:polygon(0% 0%, calc(100% - .2rem) 0%, 100% .2rem, 100% 100%, 0% 100%);
-            overflow:hidden; cursor:pointer; color:#fff; font-weight:bold; padding:8px 20px; font-size:.9rem; transition:all .3s; border:none;
-        }
-        .mihoyo-btn-simple .simple-bg { position:absolute; top:0; left:0; width:100%; height:100%; background:var(--accent); transform:translateX(-100%); transition:transform .4s ease; z-index:1; }
-        .mihoyo-btn-simple .simple-text { position:relative; z-index:2; }
-        .mihoyo-btn-simple:hover .simple-bg { transform:translateX(0); }
-        @media(max-width:780px){ .mihoyo-btn{width:160px;height:48px;} .mihoyo-btn .btn-title{font-size:.8rem;} .mihoyo-btn-simple{padding:6px 14px;font-size:.8rem;} }
-        @media(max-width:480px){ .mihoyo-btn{width:140px;height:44px;} .mihoyo-btn .btn-title{font-size:.7rem;} .mihoyo-btn .btn-sub{font-size:.45rem;} }
 
-        .card { background:var(--bg-card); border:1px solid var(--border-light); box-shadow:var(--shadow-sm); padding:1.8rem 2rem; transition:box-shadow .3s,border-color .3s,background .3s; border-radius:var(--card-radius); position:relative; }
         .section-title {
             font-size:clamp(1.5rem,2.8vw,2.2rem); font-weight:700; border-left:4px solid var(--accent);
             padding-left:16px; margin-bottom:clamp(1.5rem,3vw,2.5rem);
@@ -113,6 +103,7 @@
         }
         .section-title .en { font-size:.8rem; font-weight:400; color:var(--text-secondary); letter-spacing:.5px; opacity:.6; }
 
+        /* ===== Hero ===== */
         .hero-wrap { position:relative; min-height:80vh; display:flex; align-items:center; padding:20px 0 40px; z-index:1; }
         .hero-grid { display:grid; grid-template-columns:1.2fr .8fr; gap:clamp(20px,4vw,50px); width:100%; position:relative; align-items:center; }
         .hero-content { position:relative; z-index:2; transform:translateX(-8px); }
@@ -160,6 +151,7 @@
         .hero-float:nth-child(3) { bottom:-8px; left:-20px; transform:rotate(-5deg); }
         @media(max-width:780px){ .hero-grid{grid-template-columns:1fr;gap:30px;} .hero-side .tilt-card{max-width:100%;} .hero-content .desc{max-width:100%;} .hero-content{transform:translateX(0);} .hero-side{margin-right:0;margin-top:0;} .hero-float{display:none;} }
 
+        /* ===== 价值观 ===== */
         .value-scatter { position:relative; display:flex; flex-wrap:wrap; gap:12px 16px; justify-content:center; padding:20px 0 30px; min-height:420px; }
         .value-card {
             background:var(--bg-card); border:1px solid var(--border-light); box-shadow:var(--shadow-sm);
@@ -209,6 +201,7 @@
         }
         @media(max-width:480px){ .value-card{flex:0 1 100%!important;max-width:100%!important;min-width:0!important;border-radius:4px;} }
 
+        /* ===== 地图 ===== */
         .map-constellation { position:relative; padding:10px 0 20px; }
         .map-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; position:relative; }
         .map-item {
@@ -272,6 +265,7 @@
         }
         @media(max-width:480px){ .map-grid{grid-template-columns:1fr;} .map-item:nth-child(1),.map-item:nth-child(2),.map-item:nth-child(3){grid-column:1;grid-row:auto;margin:0;} .map-stats{grid-template-columns:1fr 1fr;} .map-item{border-radius:4px;} }
 
+        /* ===== 加入 ===== */
         .join-panel { position:relative; padding:10px 0 20px; }
         .join-panel .main-card {
             background:var(--bg-card); border:1px solid var(--border-light); box-shadow:var(--shadow-sm);
@@ -302,6 +296,7 @@
         @media(max-width:780px){ .join-panel .float-card{display:none;} .join-panel .main-card{padding:1.5rem 1.2rem;border-radius:4px;} .join-panel .main-card .btn-group{gap:.8rem;} }
         @media(max-width:480px){ .join-panel .main-card .btn-group .mihoyo-btn{width:100%;max-width:200px;} .join-panel .main-card .social-links{flex-direction:column;align-items:center;gap:.3rem;} .join-panel .main-card{border-radius:4px;} }
 
+        /* ===== 博客（主站只显示3篇） ===== */
         .blog-section { padding:60px 0 20px; border-top:1px solid var(--border-light); }
         .blog-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.8rem; margin:2rem 0; }
         .blog-card {
@@ -327,6 +322,8 @@
         .blog-card .blog-categories .cat:nth-child(3) { background:#10b981; }
         .blog-card .blog-categories .cat:nth-child(4) { background:#8b5cf6; }
         .blog-card .blog-categories .cat:nth-child(5) { background:#ef4444; }
+        .blog-card .blog-categories .cat:nth-child(6) { background:#06b6d4; }
+        .blog-card .blog-categories .cat:nth-child(7) { background:#ec4899; }
         .blog-card .read-more { display:inline-block; margin-top:10px; color:var(--accent); font-weight:600; font-size:.85rem; text-decoration:none; }
         .blog-card .read-more:hover { text-decoration:underline; }
         .blog-loading { text-align:center; padding:3rem 0; color:var(--text-secondary); font-size:1rem; }
@@ -334,6 +331,7 @@
         .blog-error { text-align:center; padding:3rem 0; color:var(--text-secondary); font-size:.9rem; }
         .blog-error i { font-size:1.8rem; color:#ef4444; margin-bottom:0.8rem; display:block; }
 
+        /* ===== 页尾 ===== */
         .footer-new { margin-top:2rem; background:#0a0f2a; padding:1.8rem clamp(1rem,3vw,2.5rem); color:#eef5ff; position:relative; z-index:2; transition:background .4s; }
         body.dark .footer-new { background:#0b1120; }
         .footer-container { max-width:1260px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:2rem; }
@@ -547,15 +545,15 @@
         </div>
     </section>
 
-    <!-- ===== 博客区域（带分类标签） ===== -->
+    <!-- ===== 博客区域（最多显示3篇最新） ===== -->
     <section id="blog" class="blog-section">
         <div class="container">
-            <div class="section-title"><span>星能博客</span><span class="en">// 来自星能工作室的思考与分享</span></div>
+            <div class="section-title"><span>星能博客</span><span class="en">// 最新文章</span></div>
             <div id="blogContainer">
                 <div class="blog-loading"><i class="fas fa-spinner fa-pulse"></i>加载博客中...</div>
             </div>
             <div style="text-align:center;margin-top:1.5rem;font-size:.75rem;color:var(--text-secondary);opacity:.4;">
-                博客内容由 <a href="https://github.com/stellarcn2020/st/issues" target="_blank" style="color:var(--accent);text-decoration:none;">GitHub Issues</a> 驱动 · 在 Issues 中创建带 <code style="background:var(--bg-card);padding:0 6px;">blog</code> 标签的文章即可自动同步 · <a href="blog/" style="color:var(--accent);text-decoration:none;">查看全部博客 →</a>
+                <a href="blog/" style="color:var(--accent);text-decoration:none;">查看全部博客 →</a>
             </div>
         </div>
     </section>
@@ -595,7 +593,7 @@
 
     <div id="groupModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeGroupModal">&times;</button><h3>加入群聊</h3><div class="contact-line">QQ交流群：966926112</div><div class="contact-line">欢迎入群，与众多创作者一起交流地图心得。</div><div style="margin-top:1.2rem;text-align:center;"><button class="mihoyo-btn-simple" id="copyGroupBtn"><span class="simple-bg"></span><span class="simple-text">复制群号</span></button></div></div></div>
     <div id="channelModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeChannelModal">&times;</button><h3>加入频道</h3><div class="contact-line">官方频道号：pd90272831</div><div class="contact-line">在QQ频道中获取最新动态、活动资讯。</div><div style="margin-top:1.2rem;text-align:center;"><button class="mihoyo-btn-simple" id="copyChannelBtn"><span class="simple-bg"></span><span class="simple-text">复制频道号</span></button></div></div></div>
-    <div id="updateLogModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeUpdateLogModal">&times;</button><h3>网站更新报告</h3><div style="margin-top:1rem;"><p><strong>v20.0 (2026.07.11)</strong></p><ul style="list-style:none;padding:0;"><li>• 博客支持分类标记</li><li>• 支持 B站/抖音/快手 视频嵌入</li><li>• 支持多类型链接卡片</li><li>• 支持教程标记</li><li>• 分类标签自动显示在列表和详情页</li></ul><p style="margin-top:1rem;">愿星光守护每一个创作者。</p></div></div></div>
+    <div id="updateLogModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeUpdateLogModal">&times;</button><h3>网站更新报告</h3><div style="margin-top:1rem;"><p><strong>v20.0 (2026.07.11)</strong></p><ul style="list-style:none;padding:0;"><li>• 主站只显示最新3篇博客</li><li>• 博客站分页（每页15篇）</li><li>• 分类筛选 + 关键词搜索</li><li>• 修复文章详情页渲染</li></ul><p style="margin-top:1rem;">愿星光守护每一个创作者。</p></div></div></div>
 
     <div class="toast-message" id="toastMessage"></div>
 
@@ -625,12 +623,12 @@
             showToast('星光 +' + add + '！');
         }
 
-        // ===== 博客加载（带分类标签） =====
+        // ===== 博客加载（只显示最新3篇） =====
         (function loadBlog() {
             var container = document.getElementById('blogContainer');
             var REPO_OWNER = 'stellarcn2020';
             var REPO_NAME = 'st';
-            var apiUrl = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues?labels=blog&state=open&sort=created&direction=desc&per_page=6';
+            var apiUrl = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues?labels=blog&state=open&sort=created&direction=desc&per_page=3';
 
             fetch(apiUrl)
                 .then(function(res) {
@@ -1286,7 +1284,7 @@
             observer.observe(item);
         });
 
-        console.log('>> 星能博客支持分类标记');
+        console.log('>> 修复主站显示3篇最新博客');
         console.log('>> 主站: https://stellarcn2020.github.io/st');
         console.log('>> 博客: https://stellarcn2020.github.io/st/blog');
     </script>
