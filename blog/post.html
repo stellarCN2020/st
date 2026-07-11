@@ -123,7 +123,6 @@
             font-size:1.05rem;
             line-height:1.9;
             color:var(--text-primary);
-            clear:both;
         }
         .post-body h1 { font-size:2rem; font-weight:700; margin:1.8rem 0 .8rem; border-bottom:2px solid var(--border-light); padding-bottom:.3rem; }
         .post-body h2 { font-size:1.6rem; font-weight:700; margin:1.6rem 0 .6rem; }
@@ -139,7 +138,21 @@
         .post-body a { color:var(--accent); text-decoration:none; }
         .post-body a:hover { text-decoration:underline; }
         .post-body hr { margin:2rem 0; border:none; border-top:1px solid var(--border-light); }
-        .post-body iframe { max-width:100%; border:1px solid var(--border-light); border-radius:4px; margin:.8rem 0; }
+
+        /* ★★★ iframe 嵌入样式 ★★★ */
+        .post-body .html-embed-iframe {
+            width: 100%;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            margin: 1.2rem 0;
+            background: #ffffff;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow .3s ease;
+        }
+        .post-body .html-embed-iframe:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
         .post-body table { width:100%; border-collapse:collapse; margin:1rem 0; }
         .post-body table th, .post-body table td { border:1px solid var(--border-light); padding:.5rem .8rem; text-align:left; }
         .post-body table th { background:var(--bg-card); font-weight:600; }
@@ -163,12 +176,14 @@
             .menu-toggle{display:block;}
             .post-meta{flex-direction:column;gap:.4rem;}
             .post-body{font-size:.95rem;}
+            .post-body .html-embed-iframe { height: 350px; }
         }
         @media(max-width:480px){
             body{padding-top:54px;} .navbar{min-height:50px;padding:.3rem .8rem;}
             .logo-img{height:18px;} .logo-text{font-size:.8rem;}
             .container{padding:0 12px;}
             .post-header .post-title{font-size:1.6rem;}
+            .post-body .html-embed-iframe { height: 280px; }
         }
     </style>
 </head>
@@ -224,6 +239,79 @@
         }
 
         // ============================================================
+        // ★★★ 核心：提取 HTML 嵌入块 ★★★
+        // 在 Markdown 渲染前，从原始 body 中提取所有 [html-embed] 块
+        // ============================================================
+        function extractHtmlEmbeds(body) {
+            var embeds = [];
+            var placeholderIndex = 0;
+
+            // 匹配 [html-embed]...[/html-embed]（支持多行）
+            var pattern = /\[html-embed\]([\s\S]*?)\[\/html-embed\]/g;
+            var match;
+
+            while ((match = pattern.exec(body)) !== null) {
+                var htmlContent = match[1].trim();
+                // 如果内容看起来像是一个完整的 HTML 文档，直接使用
+                // 否则可能是纯 HTML 片段，包裹成完整文档
+                var fullHtml = htmlContent;
+                // 检查是否已经包含 <html> 或 <body> 标签
+                if (!/<html/i.test(htmlContent) && !/<body/i.test(htmlContent)) {
+                    // 如果是片段，包裹成完整页面
+                    fullHtml = '<!DOCTYPE html>\n<html>\n<head>\n<meta charset="UTF-8">\n<style>\n' +
+                        'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; padding: 20px; line-height: 1.7; color: #1e293b; background: #f8f8f8; }\n' +
+                        '.container { max-width: 800px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }\n' +
+                        'h1 { color: #5f7fff; }\n' +
+                        '</style>\n</head>\n<body>\n<div class="container">\n' +
+                        htmlContent +
+                        '\n</div>\n</body>\n</html>';
+                }
+                // 生成占位符
+                var placeholder = '___HTML_EMBED_' + placeholderIndex + '___';
+                embeds.push({
+                    placeholder: placeholder,
+                    html: fullHtml
+                });
+                placeholderIndex++;
+
+                // 在 body 中用占位符替换原始内容
+                body = body.replace(match[0], placeholder);
+            }
+
+            return {
+                body: body,
+                embeds: embeds
+            };
+        }
+
+        // ============================================================
+        // ★★★ 渲染后替换占位符为 iframe ★★★
+        // ============================================================
+        function replaceEmbedsWithIframes(htmlContent, embeds) {
+            if (!embeds || embeds.length === 0) return htmlContent;
+
+            var result = htmlContent;
+            embeds.forEach(function(embed) {
+                // 转义 HTML 内容，防止破坏 iframe 属性
+                var escaped = embed.html
+                    .replace(/&/g, '&amp;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+
+                var iframeHtml = '<iframe class="html-embed-iframe" srcdoc="' + escaped +
+                    '" width="100%" height="500" style="border: 1px solid #e0e7f0; border-radius: 8px; background: #fff; margin: 1.2rem 0;" ' +
+                    'sandbox="allow-scripts allow-same-origin allow-modals" loading="lazy"></iframe>';
+
+                // 替换占位符
+                result = result.replace(embed.placeholder, iframeHtml);
+            });
+
+            return result;
+        }
+
+        // ============================================================
         // 解析文章元数据
         // ============================================================
         function parseMetadata(body) {
@@ -271,21 +359,34 @@
                     return res.json();
                 })
                 .then(function(issue) {
+                    // 解析标题
                     var titleMatch = issue.title.match(/^(\d{4}-\d{2}-\d{2})[- ]?(.*)/);
                     var dateStr = titleMatch ? titleMatch[1] : '未知日期';
                     var displayTitle = titleMatch ? titleMatch[2] || issue.title : issue.title;
 
+                    // 原始正文
                     var body = issue.body || '';
-                    var meta = parseMetadata(body);
+
+                    // ★★★ 第一步：提取 [html-embed] 块 ★★★
+                    var extracted = extractHtmlEmbeds(body);
+                    var bodyWithoutEmbeds = extracted.body;
+                    var embeds = extracted.embeds;
+
+                    // ★★★ 第二步：解析元数据（作者、分类） ★★★
+                    var meta = parseMetadata(bodyWithoutEmbeds);
                     var cleanBody = meta.cleanBody;
                     var customAuthor = meta.author;
                     var categories = meta.categories;
 
+                    // 作者信息
                     var authorName = customAuthor || issue.user.login;
                     var authorAvatar = issue.user.avatar_url;
 
-                    // 渲染 Markdown
+                    // ★★★ 第三步：渲染 Markdown ★★★
                     var htmlContent = marked.parse(cleanBody);
+
+                    // ★★★ 第四步：替换占位符为 iframe ★★★
+                    htmlContent = replaceEmbedsWithIframes(htmlContent, embeds);
 
                     // 构建页面
                     var html = '';
@@ -305,7 +406,6 @@
                     html += '</div>';
                     html += '<div class="post-body">' + htmlContent + '</div>';
 
-                    // 清空容器后插入新内容
                     container.innerHTML = html;
                     document.title = displayTitle + ' · 星能博客';
                 })
@@ -406,8 +506,8 @@
             });
         })();
 
-        console.log('>> 星能博客 · 文章详情页（修复版）');
-        console.log('>> 支持: 作者 | 分类 | HTML嵌入 | iframe');
+        console.log('>> 文章详情;
+        console.log('>> 支持格式: [html-embed]...[/html-embed]');
     </script>
 </body>
 </html>
