@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
+        /* ===== 复用主站样式，篇幅限制此处精简，实际使用时复制主站全部样式 ===== */
         :root {
             --bg-primary: #f5f7fc;
             --bg-card: #ffffff;
@@ -142,11 +143,11 @@
         </div>
         <button class="menu-toggle" id="menuToggle" aria-label="菜单"><i class="fas fa-bars"></i></button>
         <div class="nav-links" id="navLinks">
-            <a class="nav-link" href="/st/">首页</a>
-            <a class="nav-link" href="/st/#values">星核价值</a>
-            <a class="nav-link" href="/st/#maps">创作星群</a>
-            <a class="nav-link" href="/st/#join">加入星能</a>
-            <a class="nav-link active" href="/st/blog/">星能博客</a>
+            <a class="nav-link" href="../">首页</a>
+            <a class="nav-link" href="../#values">星核价值</a>
+            <a class="nav-link" href="../#maps">创作星群</a>
+            <a class="nav-link" href="../#join">加入星能</a>
+            <a class="nav-link active" href="./">星能博客</a>
         </div>
     </nav>
 
@@ -157,7 +158,7 @@
                 <div class="blog-loading"><i class="fas fa-spinner fa-pulse"></i>加载博客中...</div>
             </div>
             <div style="text-align:center;margin-top:1.5rem;font-size:.75rem;color:var(--text-secondary);opacity:.4;">
-                博客内容由 <a href="https://github.com/stellarcn2020/st/issues" target="_blank" style="color:var(--accent);text-decoration:none;">GitHub Issues</a> 驱动 · 在 Issues 中创建带 <code style="background:var(--bg-card);padding:0 6px;">blog</code> 标签的文章即可自动同步 · <a href="/st/" style="color:var(--accent);text-decoration:none;">返回首页 →</a>
+                博客内容由 <a href="https://github.com/stellarcn2020/st/issues" target="_blank" style="color:var(--accent);text-decoration:none;">GitHub Issues</a> 驱动 · 在 Issues 中创建带 <code style="background:var(--bg-card);padding:0 6px;">blog</code> 标签的文章即可自动同步 · <a href="../" style="color:var(--accent);text-decoration:none;">返回首页 →</a>
             </div>
         </div>
     </section>
@@ -176,55 +177,52 @@
 
     <script>
         // ===== 博客加载 =====
-(function loadBlog() {
-    var container = document.getElementById('blogContainer');
-    var REPO_OWNER = 'stellarcn2020';
-    var REPO_NAME = 'st';
-    var apiUrl = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues?labels=blog&state=open&sort=created&direction=desc&per_page=6';
+        (function loadBlog() {
+            var container = document.getElementById('blogContainer');
+            var REPO_OWNER = 'stellarcn2020';
+            var REPO_NAME = 'st';
+            var apiUrl = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues?labels=blog&state=open&sort=created&direction=desc&per_page=50';
 
-    fetch(apiUrl)
-        .then(function(res) {
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            return res.json();
-        })
-        .then(function(issues) {
-            if (!issues || issues.length === 0) {
-                container.innerHTML = '<div class="blog-loading"><i class="fas fa-inbox"></i>暂无博客文章<br><span style="font-size:.8rem;opacity:.6;">在 <a href="https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/issues" target="_blank" style="color:var(--accent);">GitHub Issues</a> 中创建带 blog 标签的文章</span></div>';
-                return;
-            }
+            fetch(apiUrl)
+                .then(function(res) {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                })
+                .then(function(issues) {
+                    if (!issues || issues.length === 0) {
+                        container.innerHTML = '<div class="blog-loading"><i class="fas fa-inbox"></i>暂无博客文章<br><span style="font-size:.8rem;opacity:.6;">在 <a href="https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/issues" target="_blank" style="color:var(--accent);">GitHub Issues</a> 中创建带 blog 标签的文章</span></div>';
+                        return;
+                    }
 
-            var html = '<div class="blog-grid">';
-            issues.forEach(function(issue) {
-                var titleMatch = issue.title.match(/^(\d{4}-\d{2}-\d{2})[- ]?(.*)/);
-                var dateStr = titleMatch ? titleMatch[1] : '未知日期';
-                var displayTitle = titleMatch ? titleMatch[2] || issue.title : issue.title;
-                var body = issue.body || '';
-                var plainText = body.replace(/[#*`>\[\]()]/g, '').trim();
-                var summary = plainText.substring(0, 200) + (plainText.length > 200 ? '...' : '');
-                var author = issue.user.login;
-                var avatar = issue.user.avatar_url;
+                    var html = '<div class="blog-grid">';
+                    issues.forEach(function(issue) {
+                        var titleMatch = issue.title.match(/^(\d{4}-\d{2}-\d{2})[- ]?(.*)/);
+                        var dateStr = titleMatch ? titleMatch[1] : '未知日期';
+                        var displayTitle = titleMatch ? titleMatch[2] || issue.title : issue.title;
+                        var body = issue.body || '';
+                        var plainText = body.replace(/[#*`>\[\]()]/g, '').trim();
+                        var summary = plainText.substring(0, 200) + (plainText.length > 200 ? '...' : '');
+                        var author = issue.user.login;
+                        var avatar = issue.user.avatar_url;
 
-                html += '<div class="blog-card">';
-                html += '<div class="blog-date">' + dateStr + '</div>';
-                html += '<div class="blog-title">' + displayTitle + '</div>';
-                html += '<div class="blog-summary">' + summary + '</div>';
-                html += '<div class="blog-author"><img src="' + avatar + '" alt="' + author + '"> ' + author + '</div>';
-                // 修改此处：指向自建详情页
-                html += '<a class="read-more" href="/blog/post.html?id=' + issue.number + '">阅读全文 →</a>';
-                html += '</div>';
-            });
-            html += '</div>';
-            container.innerHTML = html;
-        })
-        .catch(function(err) {
-            console.warn('博客加载失败:', err);
-            container.innerHTML = '<div class="blog-error"><i class="fas fa-exclamation-circle"></i>加载失败，请稍后重试<br><span style="font-size:.8rem;opacity:.6;">' + err.message + '</span></div>';
-        });
-})();
+                        html += '<div class="blog-card">';
+                        html += '<div class="blog-date">' + dateStr + '</div>';
+                        html += '<div class="blog-title">' + displayTitle + '</div>';
+                        html += '<div class="blog-summary">' + summary + '</div>';
+                        html += '<div class="blog-author"><img src="' + avatar + '" alt="' + author + '"> ' + author + '</div>';
+                        html += '<a class="read-more" href="post.html?id=' + issue.number + '">阅读全文 →</a>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                    container.innerHTML = html;
+                })
+                .catch(function(err) {
+                    console.warn('博客加载失败:', err);
+                    container.innerHTML = '<div class="blog-error"><i class="fas fa-exclamation-circle"></i>加载失败，请稍后重试<br><span style="font-size:.8rem;opacity:.6;">' + err.message + '</span></div>';
+                });
+        })();
 
-        // ============================================================
-        // 导航
-        // ============================================================
+        // ===== 导航 =====
         var navbar = document.getElementById('navbar');
         window.addEventListener('scroll', function() {
             if (window.scrollY > 60) {
@@ -252,14 +250,11 @@
             });
         });
 
-        // ============================================================
-        // 星空粒子背景
-        // ============================================================
+        // ===== 星空粒子背景 =====
         (function initStarfield() {
             var canvas = document.getElementById('starfield');
             var ctx = canvas.getContext('2d');
-            var w, h, stars = [],
-                count = 50;
+            var w, h, stars = [], count = 50;
 
             function resize() {
                 w = canvas.width = window.innerWidth;
@@ -280,8 +275,7 @@
                 this.update = function() {
                     this.y += this.speed;
                     this.twinkle += .02;
-                    if (this.y > h) { this.y = 0;
-                        this.x = Math.random() * w; }
+                    if (this.y > h) { this.y = 0; this.x = Math.random() * w; }
                 };
                 this.draw = function() {
                     var alpha = this.opacity * (.5 + .5 * Math.sin(this.twinkle));
@@ -315,7 +309,7 @@
             });
         })();
 
-        console.log('>> 星能博客 · 由 GitHub Issues 驱动');
+        console.log('>> 星能博客由 GitHub Issues 驱动');
         console.log('>> 博客地址: https://stellarcn2020.github.io/st/blog');
     </script>
 </body>
