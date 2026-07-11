@@ -588,12 +588,11 @@
 
     <div id="groupModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeGroupModal">&times;</button><h3>加入群聊</h3><div class="contact-line">QQ交流群：966926112</div><div class="contact-line">欢迎入群，与众多创作者一起交流地图心得。</div><div style="margin-top:1.2rem;text-align:center;"><button class="mihoyo-btn-simple" id="copyGroupBtn"><span class="simple-bg"></span><span class="simple-text">复制群号</span></button></div></div></div>
     <div id="channelModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeChannelModal">&times;</button><h3>加入频道</h3><div class="contact-line">官方频道号：pd90272831</div><div class="contact-line">在QQ频道中获取最新动态、活动资讯。</div><div style="margin-top:1.2rem;text-align:center;"><button class="mihoyo-btn-simple" id="copyChannelBtn"><span class="simple-bg"></span><span class="simple-text">复制频道号</span></button></div></div></div>
-    <div id="updateLogModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeUpdateLogModal">&times;</button><h3>网站更新报告</h3><div style="margin-top:1rem;"><p><strong>v18.0 (2026.07.11)</strong></p><ul style="list-style:none;padding:0;"><li>• 新增博客模块，由 GitHub Issues 驱动</li><li>• 在 Issues 中创建带 blog 标签的文章即可同步</li><li>• 文章自动提取标题、日期、作者、摘要</li></ul><p style="margin-top:1rem;">愿星光守护每一个创作者。</p></div></div></div>
+    <div id="updateLogModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeUpdateLogModal">&times;</button><h3>网站更新报告</h3><div style="margin-top:1rem;"><p><strong>v19.0 (2026.07.11)</strong></p><ul style="list-style:none;padding:0;"><li>• 博客支持自建文章详情页</li><li>• 完整 Markdown 渲染</li><li>• 支持自定义作者</li><li>• 所有链接已适配</li></ul><p style="margin-top:1rem;">愿星光守护每一个创作者。</p></div></div></div>
 
     <div class="toast-message" id="toastMessage"></div>
 
     <script>
-        // ===== Toast =====
         function showToast(msg, duration) {
             duration = duration || 2000;
             var t = document.getElementById('toastMessage');
@@ -605,7 +604,6 @@
             }, duration);
         }
 
-        // ===== 数字点击弹跳 =====
         function bounceNumber(el) {
             var numEl = el.querySelector('.num');
             if (!numEl) return;
@@ -621,51 +619,50 @@
         }
 
         // ===== 博客加载 =====
-(function loadBlog() {
-    var container = document.getElementById('blogContainer');
-    var REPO_OWNER = 'stellarcn2020';
-    var REPO_NAME = 'st';
-    var apiUrl = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues?labels=blog&state=open&sort=created&direction=desc&per_page=6';
+        (function loadBlog() {
+            var container = document.getElementById('blogContainer');
+            var REPO_OWNER = 'stellarcn2020';
+            var REPO_NAME = 'st';
+            var apiUrl = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues?labels=blog&state=open&sort=created&direction=desc&per_page=6';
 
-    fetch(apiUrl)
-        .then(function(res) {
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            return res.json();
-        })
-        .then(function(issues) {
-            if (!issues || issues.length === 0) {
-                container.innerHTML = '<div class="blog-loading"><i class="fas fa-inbox"></i>暂无博客文章<br><span style="font-size:.8rem;opacity:.6;">在 <a href="https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/issues" target="_blank" style="color:var(--accent);">GitHub Issues</a> 中创建带 blog 标签的文章</span></div>';
-                return;
-            }
+            fetch(apiUrl)
+                .then(function(res) {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                })
+                .then(function(issues) {
+                    if (!issues || issues.length === 0) {
+                        container.innerHTML = '<div class="blog-loading"><i class="fas fa-inbox"></i>暂无博客文章<br><span style="font-size:.8rem;opacity:.6;">在 <a href="https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/issues" target="_blank" style="color:var(--accent);">GitHub Issues</a> 中创建带 blog 标签的文章</span></div>';
+                        return;
+                    }
 
-            var html = '<div class="blog-grid">';
-            issues.forEach(function(issue) {
-                var titleMatch = issue.title.match(/^(\d{4}-\d{2}-\d{2})[- ]?(.*)/);
-                var dateStr = titleMatch ? titleMatch[1] : '未知日期';
-                var displayTitle = titleMatch ? titleMatch[2] || issue.title : issue.title;
-                var body = issue.body || '';
-                var plainText = body.replace(/[#*`>\[\]()]/g, '').trim();
-                var summary = plainText.substring(0, 200) + (plainText.length > 200 ? '...' : '');
-                var author = issue.user.login;
-                var avatar = issue.user.avatar_url;
+                    var html = '<div class="blog-grid">';
+                    issues.forEach(function(issue) {
+                        var titleMatch = issue.title.match(/^(\d{4}-\d{2}-\d{2})[- ]?(.*)/);
+                        var dateStr = titleMatch ? titleMatch[1] : '未知日期';
+                        var displayTitle = titleMatch ? titleMatch[2] || issue.title : issue.title;
+                        var body = issue.body || '';
+                        var plainText = body.replace(/[#*`>\[\]()]/g, '').trim();
+                        var summary = plainText.substring(0, 200) + (plainText.length > 200 ? '...' : '');
+                        var author = issue.user.login;
+                        var avatar = issue.user.avatar_url;
 
-                html += '<div class="blog-card">';
-                html += '<div class="blog-date">' + dateStr + '</div>';
-                html += '<div class="blog-title">' + displayTitle + '</div>';
-                html += '<div class="blog-summary">' + summary + '</div>';
-                html += '<div class="blog-author"><img src="' + avatar + '" alt="' + author + '"> ' + author + '</div>';
-                // 修改此处：指向自建详情页
-                html += '<a class="read-more" href="blog/post.html?id=' + issue.number + '">阅读全文 →</a>';
-                html += '</div>';
-            });
-            html += '</div>';
-            container.innerHTML = html;
-        })
-        .catch(function(err) {
-            console.warn('博客加载失败:', err);
-            container.innerHTML = '<div class="blog-error"><i class="fas fa-exclamation-circle"></i>加载失败，请稍后重试<br><span style="font-size:.8rem;opacity:.6;">' + err.message + '</span></div>';
-        });
-})();
+                        html += '<div class="blog-card">';
+                        html += '<div class="blog-date">' + dateStr + '</div>';
+                        html += '<div class="blog-title">' + displayTitle + '</div>';
+                        html += '<div class="blog-summary">' + summary + '</div>';
+                        html += '<div class="blog-author"><img src="' + avatar + '" alt="' + author + '"> ' + author + '</div>';
+                        html += '<a class="read-more" href="blog/post.html?id=' + issue.number + '">阅读全文 →</a>';
+                        html += '</div>';
+                    });
+                    html += '</div>';
+                    container.innerHTML = html;
+                })
+                .catch(function(err) {
+                    console.warn('博客加载失败:', err);
+                    container.innerHTML = '<div class="blog-error"><i class="fas fa-exclamation-circle"></i>加载失败，请稍后重试<br><span style="font-size:.8rem;opacity:.6;">' + err.message + '</span></div>';
+                });
+        })();
 
         // ============================================================
         // 页面加载时强制显示首页
