@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>星能博客 · 文章详情</title>
+    <title>文章详情</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* ===== 基础变量 ===== */
         :root {
             --bg-primary: #f5f7fc;
             --bg-card: #ffffff;
@@ -58,7 +57,6 @@
         #starfield { position:fixed; inset:0; z-index:-1; pointer-events:none; }
         .container { max-width:1340px; margin:0 auto; padding:0 clamp(16px,3vw,40px); position:relative; }
 
-        /* ===== 导航栏 ===== */
         .navbar {
             position:fixed; top:0; left:0; width:100%; z-index:100;
             display:flex; align-items:center; padding:.6rem clamp(1rem,3vw,2.5rem);
@@ -79,7 +77,7 @@
         .nav-link:hover,.nav-link.active { color:var(--accent); }
         .menu-toggle { display:none; font-size:1.4rem; color:var(--text-primary); background:none; border:none; cursor:pointer; padding:4px 8px; transition:color .3s; }
 
-        /* ===== 文章详情样式 ===== */
+        /* ===== 文章详情 ===== */
         .post-detail { padding:60px 0 40px; }
         .post-header {
             margin-bottom:2rem;
@@ -125,8 +123,8 @@
             font-size:1.05rem;
             line-height:1.9;
             color:var(--text-primary);
+            clear:both;
         }
-        /* Markdown 渲染样式 */
         .post-body h1 { font-size:2rem; font-weight:700; margin:1.8rem 0 .8rem; border-bottom:2px solid var(--border-light); padding-bottom:.3rem; }
         .post-body h2 { font-size:1.6rem; font-weight:700; margin:1.6rem 0 .6rem; }
         .post-body h3 { font-size:1.3rem; font-weight:600; margin:1.4rem 0 .4rem; }
@@ -150,7 +148,6 @@
         .post-loading i, .post-error i { font-size:2.5rem; display:block; margin-bottom:1rem; }
         .post-error { color:#ef4444; }
 
-        /* ===== 页尾 ===== */
         .footer-new { margin-top:2rem; background:#0a0f2a; padding:1.8rem clamp(1rem,3vw,2.5rem); color:#eef5ff; position:relative; z-index:2; transition:background .4s; }
         body.dark .footer-new { background:#0b1120; }
         .footer-container { max-width:1260px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:2rem; }
@@ -158,7 +155,6 @@
         .footer-col p,.footer-col a { font-size:clamp(.7rem,.8vw,.85rem); line-height:1.6; color:#b8d0ff; text-decoration:none; display:block; margin-bottom:.2rem; }
         .footer-col a:hover { color:#fff; text-decoration:underline; }
 
-        /* ===== 响应式 ===== */
         @media(max-width:780px){
             body{padding-top:60px;} .navbar{min-height:56px;padding:.4rem 1rem;}
             .nav-links{display:none;width:100%;flex-direction:column;gap:0;margin:0;padding:.8rem 0;border-top:1px solid var(--border-light);order:3;}
@@ -183,7 +179,6 @@
     <div class="grid-overlay"></div>
     <div class="tech-line"></div>
 
-    <!-- ===== 导航栏 ===== -->
     <nav class="navbar" id="navbar">
         <div class="logo">
             <img class="logo-img" src="https://user-assets.sxlcdn.com/images/1138507/FnkoMkeJ40vIQkdFDyBwHQDTIWcI.png?imageMogr2/strip/auto-orient/thumbnail/300x300%3E/quality/90!/format/png" alt="星能工作室Logo" loading="lazy" onerror="this.style.display='none'">
@@ -199,7 +194,6 @@
         </div>
     </nav>
 
-    <!-- ===== 文章内容 ===== -->
     <section class="post-detail">
         <div class="container">
             <div id="postContainer">
@@ -208,7 +202,6 @@
         </div>
     </section>
 
-    <!-- ===== 页尾 ===== -->
     <footer class="footer-new">
         <div class="footer-container">
             <div class="footer-col"><h4>星能工作室</h4><p>始于2021年，专注迷你世界地图创作与青少年技术交流。</p><p>星光点缀黑暗，用创意点亮彼此。</p><p>以热爱驱动创造，以勇气挑战未知。</p></div>
@@ -240,18 +233,14 @@
                 cleanBody: body
             };
 
-            // 提取作者
             var authorMatch = body.match(/^作者[：:]\s*(.+?)\s*[\n\r]/i);
-            if (!authorMatch) {
-                authorMatch = body.match(/^author[：:]\s*(.+?)\s*[\n\r]/i);
-            }
+            if (!authorMatch) authorMatch = body.match(/^author[：:]\s*(.+?)\s*[\n\r]/i);
             if (authorMatch && authorMatch[1]) {
                 result.author = authorMatch[1].trim();
                 result.cleanBody = result.cleanBody.replace(/^作者[：:]\s*.+?[\n\r]/, '');
                 result.cleanBody = result.cleanBody.replace(/^author[：:]\s*.+?[\n\r]/, '');
             }
 
-            // 提取分类
             var catMatch = result.cleanBody.match(/^分类[：:]\s*(.+?)\s*[\n\r]/i);
             if (catMatch && catMatch[1]) {
                 result.categories = catMatch[1].split(/[,，、\s]+/).filter(function(c) {
@@ -282,19 +271,16 @@
                     return res.json();
                 })
                 .then(function(issue) {
-                    // 解析标题
                     var titleMatch = issue.title.match(/^(\d{4}-\d{2}-\d{2})[- ]?(.*)/);
                     var dateStr = titleMatch ? titleMatch[1] : '未知日期';
                     var displayTitle = titleMatch ? titleMatch[2] || issue.title : issue.title;
 
-                    // 解析正文元数据
                     var body = issue.body || '';
                     var meta = parseMetadata(body);
                     var cleanBody = meta.cleanBody;
                     var customAuthor = meta.author;
                     var categories = meta.categories;
 
-                    // 作者信息
                     var authorName = customAuthor || issue.user.login;
                     var authorAvatar = issue.user.avatar_url;
 
@@ -319,6 +305,7 @@
                     html += '</div>';
                     html += '<div class="post-body">' + htmlContent + '</div>';
 
+                    // 清空容器后插入新内容
                     container.innerHTML = html;
                     document.title = displayTitle + ' · 星能博客';
                 })
@@ -419,8 +406,8 @@
             });
         })();
 
-        console.log('>> 星能博客 · 文章详情页');
-        console.log('>> 支持: 作者 | 分类 | HTML嵌入 | iframe | 网站引用');
+        console.log('>> 星能博客 · 文章详情页（修复版）');
+        console.log('>> 支持: 作者 | 分类 | HTML嵌入 | iframe');
     </script>
 </body>
 </html>
