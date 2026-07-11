@@ -84,98 +84,47 @@
         }
         .section-title .en { font-size:.8rem; font-weight:400; color:var(--text-secondary); letter-spacing:.5px; opacity:.6; }
 
-        /* ===== 博客列表 ===== */
+        /* ===== 博客列表样式 ===== */
         .blog-section { padding:60px 0 40px; }
-
-        /* 搜索栏 */
         .blog-toolbar {
-            display:flex;
-            flex-wrap:wrap;
-            gap:12px 20px;
-            margin-bottom:2rem;
-            align-items:center;
+            display:flex; flex-wrap:wrap; gap:12px 20px; margin-bottom:2rem; align-items:center;
         }
         .blog-toolbar .search-box {
-            flex:1;
-            min-width:200px;
-            display:flex;
-            gap:0;
-            border:1px solid var(--border-light);
-            background:var(--bg-card);
-            transition:border-color .3s;
+            flex:1; min-width:200px; display:flex; gap:0; border:1px solid var(--border-light); background:var(--bg-card); transition:border-color .3s;
         }
-        .blog-toolbar .search-box:focus-within {
-            border-color:var(--accent);
-        }
+        .blog-toolbar .search-box:focus-within { border-color:var(--accent); }
         .blog-toolbar .search-box input {
-            flex:1;
-            padding:10px 14px;
-            border:none;
-            background:transparent;
-            color:var(--text-primary);
-            font-size:.9rem;
-            font-family:inherit;
-            outline:none;
+            flex:1; padding:10px 14px; border:none; background:transparent; color:var(--text-primary); font-size:.9rem; font-family:inherit; outline:none;
         }
         .blog-toolbar .search-box button {
-            padding:10px 16px;
-            background:none;
-            border:none;
-            color:var(--text-secondary);
-            cursor:pointer;
-            transition:color .3s;
+            padding:10px 16px; background:none; border:none; color:var(--text-secondary); cursor:pointer; transition:color .3s;
         }
-        .blog-toolbar .search-box button:hover {
-            color:var(--accent);
-        }
+        .blog-toolbar .search-box button:hover { color:var(--accent); }
 
-        /* 分类筛选 */
         .blog-categories-filter {
-            display:flex;
-            flex-wrap:wrap;
-            gap:6px 10px;
-            margin-bottom:1.5rem;
+            display:flex; flex-wrap:wrap; gap:6px 10px; margin-bottom:1.5rem;
         }
         .blog-categories-filter .filter-btn {
-            padding:4px 16px;
-            font-size:.7rem;
-            font-family:'JetBrains Mono',monospace;
-            border:1px solid var(--border-light);
-            background:var(--bg-card);
-            color:var(--text-secondary);
-            cursor:pointer;
-            transition:all .3s;
-            letter-spacing:.3px;
+            padding:4px 16px; font-size:.7rem; font-family:'JetBrains Mono',monospace; border:1px solid var(--border-light);
+            background:var(--bg-card); color:var(--text-secondary); cursor:pointer; transition:all .3s; letter-spacing:.3px;
         }
-        .blog-categories-filter .filter-btn:hover {
-            border-color:var(--accent);
-            color:var(--text-primary);
-        }
-        .blog-categories-filter .filter-btn.active {
-            background:var(--accent);
-            border-color:var(--accent);
-            color:#fff;
-        }
-        .blog-categories-filter .filter-btn.all-btn {
-            border-color:var(--accent);
-            color:var(--accent);
-        }
-        .blog-categories-filter .filter-btn.all-btn.active {
-            background:var(--accent);
-            color:#fff;
-        }
+        .blog-categories-filter .filter-btn:hover { border-color:var(--accent); color:var(--text-primary); }
+        .blog-categories-filter .filter-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+        .blog-categories-filter .filter-btn.all-btn { border-color:var(--accent); color:var(--accent); }
+        .blog-categories-filter .filter-btn.all-btn.active { background:var(--accent); color:#fff; }
 
-        /* 文章网格 */
+        /* ===== ★★★ 核心修改：网格布局 ★★★ ===== */
         .blog-grid {
             display:grid;
-            grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-            gap:2rem;
+            grid-template-columns:repeat(5, 1fr);
+            gap:1.5rem;
             margin:2rem 0;
         }
         .blog-card {
             background:var(--bg-card); border:1px solid var(--border-light); box-shadow:var(--shadow-sm);
-            padding:1.8rem 2rem; transition:all .3s cubic-bezier(.34,1.56,.64,1);
+            padding:1.4rem 1.2rem; transition:all .3s cubic-bezier(.34,1.56,.64,1);
             border-radius:0; position:relative; overflow:hidden;
+            display:flex; flex-direction:column;
         }
         .blog-card::before {
             content:''; position:absolute; inset:-1px; border:2px solid transparent;
@@ -185,59 +134,39 @@
         .blog-card:hover::before { opacity:1; animation:borderFlow 2s linear infinite; }
         @keyframes borderFlow { 0%{border-image-source:linear-gradient(90deg,var(--accent),var(--accent-glow),var(--accent));} 100%{border-image-source:linear-gradient(450deg,var(--accent),var(--accent-glow),var(--accent));} }
         .blog-card:hover { box-shadow:var(--shadow-hover); transform:translateY(-4px); border-color:var(--accent); }
-        .blog-card .blog-date { font-size:.7rem; color:var(--text-secondary); opacity:.5; font-family:'JetBrains Mono',monospace; }
-        .blog-card .blog-title { font-size:1.2rem; font-weight:700; color:var(--text-primary); margin:6px 0 8px; }
-        .blog-card .blog-summary { color:var(--text-secondary); font-size:.9rem; line-height:1.8; }
-        .blog-card .blog-author { font-size:.7rem; color:var(--text-secondary); opacity:.4; margin-top:8px; display:flex; align-items:center; gap:6px; }
-        .blog-card .blog-author img { width:18px; height:18px; border-radius:50%; border:1px solid var(--border-light); }
-        .blog-card .blog-categories { display:flex; flex-wrap:wrap; gap:4px 8px; margin:6px 0 4px; }
-        .blog-card .blog-categories .cat { font-size:.55rem; padding:2px 10px; border-radius:0; color:#fff; background:var(--accent); font-family:'JetBrains Mono',monospace; letter-spacing:.3px; }
+        .blog-card .blog-date { font-size:.6rem; color:var(--text-secondary); opacity:.5; font-family:'JetBrains Mono',monospace; }
+        .blog-card .blog-title { font-size:1rem; font-weight:700; color:var(--text-primary); margin:4px 0 6px; line-height:1.3; }
+        .blog-card .blog-summary { color:var(--text-secondary); font-size:.8rem; line-height:1.7; flex:1; }
+        .blog-card .blog-author { font-size:.6rem; color:var(--text-secondary); opacity:.4; margin-top:6px; display:flex; align-items:center; gap:6px; }
+        .blog-card .blog-author img { width:16px; height:16px; border-radius:50%; border:1px solid var(--border-light); }
+        /* ===== ★★★ 标签在卡片上展示 ★★★ ===== */
+        .blog-card .blog-categories {
+            display:flex; flex-wrap:wrap; gap:3px 6px; margin:4px 0 4px;
+        }
+        .blog-card .blog-categories .cat {
+            font-size:.5rem; padding:1px 8px; border-radius:0; color:#fff;
+            background:var(--accent); font-family:'JetBrains Mono',monospace; letter-spacing:.2px;
+            display:inline-block;
+        }
         .blog-card .blog-categories .cat:nth-child(2) { background:#f59e0b; }
         .blog-card .blog-categories .cat:nth-child(3) { background:#10b981; }
         .blog-card .blog-categories .cat:nth-child(4) { background:#8b5cf6; }
         .blog-card .blog-categories .cat:nth-child(5) { background:#ef4444; }
         .blog-card .blog-categories .cat:nth-child(6) { background:#06b6d4; }
         .blog-card .blog-categories .cat:nth-child(7) { background:#ec4899; }
-        .blog-card .read-more { display:inline-block; margin-top:10px; color:var(--accent); font-weight:600; font-size:.85rem; text-decoration:none; }
+
+        .blog-card .read-more { display:inline-block; margin-top:8px; color:var(--accent); font-weight:600; font-size:.75rem; text-decoration:none; align-self:flex-start; }
         .blog-card .read-more:hover { text-decoration:underline; }
 
-        /* 分页 */
-        .pagination {
-            display:flex;
-            flex-wrap:wrap;
-            gap:6px;
-            justify-content:center;
-            margin-top:2rem;
-        }
+        .pagination { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:2rem; }
         .pagination .page-btn {
-            padding:6px 14px;
-            font-size:.8rem;
-            font-family:'JetBrains Mono',monospace;
-            border:1px solid var(--border-light);
-            background:var(--bg-card);
-            color:var(--text-secondary);
-            cursor:pointer;
-            transition:all .3s;
-            min-width:36px;
-            text-align:center;
+            padding:6px 14px; font-size:.8rem; font-family:'JetBrains Mono',monospace; border:1px solid var(--border-light);
+            background:var(--bg-card); color:var(--text-secondary); cursor:pointer; transition:all .3s; min-width:36px; text-align:center;
         }
-        .pagination .page-btn:hover {
-            border-color:var(--accent);
-            color:var(--text-primary);
-        }
-        .pagination .page-btn.active {
-            background:var(--accent);
-            border-color:var(--accent);
-            color:#fff;
-        }
-        .pagination .page-btn.disabled {
-            opacity:.3;
-            cursor:not-allowed;
-        }
-        .pagination .page-btn.disabled:hover {
-            border-color:var(--border-light);
-            color:var(--text-secondary);
-        }
+        .pagination .page-btn:hover { border-color:var(--accent); color:var(--text-primary); }
+        .pagination .page-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; }
+        .pagination .page-btn.disabled { opacity:.3; cursor:not-allowed; }
+        .pagination .page-btn.disabled:hover { border-color:var(--border-light); color:var(--text-secondary); }
 
         .blog-loading { text-align:center; padding:3rem 0; color:var(--text-secondary); font-size:1rem; }
         .blog-loading i { font-size:1.8rem; color:var(--accent); margin-bottom:0.8rem; display:block; }
@@ -253,15 +182,31 @@
         .footer-col p,.footer-col a { font-size:clamp(.7rem,.8vw,.85rem); line-height:1.6; color:#b8d0ff; text-decoration:none; display:block; margin-bottom:.2rem; }
         .footer-col a:hover { color:#fff; text-decoration:underline; }
 
+        /* ===== ★★★ 移动端：一行2个 ★★★ ===== */
         @media(max-width:780px){
             body{padding-top:60px;} .navbar{min-height:56px;padding:.4rem 1rem;}
             .nav-links{display:none;width:100%;flex-direction:column;gap:0;margin:0;padding:.8rem 0;border-top:1px solid var(--border-light);order:3;}
             .nav-links.open{display:flex;}
             .nav-link{padding:.6rem 1.2rem;width:100%;text-align:center;font-size:.9rem;}
             .menu-toggle{display:block;}
-            .blog-grid{grid-template-columns:1fr;}
+            .blog-grid{grid-template-columns:repeat(2, 1fr);gap:0.8rem;}
+            .blog-card{padding:1rem 0.8rem;}
+            .blog-card .blog-title{font-size:.9rem;}
+            .blog-card .blog-summary{font-size:.75rem;}
             .blog-toolbar{flex-direction:column;align-items:stretch;}
             .blog-toolbar .search-box{min-width:auto;}
+        }
+        @media(max-width:480px){
+            body{padding-top:54px;} .navbar{min-height:50px;padding:.3rem .8rem;}
+            .logo-img{height:18px;} .logo-text{font-size:.8rem;}
+            .container{padding:0 12px;}
+            .blog-grid{gap:0.6rem;}
+            .blog-card{padding:0.8rem 0.6rem;}
+            .blog-card .blog-title{font-size:.8rem;}
+            .blog-card .blog-summary{font-size:.7rem;line-height:1.5;}
+            .blog-card .blog-categories .cat{font-size:.45rem;padding:1px 6px;}
+            .section-title{font-size:1.2rem;padding-left:10px;margin-bottom:1rem;}
+            .section-title .en{font-size:.6rem;}
         }
     </style>
 </head>
@@ -291,7 +236,6 @@
         <div class="container">
             <div class="section-title"><span>星能博客</span><span class="en">// 来自星能工作室的思考与分享</span></div>
 
-            <!-- 工具栏 -->
             <div class="blog-toolbar" id="blogToolbar">
                 <div class="search-box">
                     <input type="text" id="searchInput" placeholder="搜索文章标题或内容..." aria-label="搜索文章">
@@ -300,17 +244,12 @@
                 <div style="font-size:.7rem;color:var(--text-secondary);opacity:.4;" id="resultCount"></div>
             </div>
 
-            <!-- 分类筛选 -->
-            <div class="blog-categories-filter" id="categoriesFilter">
-                <!-- 由 JS 动态生成 -->
-            </div>
+            <div class="blog-categories-filter" id="categoriesFilter"></div>
 
-            <!-- 文章列表 -->
             <div id="blogContainer">
                 <div class="blog-loading"><i class="fas fa-spinner fa-pulse"></i>加载博客中...</div>
             </div>
 
-            <!-- 分页 -->
             <div class="pagination" id="pagination"></div>
 
             <div style="text-align:center;margin-top:1.5rem;font-size:.75rem;color:var(--text-secondary);opacity:.4;">
@@ -366,19 +305,22 @@
         }
 
         // ============================================================
-        // 提取文章摘要
+        // 提取摘要（过滤HTML标签）
         // ============================================================
         function extractSummary(body, maxLen) {
             maxLen = maxLen || 200;
-            var clean = body.replace(/^分类[：:]\s*.+?[\n\r]/, '');
+            var clean = body || '';
+            clean = clean.replace(/^分类[：:]\s*.+?[\n\r]/, '');
             clean = clean.replace(/^作者[：:]\s*.+?[\n\r]/, '');
             clean = clean.replace(/^author[：:]\s*.+?[\n\r]/, '');
-            var plain = clean.replace(/[#*`>\[\]()]/g, '').trim();
-            return plain.substring(0, maxLen) + (plain.length > maxLen ? '...' : '');
+            clean = clean.replace(/<[^>]*>/g, ' ');
+            clean = clean.replace(/[#*`>\[\]()]/g, ' ');
+            clean = clean.replace(/\s+/g, ' ').trim();
+            return clean.substring(0, maxLen) + (clean.length > maxLen ? '...' : '');
         }
 
         // ============================================================
-        // 解析文章元数据
+        // 解析文章
         // ============================================================
         function parseIssue(issue) {
             var titleMatch = issue.title.match(/^(\d{4}-\d{2}-\d{2})[- ]?(.*)/);
@@ -404,7 +346,7 @@
         }
 
         // ============================================================
-        // 渲染文章列表
+        // 渲染文章
         // ============================================================
         function renderArticles(articles) {
             if (!articles || articles.length === 0) {
@@ -435,7 +377,7 @@
         }
 
         // ============================================================
-        // 渲染分类按钮
+        // 渲染分类
         // ============================================================
         function renderCategories(issues) {
             var catSet = {};
@@ -455,7 +397,6 @@
             });
             categoriesFilter.innerHTML = html;
 
-            // 绑定点击事件
             categoriesFilter.querySelectorAll('.filter-btn').forEach(function(btn) {
                 btn.addEventListener('click', function() {
                     selectedCategory = this.dataset.cat;
@@ -466,16 +407,14 @@
         }
 
         // ============================================================
-        // 应用筛选和搜索
+        // 筛选
         // ============================================================
         function getFilteredIssues() {
             var filtered = allIssues.filter(function(issue) {
                 var data = parseIssue(issue);
-                // 分类筛选
                 if (selectedCategory !== '全部') {
                     if (!data.categories.includes(selectedCategory)) return false;
                 }
-                // 关键词搜索
                 if (searchKeyword.trim() !== '') {
                     var keyword = searchKeyword.trim().toLowerCase();
                     var titleMatch = data.title.toLowerCase().includes(keyword);
@@ -503,7 +442,7 @@
         }
 
         // ============================================================
-        // 分页渲染
+        // 分页
         // ============================================================
         function renderPagination(totalPages) {
             if (totalPages <= 1) {
@@ -512,11 +451,9 @@
             }
 
             var html = '';
-            // 上一页
             var prevDisabled = currentPage <= 1 ? ' disabled' : '';
             html += '<button class="page-btn' + prevDisabled + '" data-page="' + (currentPage - 1) + '">‹</button>';
 
-            // 页码
             var startPage = Math.max(1, currentPage - 2);
             var endPage = Math.min(totalPages, currentPage + 2);
 
@@ -535,29 +472,23 @@
                 html += '<button class="page-btn" data-page="' + totalPages + '">' + totalPages + '</button>';
             }
 
-            // 下一页
             var nextDisabled = currentPage >= totalPages ? ' disabled' : '';
             html += '<button class="page-btn' + nextDisabled + '" data-page="' + (currentPage + 1) + '">›</button>';
 
             pagination.innerHTML = html;
 
-            // 绑定分页事件
             pagination.querySelectorAll('.page-btn:not(.disabled)').forEach(function(btn) {
                 btn.addEventListener('click', function() {
                     var page = parseInt(this.dataset.page);
                     if (!isNaN(page) && page >= 1 && page <= totalPages) {
                         currentPage = page;
                         applyFilters();
-                        // 滚动到列表顶部
                         document.querySelector('.blog-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
                 });
             });
         }
 
-        // ============================================================
-        // 更新结果计数
-        // ============================================================
         function updateResultCount(total) {
             if (searchKeyword.trim() || selectedCategory !== '全部') {
                 resultCount.textContent = '找到 ' + total + ' 篇文章';
@@ -567,7 +498,7 @@
         }
 
         // ============================================================
-        // 加载博客数据
+        // 加载数据
         // ============================================================
         function loadBlog() {
             var apiUrl = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues?labels=blog&state=open&sort=created&direction=desc&per_page=100';
@@ -595,7 +526,7 @@
         }
 
         // ============================================================
-        // 搜索事件
+        // 搜索
         // ============================================================
         function doSearch() {
             searchKeyword = searchInput.value;
@@ -612,7 +543,7 @@
         });
 
         // ============================================================
-        // 导航菜单
+        // 导航
         // ============================================================
         var navbar = document.getElementById('navbar');
         window.addEventListener('scroll', function() {
@@ -707,7 +638,7 @@
         // ============================================================
         loadBlog();
 
-        console.log('>> 星能博客更新 · 分页+分类+搜索');
+        console.log('>> 星能博客');
         console.log('>> 博客地址: https://stellarcn2020.github.io/st/blog');
     </script>
 </body>
