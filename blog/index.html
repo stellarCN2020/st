@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ===== 复用主站样式，篇幅限制此处精简，实际使用时复制主站全部样式 ===== */
+        /* ===== 复用主站样式（此处为完整版，篇幅原因仅保留核心） ===== */
         :root {
             --bg-primary: #f5f7fc;
             --bg-card: #ffffff;
@@ -105,6 +105,14 @@
         .blog-card .blog-summary { color:var(--text-secondary); font-size:.9rem; line-height:1.8; }
         .blog-card .blog-author { font-size:.7rem; color:var(--text-secondary); opacity:.4; margin-top:8px; display:flex; align-items:center; gap:6px; }
         .blog-card .blog-author img { width:18px; height:18px; border-radius:50%; border:1px solid var(--border-light); }
+        .blog-card .blog-categories { display:flex; flex-wrap:wrap; gap:4px 8px; margin:6px 0 4px; }
+        .blog-card .blog-categories .cat { font-size:.55rem; padding:2px 10px; border-radius:0; color:#fff; background:var(--accent); font-family:'JetBrains Mono',monospace; letter-spacing:.3px; }
+        .blog-card .blog-categories .cat:nth-child(2) { background:#f59e0b; }
+        .blog-card .blog-categories .cat:nth-child(3) { background:#10b981; }
+        .blog-card .blog-categories .cat:nth-child(4) { background:#8b5cf6; }
+        .blog-card .blog-categories .cat:nth-child(5) { background:#ef4444; }
+        .blog-card .blog-categories .cat:nth-child(6) { background:#06b6d4; }
+        .blog-card .blog-categories .cat:nth-child(7) { background:#ec4899; }
         .blog-card .read-more { display:inline-block; margin-top:10px; color:var(--accent); font-weight:600; font-size:.85rem; text-decoration:none; }
         .blog-card .read-more:hover { text-decoration:underline; }
         .blog-loading { text-align:center; padding:3rem 0; color:var(--text-secondary); font-size:1rem; }
@@ -176,7 +184,7 @@
     </footer>
 
     <script>
-        // ===== 博客加载 =====
+        // ===== 博客加载（带分类标签） =====
         (function loadBlog() {
             var container = document.getElementById('blogContainer');
             var REPO_OWNER = 'stellarcn2020';
@@ -200,6 +208,15 @@
                         var dateStr = titleMatch ? titleMatch[1] : '未知日期';
                         var displayTitle = titleMatch ? titleMatch[2] || issue.title : issue.title;
                         var body = issue.body || '';
+
+                        // 提取分类
+                        var categories = [];
+                        var catMatch = body.match(/^分类[：:]\s*(.+?)\s*[\n\r]/i);
+                        if (catMatch && catMatch[1]) {
+                            categories = catMatch[1].split(/[,，、\s]+/).filter(function(c) { return c.trim().length > 0; });
+                            body = body.replace(/^分类[：:]\s*.+?[\n\r]/, '');
+                        }
+
                         var plainText = body.replace(/[#*`>\[\]()]/g, '').trim();
                         var summary = plainText.substring(0, 200) + (plainText.length > 200 ? '...' : '');
                         var author = issue.user.login;
@@ -207,6 +224,13 @@
 
                         html += '<div class="blog-card">';
                         html += '<div class="blog-date">' + dateStr + '</div>';
+                        if (categories.length > 0) {
+                            html += '<div class="blog-categories">';
+                            categories.forEach(function(cat) {
+                                html += '<span class="cat">' + cat.trim() + '</span>';
+                            });
+                            html += '</div>';
+                        }
                         html += '<div class="blog-title">' + displayTitle + '</div>';
                         html += '<div class="blog-summary">' + summary + '</div>';
                         html += '<div class="blog-author"><img src="' + avatar + '" alt="' + author + '"> ' + author + '</div>';
@@ -309,7 +333,7 @@
             });
         })();
 
-        console.log('>> 星能博客由 GitHub Issues 驱动');
+        console.log('>> 星能博客分类标记');
         console.log('>> 博客地址: https://stellarcn2020.github.io/st/blog');
     </script>
 </body>
