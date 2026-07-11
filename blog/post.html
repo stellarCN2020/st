@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>文章详情</title>
+    <title>星能博客 · 文章详情</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- 引入 marked.js 用于 Markdown 渲染 -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* ===== 完全复用主站样式 ===== */
+        /* ===== 基础变量 ===== */
         :root {
             --bg-primary: #f5f7fc;
             --bg-card: #ffffff;
@@ -18,7 +17,6 @@
             --border-light: #e0e7f0;
             --shadow-sm: 0 8px 20px rgba(0,0,0,0.05);
             --shadow-hover: 0 20px 48px rgba(0,0,0,0.12);
-            --shadow-xl: 0 32px 64px rgba(0,0,0,0.10);
             --accent: #5f7fff;
             --accent-glow: #a07aff;
             --accent-light: #eef4ff;
@@ -32,7 +30,6 @@
             --border-light: #2a3a5a;
             --shadow-sm: 0 8px 20px rgba(0,0,0,0.4);
             --shadow-hover: 0 20px 48px rgba(0,0,0,0.6);
-            --shadow-xl: 0 32px 64px rgba(0,0,0,0.5);
             --accent-light: #1a2a4a;
         }
         * { margin:0; padding:0; box-sizing:border-box; cursor:default; }
@@ -61,6 +58,7 @@
         #starfield { position:fixed; inset:0; z-index:-1; pointer-events:none; }
         .container { max-width:1340px; margin:0 auto; padding:0 clamp(16px,3vw,40px); position:relative; }
 
+        /* ===== 导航栏 ===== */
         .navbar {
             position:fixed; top:0; left:0; width:100%; z-index:100;
             display:flex; align-items:center; padding:.6rem clamp(1rem,3vw,2.5rem);
@@ -81,89 +79,100 @@
         .nav-link:hover,.nav-link.active { color:var(--accent); }
         .menu-toggle { display:none; font-size:1.4rem; color:var(--text-primary); background:none; border:none; cursor:pointer; padding:4px 8px; transition:color .3s; }
 
-        .section-title {
-            font-size:clamp(1.5rem,2.8vw,2.2rem); font-weight:700; border-left:4px solid var(--accent);
-            padding-left:16px; margin-bottom:clamp(1.5rem,3vw,2.5rem);
-            display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; position:relative; z-index:2;
-            color:var(--text-primary); transition:color .3s;
-        }
-        .section-title .en { font-size:.8rem; font-weight:400; color:var(--text-secondary); letter-spacing:.5px; opacity:.6; }
-
         /* ===== 文章详情样式 ===== */
-        .post-detail {
-            padding: 60px 0 40px;
-        }
+        .post-detail { padding:60px 0 40px; }
         .post-header {
-            margin-bottom: 2rem;
-            border-bottom: 1px solid var(--border-light);
-            padding-bottom: 1.5rem;
+            margin-bottom:2rem;
+            border-bottom:1px solid var(--border-light);
+            padding-bottom:1.5rem;
         }
-        .post-header h1 {
-            font-size: clamp(2rem, 4vw, 2.8rem);
-            font-weight: 800;
-            color: var(--text-primary);
-            line-height: 1.2;
-            margin-bottom: 0.5rem;
+        .post-header .post-title {
+            font-size:clamp(2rem,4vw,2.8rem);
+            font-weight:800;
+            color:var(--text-primary);
+            line-height:1.2;
+            margin-bottom:.5rem;
         }
         .post-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            font-size: .9rem;
-            color: var(--text-secondary);
-            opacity: .7;
+            display:flex;
+            flex-wrap:wrap;
+            gap:.8rem 1.5rem;
+            font-size:.85rem;
+            color:var(--text-secondary);
+            opacity:.7;
+            align-items:center;
         }
-        .post-meta .author {
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        .post-meta .author { display:flex; align-items:center; gap:6px; }
+        .post-meta .author img { width:24px; height:24px; border-radius:50%; border:1px solid var(--border-light); }
+        .post-categories { display:flex; flex-wrap:wrap; gap:4px 8px; margin:8px 0 0; }
+        .post-categories .cat {
+            font-size:.6rem;
+            padding:2px 12px;
+            border-radius:0;
+            color:#fff;
+            background:var(--accent);
+            font-family:'JetBrains Mono',monospace;
+            letter-spacing:.3px;
         }
-        .post-meta .author img {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            border: 1px solid var(--border-light);
-        }
+        .post-categories .cat:nth-child(2) { background:#f59e0b; }
+        .post-categories .cat:nth-child(3) { background:#10b981; }
+        .post-categories .cat:nth-child(4) { background:#8b5cf6; }
+        .post-categories .cat:nth-child(5) { background:#ef4444; }
+        .post-categories .cat:nth-child(6) { background:#06b6d4; }
+        .post-categories .cat:nth-child(7) { background:#ec4899; }
+
         .post-body {
-            font-size: 1.05rem;
-            line-height: 1.9;
-            color: var(--text-primary);
+            font-size:1.05rem;
+            line-height:1.9;
+            color:var(--text-primary);
         }
         /* Markdown 渲染样式 */
-        .post-body h1 { font-size: 2rem; font-weight: 700; margin: 1.8rem 0 0.8rem; border-bottom: 2px solid var(--border-light); padding-bottom: 0.3rem; }
-        .post-body h2 { font-size: 1.6rem; font-weight: 700; margin: 1.6rem 0 0.6rem; }
-        .post-body h3 { font-size: 1.3rem; font-weight: 600; margin: 1.4rem 0 0.4rem; }
-        .post-body p { margin: 0.8rem 0; }
-        .post-body ul, .post-body ol { margin: 0.8rem 0 0.8rem 1.8rem; }
-        .post-body li { margin: 0.2rem 0; }
-        .post-body blockquote { border-left: 4px solid var(--accent); padding-left: 1.2rem; margin: 1rem 0; color: var(--text-secondary); font-style: italic; }
-        .post-body code { background: var(--bg-card); padding: 0.1rem 0.4rem; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: .9em; border: 1px solid var(--border-light); }
-        .post-body pre { background: var(--bg-card); padding: 1rem; overflow-x: auto; border-radius: 4px; border: 1px solid var(--border-light); margin: 1rem 0; }
-        .post-body pre code { background: transparent; border: none; padding: 0; }
-        .post-body img { max-width: 100%; height: auto; border-radius: 4px; margin: 1rem 0; box-shadow: var(--shadow-sm); }
-        .post-body a { color: var(--accent); text-decoration: none; }
-        .post-body a:hover { text-decoration: underline; }
-        .post-body hr { margin: 2rem 0; border: none; border-top: 1px solid var(--border-light); }
+        .post-body h1 { font-size:2rem; font-weight:700; margin:1.8rem 0 .8rem; border-bottom:2px solid var(--border-light); padding-bottom:.3rem; }
+        .post-body h2 { font-size:1.6rem; font-weight:700; margin:1.6rem 0 .6rem; }
+        .post-body h3 { font-size:1.3rem; font-weight:600; margin:1.4rem 0 .4rem; }
+        .post-body p { margin:.8rem 0; }
+        .post-body ul, .post-body ol { margin:.8rem 0 .8rem 1.8rem; }
+        .post-body li { margin:.2rem 0; }
+        .post-body blockquote { border-left:4px solid var(--accent); padding-left:1.2rem; margin:1rem 0; color:var(--text-secondary); font-style:italic; }
+        .post-body code { background:var(--bg-card); padding:.1rem .4rem; border-radius:4px; font-family:'JetBrains Mono',monospace; font-size:.9em; border:1px solid var(--border-light); }
+        .post-body pre { background:var(--bg-card); padding:1rem; overflow-x:auto; border-radius:4px; border:1px solid var(--border-light); margin:1rem 0; }
+        .post-body pre code { background:transparent; border:none; padding:0; }
+        .post-body img { max-width:100%; height:auto; border-radius:4px; margin:1rem 0; box-shadow:var(--shadow-sm); }
+        .post-body a { color:var(--accent); text-decoration:none; }
+        .post-body a:hover { text-decoration:underline; }
+        .post-body hr { margin:2rem 0; border:none; border-top:1px solid var(--border-light); }
+        .post-body iframe { max-width:100%; border:1px solid var(--border-light); border-radius:4px; margin:.8rem 0; }
+        .post-body table { width:100%; border-collapse:collapse; margin:1rem 0; }
+        .post-body table th, .post-body table td { border:1px solid var(--border-light); padding:.5rem .8rem; text-align:left; }
+        .post-body table th { background:var(--bg-card); font-weight:600; }
 
-        .post-loading, .post-error {
-            text-align: center; padding: 4rem 0; color: var(--text-secondary);
-        }
-        .post-loading i, .post-error i { font-size: 2.5rem; display: block; margin-bottom: 1rem; }
+        .post-loading, .post-error { text-align:center; padding:4rem 0; color:var(--text-secondary); }
+        .post-loading i, .post-error i { font-size:2.5rem; display:block; margin-bottom:1rem; }
+        .post-error { color:#ef4444; }
 
-        .footer-new { margin-top: 2rem; background:#0a0f2a; padding:1.8rem clamp(1rem,3vw,2.5rem); color:#eef5ff; position:relative; z-index:2; transition:background .4s; }
+        /* ===== 页尾 ===== */
+        .footer-new { margin-top:2rem; background:#0a0f2a; padding:1.8rem clamp(1rem,3vw,2.5rem); color:#eef5ff; position:relative; z-index:2; transition:background .4s; }
         body.dark .footer-new { background:#0b1120; }
         .footer-container { max-width:1260px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:2rem; }
         .footer-col h4 { font-size:clamp(1rem,1.2vw,1.2rem); font-weight:700; border-left:3px solid var(--accent); padding-left:12px; margin-bottom:.8rem; color:#fff; }
         .footer-col p,.footer-col a { font-size:clamp(.7rem,.8vw,.85rem); line-height:1.6; color:#b8d0ff; text-decoration:none; display:block; margin-bottom:.2rem; }
         .footer-col a:hover { color:#fff; text-decoration:underline; }
 
+        /* ===== 响应式 ===== */
         @media(max-width:780px){
             body{padding-top:60px;} .navbar{min-height:56px;padding:.4rem 1rem;}
             .nav-links{display:none;width:100%;flex-direction:column;gap:0;margin:0;padding:.8rem 0;border-top:1px solid var(--border-light);order:3;}
             .nav-links.open{display:flex;}
             .nav-link{padding:.6rem 1.2rem;width:100%;text-align:center;font-size:.9rem;}
             .menu-toggle{display:block;}
-            .post-meta{flex-direction:column;gap:.5rem;}
+            .post-meta{flex-direction:column;gap:.4rem;}
+            .post-body{font-size:.95rem;}
+        }
+        @media(max-width:480px){
+            body{padding-top:54px;} .navbar{min-height:50px;padding:.3rem .8rem;}
+            .logo-img{height:18px;} .logo-text{font-size:.8rem;}
+            .container{padding:0 12px;}
+            .post-header .post-title{font-size:1.6rem;}
         }
     </style>
 </head>
@@ -174,6 +183,7 @@
     <div class="grid-overlay"></div>
     <div class="tech-line"></div>
 
+    <!-- ===== 导航栏 ===== -->
     <nav class="navbar" id="navbar">
         <div class="logo">
             <img class="logo-img" src="https://user-assets.sxlcdn.com/images/1138507/FnkoMkeJ40vIQkdFDyBwHQDTIWcI.png?imageMogr2/strip/auto-orient/thumbnail/300x300%3E/quality/90!/format/png" alt="星能工作室Logo" loading="lazy" onerror="this.style.display='none'">
@@ -189,6 +199,7 @@
         </div>
     </nav>
 
+    <!-- ===== 文章内容 ===== -->
     <section class="post-detail">
         <div class="container">
             <div id="postContainer">
@@ -197,6 +208,7 @@
         </div>
     </section>
 
+    <!-- ===== 页尾 ===== -->
     <footer class="footer-new">
         <div class="footer-container">
             <div class="footer-col"><h4>星能工作室</h4><p>始于2021年，专注迷你世界地图创作与青少年技术交流。</p><p>星光点缀黑暗，用创意点亮彼此。</p><p>以热爱驱动创造，以勇气挑战未知。</p></div>
@@ -211,22 +223,55 @@
 
     <script>
         // ============================================================
-        // 获取文章编号
+        // 工具函数
         // ============================================================
         function getQueryParam(name) {
             var urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(name);
         }
 
+        // ============================================================
+        // 解析文章元数据
+        // ============================================================
+        function parseMetadata(body) {
+            var result = {
+                author: null,
+                categories: [],
+                cleanBody: body
+            };
+
+            // 提取作者
+            var authorMatch = body.match(/^作者[：:]\s*(.+?)\s*[\n\r]/i);
+            if (!authorMatch) {
+                authorMatch = body.match(/^author[：:]\s*(.+?)\s*[\n\r]/i);
+            }
+            if (authorMatch && authorMatch[1]) {
+                result.author = authorMatch[1].trim();
+                result.cleanBody = result.cleanBody.replace(/^作者[：:]\s*.+?[\n\r]/, '');
+                result.cleanBody = result.cleanBody.replace(/^author[：:]\s*.+?[\n\r]/, '');
+            }
+
+            // 提取分类
+            var catMatch = result.cleanBody.match(/^分类[：:]\s*(.+?)\s*[\n\r]/i);
+            if (catMatch && catMatch[1]) {
+                result.categories = catMatch[1].split(/[,，、\s]+/).filter(function(c) {
+                    return c.trim().length > 0;
+                });
+                result.cleanBody = result.cleanBody.replace(/^分类[：:]\s*.+?[\n\r]/, '');
+            }
+
+            return result;
+        }
+
+        // ============================================================
+        // 加载文章
+        // ============================================================
         var issueNumber = getQueryParam('id');
         var container = document.getElementById('postContainer');
 
         if (!issueNumber) {
             container.innerHTML = '<div class="post-error"><i class="fas fa-exclamation-circle"></i>文章编号缺失</div>';
         } else {
-            // ============================================================
-            // 加载文章详情
-            // ============================================================
             var REPO_OWNER = 'stellarcn2020';
             var REPO_NAME = 'st';
             var apiUrl = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues/' + issueNumber;
@@ -242,42 +287,39 @@
                     var dateStr = titleMatch ? titleMatch[1] : '未知日期';
                     var displayTitle = titleMatch ? titleMatch[2] || issue.title : issue.title;
 
-                    // 解析自定义作者：支持在正文开头用 "作者：xxx" 或 "author: xxx" 提取
+                    // 解析正文元数据
                     var body = issue.body || '';
-                    var authorName = issue.user.login; // 默认使用 GitHub 用户名
+                    var meta = parseMetadata(body);
+                    var cleanBody = meta.cleanBody;
+                    var customAuthor = meta.author;
+                    var categories = meta.categories;
+
+                    // 作者信息
+                    var authorName = customAuthor || issue.user.login;
                     var authorAvatar = issue.user.avatar_url;
 
-                    // 尝试从正文提取自定义作者（支持中英文）
-                    var authorMatch = body.match(/^作者[：:]\s*(.+?)\s*[\n\r]/i);
-                    if (!authorMatch) {
-                        authorMatch = body.match(/^author[：:]\s*(.+?)\s*[\n\r]/i);
-                    }
-                    if (authorMatch && authorMatch[1]) {
-                        authorName = authorMatch[1].trim();
-                        // 移除作者行，以免在正文中重复显示
-                        body = body.replace(/^作者[：:]\s*.+?[\n\r]/, '');
-                        body = body.replace(/^author[：:]\s*.+?[\n\r]/, '');
-                    }
-
                     // 渲染 Markdown
-                    var renderer = new marked.Renderer();
-                    // 对图片添加样式（已通过CSS）
-                    // 对代码块使用 <pre><code>
-                    var htmlContent = marked.parse(body, { renderer: renderer });
+                    var htmlContent = marked.parse(cleanBody);
 
-                    // 组装页面
+                    // 构建页面
                     var html = '';
                     html += '<div class="post-header">';
-                    html += '<h1>' + displayTitle + '</h1>';
+                    html += '<div class="post-title">' + displayTitle + '</div>';
                     html += '<div class="post-meta">';
                     html += '<span>' + dateStr + '</span>';
                     html += '<span class="author"><img src="' + authorAvatar + '" alt="' + authorName + '"> ' + authorName + '</span>';
-                    html += '</div></div>';
+                    html += '</div>';
+                    if (categories.length > 0) {
+                        html += '<div class="post-categories">';
+                        categories.forEach(function(cat) {
+                            html += '<span class="cat">' + cat.trim() + '</span>';
+                        });
+                        html += '</div>';
+                    }
+                    html += '</div>';
                     html += '<div class="post-body">' + htmlContent + '</div>';
 
                     container.innerHTML = html;
-
-                    // 更新页面标题
                     document.title = displayTitle + ' · 星能博客';
                 })
                 .catch(function(err) {
@@ -317,7 +359,7 @@
         });
 
         // ============================================================
-        // 星空粒子背景 (精简版)
+        // 星空粒子背景
         // ============================================================
         (function initStarfield() {
             var canvas = document.getElementById('starfield');
@@ -377,7 +419,8 @@
             });
         })();
 
-        console.log('>> 文章详情');
+        console.log('>> 星能博客 · 文章详情页');
+        console.log('>> 支持: 作者 | 分类 | HTML嵌入 | iframe | 网站引用');
     </script>
 </body>
 </html>
