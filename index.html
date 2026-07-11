@@ -321,6 +321,12 @@
         .blog-card .blog-summary { color:var(--text-secondary); font-size:.9rem; line-height:1.8; }
         .blog-card .blog-author { font-size:.7rem; color:var(--text-secondary); opacity:.4; margin-top:8px; display:flex; align-items:center; gap:6px; }
         .blog-card .blog-author img { width:18px; height:18px; border-radius:50%; border:1px solid var(--border-light); }
+        .blog-card .blog-categories { display:flex; flex-wrap:wrap; gap:4px 8px; margin:6px 0 4px; }
+        .blog-card .blog-categories .cat { font-size:.55rem; padding:2px 10px; border-radius:0; color:#fff; background:var(--accent); font-family:'JetBrains Mono',monospace; letter-spacing:.3px; }
+        .blog-card .blog-categories .cat:nth-child(2) { background:#f59e0b; }
+        .blog-card .blog-categories .cat:nth-child(3) { background:#10b981; }
+        .blog-card .blog-categories .cat:nth-child(4) { background:#8b5cf6; }
+        .blog-card .blog-categories .cat:nth-child(5) { background:#ef4444; }
         .blog-card .read-more { display:inline-block; margin-top:10px; color:var(--accent); font-weight:600; font-size:.85rem; text-decoration:none; }
         .blog-card .read-more:hover { text-decoration:underline; }
         .blog-loading { text-align:center; padding:3rem 0; color:var(--text-secondary); font-size:1rem; }
@@ -541,6 +547,7 @@
         </div>
     </section>
 
+    <!-- ===== 博客区域（带分类标签） ===== -->
     <section id="blog" class="blog-section">
         <div class="container">
             <div class="section-title"><span>星能博客</span><span class="en">// 来自星能工作室的思考与分享</span></div>
@@ -588,7 +595,7 @@
 
     <div id="groupModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeGroupModal">&times;</button><h3>加入群聊</h3><div class="contact-line">QQ交流群：966926112</div><div class="contact-line">欢迎入群，与众多创作者一起交流地图心得。</div><div style="margin-top:1.2rem;text-align:center;"><button class="mihoyo-btn-simple" id="copyGroupBtn"><span class="simple-bg"></span><span class="simple-text">复制群号</span></button></div></div></div>
     <div id="channelModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeChannelModal">&times;</button><h3>加入频道</h3><div class="contact-line">官方频道号：pd90272831</div><div class="contact-line">在QQ频道中获取最新动态、活动资讯。</div><div style="margin-top:1.2rem;text-align:center;"><button class="mihoyo-btn-simple" id="copyChannelBtn"><span class="simple-bg"></span><span class="simple-text">复制频道号</span></button></div></div></div>
-    <div id="updateLogModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeUpdateLogModal">&times;</button><h3>网站更新报告</h3><div style="margin-top:1rem;"><p><strong>v19.0 (2026.07.11)</strong></p><ul style="list-style:none;padding:0;"><li>• 博客支持自建文章详情页</li><li>• 完整 Markdown 渲染</li><li>• 支持自定义作者</li><li>• 所有链接已适配</li></ul><p style="margin-top:1rem;">愿星光守护每一个创作者。</p></div></div></div>
+    <div id="updateLogModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeUpdateLogModal">&times;</button><h3>网站更新报告</h3><div style="margin-top:1rem;"><p><strong>v20.0 (2026.07.11)</strong></p><ul style="list-style:none;padding:0;"><li>• 博客支持分类标记</li><li>• 支持 B站/抖音/快手 视频嵌入</li><li>• 支持多类型链接卡片</li><li>• 支持教程标记</li><li>• 分类标签自动显示在列表和详情页</li></ul><p style="margin-top:1rem;">愿星光守护每一个创作者。</p></div></div></div>
 
     <div class="toast-message" id="toastMessage"></div>
 
@@ -618,7 +625,7 @@
             showToast('星光 +' + add + '！');
         }
 
-        // ===== 博客加载 =====
+        // ===== 博客加载（带分类标签） =====
         (function loadBlog() {
             var container = document.getElementById('blogContainer');
             var REPO_OWNER = 'stellarcn2020';
@@ -642,6 +649,15 @@
                         var dateStr = titleMatch ? titleMatch[1] : '未知日期';
                         var displayTitle = titleMatch ? titleMatch[2] || issue.title : issue.title;
                         var body = issue.body || '';
+
+                        // 提取分类
+                        var categories = [];
+                        var catMatch = body.match(/^分类[：:]\s*(.+?)\s*[\n\r]/i);
+                        if (catMatch && catMatch[1]) {
+                            categories = catMatch[1].split(/[,，、\s]+/).filter(function(c) { return c.trim().length > 0; });
+                            body = body.replace(/^分类[：:]\s*.+?[\n\r]/, '');
+                        }
+
                         var plainText = body.replace(/[#*`>\[\]()]/g, '').trim();
                         var summary = plainText.substring(0, 200) + (plainText.length > 200 ? '...' : '');
                         var author = issue.user.login;
@@ -649,6 +665,13 @@
 
                         html += '<div class="blog-card">';
                         html += '<div class="blog-date">' + dateStr + '</div>';
+                        if (categories.length > 0) {
+                            html += '<div class="blog-categories">';
+                            categories.forEach(function(cat) {
+                                html += '<span class="cat">' + cat.trim() + '</span>';
+                            });
+                            html += '</div>';
+                        }
                         html += '<div class="blog-title">' + displayTitle + '</div>';
                         html += '<div class="blog-summary">' + summary + '</div>';
                         html += '<div class="blog-author"><img src="' + avatar + '" alt="' + author + '"> ' + author + '</div>';
@@ -1263,7 +1286,7 @@
             observer.observe(item);
         });
 
-        console.log('>> 星能博客由 GitHub Issues 驱动');
+        console.log('>> 星能博客支持分类标记');
         console.log('>> 主站: https://stellarcn2020.github.io/st');
         console.log('>> 博客: https://stellarcn2020.github.io/st/blog');
     </script>
