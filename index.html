@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>星能创造 | 星能之心，创造之星</title>
+    <title>星能之心 · 创造之星</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -302,7 +302,6 @@
         @media(max-width:780px){ .join-panel .float-card{display:none;} .join-panel .main-card{padding:1.5rem 1.2rem;border-radius:4px;} .join-panel .main-card .btn-group{gap:.8rem;} }
         @media(max-width:480px){ .join-panel .main-card .btn-group .mihoyo-btn{width:100%;max-width:200px;} .join-panel .main-card .social-links{flex-direction:column;align-items:center;gap:.3rem;} .join-panel .main-card{border-radius:4px;} }
 
-        /* ===== 博客样式 ===== */
         .blog-section { padding:60px 0 20px; border-top:1px solid var(--border-light); }
         .blog-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.8rem; margin:2rem 0; }
         .blog-card {
@@ -458,55 +457,55 @@
     <section id="values" style="padding:40px 0 20px;border-top:1px solid var(--border-light);border-bottom:1px solid var(--border-light);">
         <div class="container">
             <div class="section-title"><span>星核价值</span><span class="en">// 单击展开  拖拽重组</span></div>
-            <div class="value-card draggable-card" onclick="toggleValue(event,this)" data-value="热爱">
-    <div class="glow-dot"></div>
-    <h3>热爱</h3>
-    <div class="brief">以赤诚之心投入创作</div>
-    <div class="expand-content"><div class="inner">让每一份作品都饱含温度，<span class="highlight">用热情点燃星火</span>，在创作的路上永不停歇。</div></div>
-    <div class="expand-hint">▼ 点击展开</div>
-    <div class="drag-hint">↕ 拖动</div>
-</div>
-<div class="value-card draggable-card" onclick="toggleValue(event,this)" data-value="勇敢">
-    <div class="glow-dot"></div>
-    <h3>勇敢</h3>
-    <div class="brief">敢于尝试新想法</div>
-    <div class="expand-content"><div class="inner">在未知的星域中开辟道路，<span class="highlight">不惧失败</span>，每一次尝试都是向星光靠近的一步。</div></div>
-    <div class="expand-hint">▼ 点击展开</div>
-    <div class="drag-hint">↕ 拖动</div>
-</div>
-<div class="value-card draggable-card" onclick="toggleValue(event,this)" data-value="突破">
-    <div class="glow-dot"></div>
-    <h3>突破</h3>
-    <div class="brief">不断超越自我</div>
-    <div class="expand-content"><div class="inner">让创意在碰撞中进化，<span class="highlight">打破边界</span>，从平凡中创造非凡。</div></div>
-    <div class="expand-hint">▼ 点击展开</div>
-    <div class="drag-hint">↕ 拖动</div>
-</div>
-<div class="value-card draggable-card" onclick="toggleValue(event,this)" data-value="创造">
-    <div class="glow-dot"></div>
-    <h3>创造</h3>
-    <div class="brief">用想象力编织世界</div>
-    <div class="expand-content"><div class="inner">让星光从指尖流淌，<span class="highlight">把脑海中的星图</span>变成触手可及的现实。</div></div>
-    <div class="expand-hint">▼ 点击展开</div>
-    <div class="drag-hint">↕ 拖动</div>
-</div>
-<div class="value-card draggable-card" onclick="toggleValue(event,this)" data-value="同行">
-    <div class="glow-dot"></div>
-    <h3>同行</h3>
-    <div class="brief">在星能大家庭中彼此照亮</div>
-    <div class="expand-content"><div class="inner"><span class="highlight">共同成长</span>，一个人的星光微弱，一群人的星光足以照亮整片夜空。</div></div>
-    <div class="expand-hint">▼ 点击展开</div>
-    <div class="drag-hint">↕ 拖动</div>
-</div>
-<div class="value-card draggable-card" onclick="toggleValue(event,this)" data-value="无限">
-    <div class="glow-dot"></div>
-    <h3>无限</h3>
-    <div class="brief">创作没有边界</div>
-    <div class="expand-content"><div class="inner">星光终将汇聚成银河，<span class="highlight">相信可能</span>，每一个想法都值得被实现。</div></div>
-    <div class="expand-hint">▼ 点击展开</div>
-    <div class="drag-hint">↕ 拖动</div>
-</div>
-                <!-- 其他价值观卡片... -->
+            <div class="value-scatter" id="valueScatter">
+                <div class="value-card draggable-card" onclick="toggleValue(event,this)" data-value="热爱">
+                    <div class="glow-dot"></div>
+                    <h3>热爱</h3>
+                    <div class="brief">以赤诚之心投入创作</div>
+                    <div class="expand-content"><div class="inner">让每一份作品都饱含温度，<span class="highlight">用热情点燃星火</span>，在创作的路上永不停歇。</div></div>
+                    <div class="expand-hint">▼ 点击展开</div>
+                    <div class="drag-hint">↕ 拖动</div>
+                </div>
+                <div class="value-card draggable-card" onclick="toggleValue(event,this)" data-value="勇敢">
+                    <div class="glow-dot"></div>
+                    <h3>勇敢</h3>
+                    <div class="brief">敢于尝试新想法</div>
+                    <div class="expand-content"><div class="inner">在未知的星域中开辟道路，<span class="highlight">不惧失败</span>，每一次尝试都是向星光靠近的一步。</div></div>
+                    <div class="expand-hint">▼ 点击展开</div>
+                    <div class="drag-hint">↕ 拖动</div>
+                </div>
+                <div class="value-card draggable-card" onclick="toggleValue(event,this)" data-value="突破">
+                    <div class="glow-dot"></div>
+                    <h3>突破</h3>
+                    <div class="brief">不断超越自我</div>
+                    <div class="expand-content"><div class="inner">让创意在碰撞中进化，<span class="highlight">打破边界</span>，从平凡中创造非凡。</div></div>
+                    <div class="expand-hint">▼ 点击展开</div>
+                    <div class="drag-hint">↕ 拖动</div>
+                </div>
+                <div class="value-card draggable-card" onclick="toggleValue(event,this)" data-value="创造">
+                    <div class="glow-dot"></div>
+                    <h3>创造</h3>
+                    <div class="brief">用想象力编织世界</div>
+                    <div class="expand-content"><div class="inner">让星光从指尖流淌，<span class="highlight">把脑海中的星图</span>变成触手可及的现实。</div></div>
+                    <div class="expand-hint">▼ 点击展开</div>
+                    <div class="drag-hint">↕ 拖动</div>
+                </div>
+                <div class="value-card draggable-card" onclick="toggleValue(event,this)" data-value="同行">
+                    <div class="glow-dot"></div>
+                    <h3>同行</h3>
+                    <div class="brief">在星能大家庭中彼此照亮</div>
+                    <div class="expand-content"><div class="inner"><span class="highlight">共同成长</span>，一个人的星光微弱，一群人的星光足以照亮整片夜空。</div></div>
+                    <div class="expand-hint">▼ 点击展开</div>
+                    <div class="drag-hint">↕ 拖动</div>
+                </div>
+                <div class="value-card draggable-card" onclick="toggleValue(event,this)" data-value="无限">
+                    <div class="glow-dot"></div>
+                    <h3>无限</h3>
+                    <div class="brief">创作没有边界</div>
+                    <div class="expand-content"><div class="inner">星光终将汇聚成银河，<span class="highlight">相信可能</span>，每一个想法都值得被实现。</div></div>
+                    <div class="expand-hint">▼ 点击展开</div>
+                    <div class="drag-hint">↕ 拖动</div>
+                </div>
             </div>
             <div style="text-align:center;margin-top:4px;font-size:.55rem;color:var(--text-secondary);opacity:.3;letter-spacing:1px;">✦ 拖拽重组 · 单击展开 ✦</div>
         </div>
@@ -517,7 +516,6 @@
             <div class="section-title"><span>创作星图</span><span class="en">// 轻触卡片  点亮星能</span></div>
             <div class="map-constellation">
                 <div class="map-grid">
-                    <!-- 地图卡片内容不变 -->
                     <div class="map-item map-clickable" data-map="city" style="border-color:var(--accent);border-width:2px;">
                         <div class="map-bg"></div><div class="explore-flash" id="flash-city"></div>
                         <span class="map-tag">策划中</span><h3>星空之城</h3>
@@ -551,7 +549,6 @@
         </div>
     </section>
 
-    <!-- ===== 博客区域 ===== -->
     <section id="blog" class="blog-section">
         <div class="container">
             <div class="section-title"><span>星能博客</span><span class="en">// 最新文章</span></div>
@@ -599,12 +596,11 @@
 
     <div id="groupModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeGroupModal">&times;</button><h3>加入群聊</h3><div class="contact-line">QQ交流群：966926112</div><div class="contact-line">欢迎入群，与众多创作者一起交流地图心得。</div><div style="margin-top:1.2rem;text-align:center;"><button class="mihoyo-btn-simple" id="copyGroupBtn"><span class="simple-bg"></span><span class="simple-text">复制群号</span></button></div></div></div>
     <div id="channelModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeChannelModal">&times;</button><h3>加入频道</h3><div class="contact-line">官方频道号：pd90272831</div><div class="contact-line">在QQ频道中获取最新动态、活动资讯。</div><div style="margin-top:1.2rem;text-align:center;"><button class="mihoyo-btn-simple" id="copyChannelBtn"><span class="simple-bg"></span><span class="simple-text">复制频道号</span></button></div></div></div>
-    <div id="updateLogModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeUpdateLogModal">&times;</button><h3>网站更新报告</h3><div style="margin-top:1rem;"><p><strong>v21.0 (2026.07.11)</strong></p><ul style="list-style:none;padding:0;"><li>• 修复摘要HTML标签问题</li><li>• 主站显示最新3篇博客</li><li>• 博客站分页+分类+搜索</li></ul><p style="margin-top:1rem;">愿星光守护每一个创作者。</p></div></div></div>
+    <div id="updateLogModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeUpdateLogModal">&times;</button><h3>网站更新报告</h3><div style="margin-top:1rem;"><p><strong>v22.0 (2026.07.11)</strong></p><ul style="list-style:none;padding:0;"><li>• 完整主站所有功能</li><li>• 博客支持分类标签展示</li><li>• 修复摘要HTML标签问题</li></ul><p style="margin-top:1rem;">愿星光守护每一个创作者。</p></div></div></div>
 
     <div class="toast-message" id="toastMessage"></div>
 
     <script>
-        // ===== Toast =====
         function showToast(msg, duration) {
             duration = duration || 2000;
             var t = document.getElementById('toastMessage');
@@ -630,7 +626,6 @@
             showToast('星光 +' + add + '！');
         }
 
-        // ===== 博客加载（只显示最新3篇，修复摘要） =====
         (function loadBlog() {
             var container = document.getElementById('blogContainer');
             var REPO_OWNER = 'stellarcn2020';
@@ -655,14 +650,12 @@
                         var displayTitle = titleMatch ? titleMatch[2] || issue.title : issue.title;
                         var body = issue.body || '';
 
-                        // 提取分类
                         var categories = [];
                         var catMatch = body.match(/^分类[：:]\s*(.+?)\s*[\n\r]/i);
                         if (catMatch && catMatch[1]) {
                             categories = catMatch[1].split(/[,，、\s]+/).filter(function(c) { return c.trim().length > 0; });
                         }
 
-                        // ★★★ 提取摘要（核心修复：移除所有HTML标签） ★★★
                         var cleanBody = body;
                         cleanBody = cleanBody.replace(/^分类[：:]\s*.+?[\n\r]/, '');
                         cleanBody = cleanBody.replace(/^作者[：:]\s*.+?[\n\r]/, '');
@@ -699,9 +692,6 @@
                 });
         })();
 
-        // ============================================================
-        // 页面加载时强制显示首页
-        // ============================================================
         (function initDefaultPage() {
             window.scrollTo(0, 0);
             var heroLink = document.querySelector('.nav-link[href="#hero"]');
@@ -714,9 +704,6 @@
             }
         })();
 
-        // ============================================================
-        // HERO 按压倾斜
-        // ============================================================
         (function initHeroPress() {
             var heroCard = document.getElementById('heroTiltCard');
             if (!heroCard) return;
@@ -792,9 +779,6 @@
             }, { passive: true });
         })();
 
-        // ============================================================
-        // 地图互动
-        // ============================================================
         (function initMapInteractions() {
             var mapItems = document.querySelectorAll('.map-item.map-clickable');
             mapItems.forEach(function(item) {
@@ -851,9 +835,6 @@
             });
         })();
 
-        // ============================================================
-        // 价值观
-        // ============================================================
         function toggleValue(e, el) {
             if (el.classList.contains('dragging')) return;
             e.stopPropagation();
@@ -877,9 +858,6 @@
             }
         }
 
-        // ============================================================
-        // 拖拽重组
-        // ============================================================
         (function initDragDrop() {
             var cards = document.querySelectorAll('.value-card.draggable-card');
             var dragEl = null,
@@ -978,9 +956,6 @@
             });
         })();
 
-        // ============================================================
-        // 星群连线 Canvas
-        // ============================================================
         (function initConstellation() {
             var canvas = document.getElementById('constellationCanvas');
             var ctx = canvas.getContext('2d');
@@ -1099,9 +1074,6 @@
             });
         })();
 
-        // ============================================================
-        // 星空粒子背景
-        // ============================================================
         (function initStarfield() {
             var canvas = document.getElementById('starfield');
             var ctx = canvas.getContext('2d');
@@ -1166,9 +1138,6 @@
             });
         })();
 
-        // ============================================================
-        // 导航
-        // ============================================================
         var navbar = document.getElementById('navbar');
         window.addEventListener('scroll', function() {
             if (window.scrollY > 60) {
@@ -1210,9 +1179,6 @@
             });
         });
 
-        // ============================================================
-        // 导航高亮修复
-        // ============================================================
         var sections = document.querySelectorAll('section[id]');
         var navLinksAll = document.querySelectorAll('.nav-link');
 
@@ -1239,9 +1205,6 @@
             });
         });
 
-        // ============================================================
-        // Modals
-        // ============================================================
         var groupModal = document.getElementById('groupModal'),
             channelModal = document.getElementById('channelModal'),
             updateLogModal = document.getElementById('updateLogModal');
@@ -1283,9 +1246,6 @@
             });
         });
 
-        // ============================================================
-        // 入场动画
-        // ============================================================
         var items = document.querySelectorAll('.animate-item');
         var observer = new IntersectionObserver(function(entries) {
             entries.forEach(function(entry) {
@@ -1298,7 +1258,7 @@
             observer.observe(item);
         });
 
-        console.log('>> 星能工作室 · 主站显示3篇最新博客（修复版）');
+        console.log('>> 主站');
         console.log('>> 主站: https://stellarcn2020.github.io/st');
         console.log('>> 博客: https://stellarcn2020.github.io/st/blog');
     </script>
