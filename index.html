@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>星能之心 · 创造之星</title>
+    <title>星能工作室 | 星能之心 创造之星</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -302,35 +302,144 @@
         @media(max-width:780px){ .join-panel .float-card{display:none;} .join-panel .main-card{padding:1.5rem 1.2rem;border-radius:4px;} .join-panel .main-card .btn-group{gap:.8rem;} }
         @media(max-width:480px){ .join-panel .main-card .btn-group .mihoyo-btn{width:100%;max-width:200px;} .join-panel .main-card .social-links{flex-direction:column;align-items:center;gap:.3rem;} .join-panel .main-card{border-radius:4px;} }
 
+        /* ============================================================
+           ★★★ 博客卡片 - 横向布局（宽高比 4:3） ★★★
+           ============================================================ */
         .blog-section { padding:60px 0 20px; border-top:1px solid var(--border-light); }
-        .blog-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.8rem; margin:2rem 0; }
+
+        /* 网格：自适应列数，最小宽度 260px */
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        /* 卡片：固定宽高比 4:3，flex 纵向排列 */
         .blog-card {
-            background:var(--bg-card); border:1px solid var(--border-light); box-shadow:var(--shadow-sm);
-            padding:1.8rem 2rem; transition:all .3s cubic-bezier(.34,1.56,.64,1);
-            border-radius:var(--card-radius); position:relative; overflow:hidden;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+            padding: 1.2rem 1.2rem;
+            transition: all .3s cubic-bezier(.34,1.56,.64,1);
+            border-radius: var(--card-radius);
+            position: relative;
+            overflow: hidden;
+            /* ★ 横向卡片：宽高比 4:3 */
+            aspect-ratio: 4 / 3;
+            display: flex;
+            flex-direction: column;
         }
+
         .blog-card::before {
-            content:''; position:absolute; inset:-1px; border:2px solid transparent;
-            border-image:linear-gradient(90deg,var(--accent),var(--accent-glow),var(--accent)); border-image-slice:1;
-            pointer-events:none; opacity:0; transition:opacity .4s; border-radius:var(--card-radius);
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border: 2px solid transparent;
+            border-image: linear-gradient(90deg, var(--accent), var(--accent-glow), var(--accent));
+            border-image-slice: 1;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity .4s;
+            border-radius: var(--card-radius);
         }
-        .blog-card:hover::before { opacity:1; animation:borderFlow 2s linear infinite; }
-        .blog-card:hover { box-shadow:var(--shadow-hover); transform:translateY(-4px); border-color:var(--accent); }
-        .blog-card .blog-date { font-size:.7rem; color:var(--text-secondary); opacity:.5; font-family:'JetBrains Mono',monospace; }
-        .blog-card .blog-title { font-size:1.2rem; font-weight:700; color:var(--text-primary); margin:6px 0 8px; }
-        .blog-card .blog-summary { color:var(--text-secondary); font-size:.9rem; line-height:1.8; }
-        .blog-card .blog-author { font-size:.7rem; color:var(--text-secondary); opacity:.4; margin-top:8px; display:flex; align-items:center; gap:6px; }
-        .blog-card .blog-author img { width:18px; height:18px; border-radius:50%; border:1px solid var(--border-light); }
-        .blog-card .blog-categories { display:flex; flex-wrap:wrap; gap:4px 8px; margin:6px 0 4px; }
-        .blog-card .blog-categories .cat { font-size:.55rem; padding:2px 10px; border-radius:0; color:#fff; background:var(--accent); font-family:'JetBrains Mono',monospace; letter-spacing:.3px; }
-        .blog-card .blog-categories .cat:nth-child(2) { background:#f59e0b; }
-        .blog-card .blog-categories .cat:nth-child(3) { background:#10b981; }
-        .blog-card .blog-categories .cat:nth-child(4) { background:#8b5cf6; }
-        .blog-card .blog-categories .cat:nth-child(5) { background:#ef4444; }
-        .blog-card .blog-categories .cat:nth-child(6) { background:#06b6d4; }
-        .blog-card .blog-categories .cat:nth-child(7) { background:#ec4899; }
-        .blog-card .read-more { display:inline-block; margin-top:10px; color:var(--accent); font-weight:600; font-size:.85rem; text-decoration:none; }
-        .blog-card .read-more:hover { text-decoration:underline; }
+        .blog-card:hover::before {
+            opacity: 1;
+            animation: borderFlow 2s linear infinite;
+        }
+        .blog-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-4px);
+            border-color: var(--accent);
+        }
+
+        /* 日期 */
+        .blog-card .blog-date {
+            font-size: .6rem;
+            color: var(--text-secondary);
+            opacity: .5;
+            font-family: 'JetBrains Mono', monospace;
+            flex-shrink: 0;
+        }
+
+        /* ★ 标签展示（在卡片上） */
+        .blog-card .blog-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px 6px;
+            margin: 4px 0 4px;
+            flex-shrink: 0;
+        }
+        .blog-card .blog-categories .cat {
+            font-size: .5rem;
+            padding: 1px 8px;
+            border-radius: 0;
+            color: #fff;
+            background: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: .2px;
+            display: inline-block;
+        }
+        .blog-card .blog-categories .cat:nth-child(2) { background: #f59e0b; }
+        .blog-card .blog-categories .cat:nth-child(3) { background: #10b981; }
+        .blog-card .blog-categories .cat:nth-child(4) { background: #8b5cf6; }
+        .blog-card .blog-categories .cat:nth-child(5) { background: #ef4444; }
+        .blog-card .blog-categories .cat:nth-child(6) { background: #06b6d4; }
+        .blog-card .blog-categories .cat:nth-child(7) { background: #ec4899; }
+
+        /* 标题 */
+        .blog-card .blog-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 2px 0 4px;
+            line-height: 1.3;
+            flex-shrink: 0;
+        }
+
+        /* ★ 摘要：最多显示 3 行，自动截断 */
+        .blog-card .blog-summary {
+            color: var(--text-secondary);
+            font-size: .8rem;
+            line-height: 1.6;
+            flex: 1;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        /* 作者信息：放在底部 */
+        .blog-card .blog-author {
+            font-size: .6rem;
+            color: var(--text-secondary);
+            opacity: .4;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .blog-card .blog-author img {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1px solid var(--border-light);
+        }
+
+        /* 阅读更多按钮 */
+        .blog-card .read-more {
+            display: inline-block;
+            margin-top: 4px;
+            color: var(--accent);
+            font-weight: 600;
+            font-size: .7rem;
+            text-decoration: none;
+            align-self: flex-start;
+            flex-shrink: 0;
+        }
+        .blog-card .read-more:hover { text-decoration: underline; }
+
         .blog-loading { text-align:center; padding:3rem 0; color:var(--text-secondary); font-size:1rem; }
         .blog-loading i { font-size:1.8rem; color:var(--accent); margin-bottom:0.8rem; display:block; }
         .blog-error { text-align:center; padding:3rem 0; color:var(--text-secondary); font-size:.9rem; }
@@ -381,12 +490,14 @@
             .nav-link{padding:.6rem 1.2rem;width:100%;text-align:center;font-size:.9rem;}
             .menu-toggle{display:block;} .section-title{padding-left:12px;}
             .blog-grid{grid-template-columns:1fr;}
+            .blog-card { aspect-ratio: auto; min-height: 140px; }
         }
         @media(max-width:480px){
             body{padding-top:54px;} .navbar{min-height:50px;padding:.3rem .8rem;}
             .logo-img{height:18px;} .logo-text{font-size:.8rem;}
             .container{padding:0 12px;} .card{padding:1rem 1.2rem;}
             .section-title{font-size:1.2rem;padding-left:10px;margin-bottom:1rem;} .section-title .en{font-size:.6rem;}
+            .blog-card { min-height: 120px; }
         }
 
         .animate-item { opacity:0; transform:translateY(24px); transition:opacity .6s cubic-bezier(.34,1.56,.64,1),transform .6s cubic-bezier(.34,1.56,.64,1); }
@@ -596,7 +707,7 @@
 
     <div id="groupModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeGroupModal">&times;</button><h3>加入群聊</h3><div class="contact-line">QQ交流群：966926112</div><div class="contact-line">欢迎入群，与众多创作者一起交流地图心得。</div><div style="margin-top:1.2rem;text-align:center;"><button class="mihoyo-btn-simple" id="copyGroupBtn"><span class="simple-bg"></span><span class="simple-text">复制群号</span></button></div></div></div>
     <div id="channelModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeChannelModal">&times;</button><h3>加入频道</h3><div class="contact-line">官方频道号：pd90272831</div><div class="contact-line">在QQ频道中获取最新动态、活动资讯。</div><div style="margin-top:1.2rem;text-align:center;"><button class="mihoyo-btn-simple" id="copyChannelBtn"><span class="simple-bg"></span><span class="simple-text">复制频道号</span></button></div></div></div>
-    <div id="updateLogModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeUpdateLogModal">&times;</button><h3>网站更新报告</h3><div style="margin-top:1rem;"><p><strong>v22.0 (2026.07.11)</strong></p><ul style="list-style:none;padding:0;"><li>• 完整主站所有功能</li><li>• 博客支持分类标签展示</li><li>• 修复摘要HTML标签问题</li></ul><p style="margin-top:1rem;">愿星光守护每一个创作者。</p></div></div></div>
+    <div id="updateLogModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeUpdateLogModal">&times;</button><h3>网站更新报告</h3><div style="margin-top:1rem;"><p><strong>v22.1 (2026.07.11)</strong></p><ul style="list-style:none;padding:0;"><li>• 博客卡片改为横向布局 (4:3)</li><li>• 标签在预览卡片上展示</li><li>• 摘要限制3行显示</li><li>• 卡片更紧凑美观</li></ul><p style="margin-top:1rem;">愿星光守护每一个创作者。</p></div></div></div>
 
     <div class="toast-message" id="toastMessage"></div>
 
@@ -663,7 +774,7 @@
                         cleanBody = cleanBody.replace(/<[^>]*>/g, ' ');
                         cleanBody = cleanBody.replace(/[#*`>\[\]()]/g, ' ');
                         cleanBody = cleanBody.replace(/\s+/g, ' ').trim();
-                        var summary = cleanBody.substring(0, 200) + (cleanBody.length > 200 ? '...' : '');
+                        var summary = cleanBody.substring(0, 150) + (cleanBody.length > 150 ? '...' : '');
 
                         var author = issue.user.login;
                         var avatar = issue.user.avatar_url;
@@ -1258,7 +1369,7 @@
             observer.observe(item);
         });
 
-        console.log('>> 主站');
+        console.log('>> 星能主站');
         console.log('>> 主站: https://stellarcn2020.github.io/st');
         console.log('>> 博客: https://stellarcn2020.github.io/st/blog');
     </script>
