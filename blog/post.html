@@ -192,7 +192,7 @@
         .post-body .table-wrap table { margin: 0; }
 
         /* ============================================================
-           ★★★ 嵌入页面容器（支持自定义尺寸） ★★★
+           ★★★ 嵌入页面容器 ★★★
            ============================================================ */
         .html-embed-wrapper {
             border: 2px solid var(--accent);
@@ -235,9 +235,6 @@
         .post-loading i, .post-error i { font-size:2.5rem; display:block; margin-bottom:1rem; }
         .post-error { color:#ef4444; }
 
-        /* ============================================================
-                   侧栏目录
-                   ============================================================ */
         .post-toc {
             position: sticky;
             top: 90px;
@@ -303,9 +300,6 @@
         .post-toc .toc-list li.toc-h3 a { font-size: 0.72rem; opacity: 0.8; }
         .post-toc .toc-empty { font-size:0.75rem; color:var(--text-secondary); opacity:0.3; text-align:center; padding:12px 0; }
 
-        /* ============================================================
-                   移动端底部目录
-                   ============================================================ */
         .toc-mobile {
             display: none;
             position: fixed;
@@ -408,9 +402,6 @@
         .footer-col p,.footer-col a { font-size:clamp(.7rem,.8vw,.85rem); line-height:1.6; color:#b8d0ff; text-decoration:none; display:block; margin-bottom:.2rem; }
         .footer-col a:hover { color:#fff; text-decoration:underline; }
 
-        /* ============================================================
-                   响应式
-                   ============================================================ */
         @media(max-width:1024px){ .post-toc { width: 200px; } }
         @media(max-width:860px){
             .post-wrapper { flex-direction: column; }
@@ -667,7 +658,7 @@
         resizeObserver.observe(document.body);
 
         // ============================================================
-        // ★★★ 加载文章 ★★★
+        // ★★★ 加载文章（修复 html-embed 解析） ★★★
         // ============================================================
         var issueNumber = getQueryParam('id');
         var container = document.getElementById('postContainer');
@@ -698,42 +689,67 @@
                     var authorName = customAuthor || issue.user.login;
                     var authorAvatar = issue.user.avatar_url;
 
-                    // ★★★ 渲染 Markdown ★★★
-                    var htmlContent = marked.parse(cleanBody, { gfm: true });
+                    // ============================================================
+                    // ★★★ 核心修复：在 Markdown 渲染之前提取 html-embed ★★★
+                    // ============================================================
+                    var embedPlaceholders = [];
+                    var processedBody = cleanBody;
 
-                    // ★★★ 处理 [html-embed] 标签（支持自定义尺寸） ★★★
-                    htmlContent = htmlContent.replace(
+                    // 提取所有 [html-embed] 标签
+                    processedBody = processedBody.replace(
                         /\[html-embed\s*([^\]]*)\]([\s\S]*?)\[\/html-embed\]/g,
                         function(match, paramsStr, content) {
+                            var index = embedPlaceholders.length;
                             var params = parseEmbedParams(paramsStr);
                             var width = params.width || '100%';
                             var height = params.height || '500px';
 
+                            // 清理内容中的 Markdown 代码块标记
                             content = content.replace(/```html\s*/g, '');
                             content = content.replace(/```\s*/g, '');
                             content = content.trim();
 
-                            var escaped = content
-                                .replace(/&/g, '&amp;')
-                                .replace(/"/g, '&quot;')
-                                .replace(/'/g, '&#39;')
-                                .replace(/</g, '&lt;')
-                                .replace(/>/g, '&gt;');
+                            // 保存到占位符数组
+                            embedPlaceholders.push({
+                                width: width,
+                                height: height,
+                                content: content,
+                                raw: match
+                            });
 
-                            var sizeLabel = width + ' × ' + height;
-
-                            return '<div class="html-embed-wrapper">' +
-                                '<div class="html-embed-header">' +
-                                '<span>✦ 嵌入页面</span>' +
-                                '<span class="size-tag">' + sizeLabel + '</span>' +
-                                '<span class="badge">iframe</span>' +
-                                '</div>' +
-                                '<iframe srcdoc="' + escaped + '" width="' + width + '" height="' + height +
-                                '" style="display:block; border:none; background:#fff; width:' + width + '; height:' +
-                                height + ';" sandbox="allow-scripts allow-same-origin allow-modals"></iframe>' +
-                                '</div>';
+                            // 用唯一占位符替换（在 Markdown 渲染后不会被破坏）
+                            return '___HTML_EMBED_' + index + '___';
                         }
                     );
+
+                    // ★★★ 渲染 Markdown ★★★
+                    var htmlContent = marked.parse(processedBody, { gfm: true });
+
+                    // ★★★ 恢复占位符 ★★★
+                    embedPlaceholders.forEach(function(embed, index) {
+                        var escaped = embed.content
+                            .replace(/&/g, '&amp;')
+                            .replace(/"/g, '&quot;')
+                            .replace(/'/g, '&#39;')
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;');
+
+                        var sizeLabel = embed.width + ' × ' + embed.height;
+
+                        var iframeHtml =
+                            '<div class="html-embed-wrapper">' +
+                            '<div class="html-embed-header">' +
+                            '<span>✦ 嵌入页面</span>' +
+                            '<span class="size-tag">' + sizeLabel + '</span>' +
+                            '<span class="badge">iframe</span>' +
+                            '</div>' +
+                            '<iframe srcdoc="' + escaped + '" width="' + embed.width + '" height="' + embed.height +
+                            '" style="display:block; border:none; background:#fff; width:' + embed.width + '; height:' +
+                            embed.height + ';" sandbox="allow-scripts allow-same-origin allow-modals"></iframe>' +
+                            '</div>';
+
+                        htmlContent = htmlContent.replace('___HTML_EMBED_' + index + '___', iframeHtml);
+                    });
 
                     // ★★★ 为表格添加滚动容器 ★★★
                     htmlContent = htmlContent.replace(/<table([\s\S]*?)<\/table>/g, function(match) {
@@ -875,7 +891,7 @@
             });
         })();
 
-        console.log('>> 星能博客 · 文章详情页（支持自定义尺寸）');
+        console.log('>> 星能博客 · 文章详情页（修复 html-embed 解析）');
         console.log('>> 用法: [html-embed width="80%" height="600px"]...[/html-embed]');
     </script>
 </body>
