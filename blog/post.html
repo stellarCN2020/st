@@ -191,9 +191,6 @@
         }
         .post-body .table-wrap table { margin: 0; }
 
-        /* ============================================================
-           ★★★ 嵌入页面容器 ★★★
-           ============================================================ */
         .html-embed-wrapper {
             border: 2px solid var(--accent);
             border-radius: 4px;
@@ -519,9 +516,6 @@
             return result;
         }
 
-        // ============================================================
-        // ★★★ 解析 [html-embed] 参数 ★★★
-        // ============================================================
         function parseEmbedParams(str) {
             var params = { width: null, height: null };
             if (!str) return params;
@@ -658,7 +652,7 @@
         resizeObserver.observe(document.body);
 
         // ============================================================
-        // ★★★ 加载文章（修复 html-embed 解析） ★★★
+        // ★★★ 加载文章（修复占位符替换） ★★★
         // ============================================================
         var issueNumber = getQueryParam('id');
         var container = document.getElementById('postContainer');
@@ -690,35 +684,30 @@
                     var authorAvatar = issue.user.avatar_url;
 
                     // ============================================================
-                    // ★★★ 核心修复：在 Markdown 渲染之前提取 html-embed ★★★
+                    // ★★★ 核心修复：使用随机占位符，确保不被 Markdown 破坏 ★★★
                     // ============================================================
-                    var embedPlaceholders = [];
+                    var embedMap = {};
                     var processedBody = cleanBody;
 
-                    // 提取所有 [html-embed] 标签
                     processedBody = processedBody.replace(
                         /\[html-embed\s*([^\]]*)\]([\s\S]*?)\[\/html-embed\]/g,
                         function(match, paramsStr, content) {
-                            var index = embedPlaceholders.length;
+                            var uid = 'EMBED_' + Math.random().toString(36).substring(2, 10);
                             var params = parseEmbedParams(paramsStr);
                             var width = params.width || '100%';
                             var height = params.height || '500px';
 
-                            // 清理内容中的 Markdown 代码块标记
                             content = content.replace(/```html\s*/g, '');
                             content = content.replace(/```\s*/g, '');
                             content = content.trim();
 
-                            // 保存到占位符数组
-                            embedPlaceholders.push({
+                            embedMap[uid] = {
                                 width: width,
                                 height: height,
-                                content: content,
-                                raw: match
-                            });
+                                content: content
+                            };
 
-                            // 用唯一占位符替换（在 Markdown 渲染后不会被破坏）
-                            return '___HTML_EMBED_' + index + '___';
+                            return '___' + uid + '___';
                         }
                     );
 
@@ -726,7 +715,8 @@
                     var htmlContent = marked.parse(processedBody, { gfm: true });
 
                     // ★★★ 恢复占位符 ★★★
-                    embedPlaceholders.forEach(function(embed, index) {
+                    for (var uid in embedMap) {
+                        var embed = embedMap[uid];
                         var escaped = embed.content
                             .replace(/&/g, '&amp;')
                             .replace(/"/g, '&quot;')
@@ -748,8 +738,8 @@
                             embed.height + ';" sandbox="allow-scripts allow-same-origin allow-modals"></iframe>' +
                             '</div>';
 
-                        htmlContent = htmlContent.replace('___HTML_EMBED_' + index + '___', iframeHtml);
-                    });
+                        htmlContent = htmlContent.split('___' + uid + '___').join(iframeHtml);
+                    }
 
                     // ★★★ 为表格添加滚动容器 ★★★
                     htmlContent = htmlContent.replace(/<table([\s\S]*?)<\/table>/g, function(match) {
@@ -891,7 +881,7 @@
             });
         })();
 
-        console.log('>> 星能博客 · 文章详情页（修复 html-embed 解析）');
+        console.log('>> 星能博客 · 文章详情页（修复占位符）');
         console.log('>> 用法: [html-embed width="80%" height="600px"]...[/html-embed]');
     </script>
 </body>
