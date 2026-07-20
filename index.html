@@ -3,63 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>星能工作室 | 星能之心 创造之星</title>
+    <title>星能工作室 | 星能之心，创造之星</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
+        /* ===== 基础变量 ===== */
         :root {
             --bg-primary: #f5f7fc;
             --bg-card: #ffffff;
             --text-primary: #1e293b;
             --text-secondary: #4c6a9e;
-            --border-light: #e0e7f0;
-            --shadow-sm: 0 8px 20px rgba(0,0,0,0.05);
-            --shadow-hover: 0 20px 48px rgba(0,0,0,0.12);
-            --shadow-xl: 0 32px 64px rgba(0,0,0,0.10);
+            --border-light: #dce3ef;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-hover: 0 4px 16px rgba(0,0,0,0.08);
             --accent: #5f7fff;
-            --accent-glow: #a07aff;
             --accent-light: #eef4ff;
-            --card-radius: 0px;
-        }
-        body.dark {
-            --bg-primary: #0b1120;
-            --bg-card: #162033;
-            --text-primary: #e8edf5;
-            --text-secondary: #8a9fc0;
-            --border-light: #2a3a5a;
-            --shadow-sm: 0 8px 20px rgba(0,0,0,0.4);
-            --shadow-hover: 0 20px 48px rgba(0,0,0,0.6);
-            --shadow-xl: 0 32px 64px rgba(0,0,0,0.5);
-            --accent-light: #1a2a4a;
+            --dark: #1a2a4f;
+            --radius: 0px;
         }
         * { margin:0; padding:0; box-sizing:border-box; cursor:default; }
-        a,button,.btn,.nav-link,.mihoyo-btn,.card-clickable,.draggable-card,.map-clickable { cursor:pointer; }
-        :focus { outline:none; }
+        a,button,.btn,.nav-link,.mihoyo-btn { cursor:pointer; }
+        :focus { outline:2px solid var(--accent); outline-offset:2px; }
         html { font-size:16px; scroll-behavior:smooth; }
         body {
             font-family:'Inter','Segoe UI',system-ui,-apple-system,'Microsoft YaHei',sans-serif;
             background:var(--bg-primary); color:var(--text-primary);
             padding-top:72px; line-height:1.7; overflow-x:hidden;
-            -webkit-font-smoothing:antialiased; transition:background .4s,color .4s; user-select:none;
+            -webkit-font-smoothing:antialiased; user-select:none;
+            -webkit-tap-highlight-color:transparent;
         }
-        .grid-bg { position:fixed; inset:0; z-index:-2; background:linear-gradient(135deg,var(--bg-primary) 0%,#e8edf8 100%); transition:background .4s; }
-        body.dark .grid-bg { background:linear-gradient(135deg,#0b1120 0%,#162033 100%); }
+        .grid-bg { position:fixed; inset:0; z-index:-2; background:linear-gradient(135deg,var(--bg-primary) 0%,#e8edf8 100%); }
         .grid-overlay {
             position:fixed; inset:0; z-index:-1; pointer-events:none;
             background-image:linear-gradient(to right,rgba(95,127,255,.04) 1px,transparent 1px),
                            linear-gradient(to bottom,rgba(95,127,255,.04) 1px,transparent 1px);
-            background-size:30px 30px; transition:opacity .4s;
+            background-size:30px 30px;
         }
-        body.dark .grid-overlay {
-            background-image:linear-gradient(to right,rgba(95,127,255,.06) 1px,transparent 1px),
-                           linear-gradient(to bottom,rgba(95,127,255,.06) 1px,transparent 1px);
-        }
-        .tech-line { position:fixed; bottom:0; left:0; width:100%; height:2px; background:linear-gradient(90deg,#1a2a4f,var(--accent),#1a2a4f); z-index:99; }
+        .tech-line { position:fixed; bottom:0; left:0; width:100%; height:2px; background:linear-gradient(90deg,var(--dark),var(--accent),var(--dark)); z-index:99; }
         #starfield { position:fixed; inset:0; z-index:-1; pointer-events:none; }
-        #constellationCanvas { position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.18; }
-        body.dark #constellationCanvas { opacity:.28; }
+        #constellationCanvas { position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.12; }
         .container { max-width:1340px; margin:0 auto; padding:0 clamp(16px,3vw,40px); position:relative; }
 
+        /* ============================================================
+           导航栏
+           ============================================================ */
         .navbar {
             position:fixed; top:0; left:0; width:100%; z-index:100;
             display:flex; align-items:center; padding:.6rem clamp(1rem,3vw,2.5rem);
@@ -67,7 +54,6 @@
             box-shadow:0 2px 8px rgba(0,0,0,.04); border-bottom:1px solid var(--border-light);
             transition:background .3s,box-shadow .3s,border-color .3s; min-height:64px; flex-wrap:wrap;
         }
-        body.dark .navbar { background:rgba(22,32,51,.92); border-bottom-color:var(--border-light); }
         .navbar.transparent { background:transparent; box-shadow:none; border-bottom-color:transparent; }
         .logo { display:flex; align-items:center; gap:10px; flex:1; min-width:120px; }
         .logo-img { height:clamp(22px,3vw,28px); width:auto; filter:drop-shadow(0 2px 4px rgba(0,0,0,.06)); }
@@ -80,6 +66,9 @@
         .nav-link:hover,.nav-link.active { color:var(--accent); }
         .menu-toggle { display:none; font-size:1.4rem; color:var(--text-primary); background:none; border:none; cursor:pointer; padding:4px 8px; transition:color .3s; }
 
+        /* ============================================================
+           按钮
+           ============================================================ */
         .mihoyo-btn {
             position:relative; display:inline-flex; align-items:center; justify-content:center;
             background:#3d3d3d; clip-path:polygon(0% 0%, calc(100% - .24rem) 0%, 100% .24rem, 100% 100%, 0% 100%);
@@ -104,349 +93,265 @@
         @media(max-width:780px){ .mihoyo-btn{width:160px;height:48px;} .mihoyo-btn .btn-title{font-size:.8rem;} .mihoyo-btn-simple{padding:6px 14px;font-size:.8rem;} }
         @media(max-width:480px){ .mihoyo-btn{width:140px;height:44px;} .mihoyo-btn .btn-title{font-size:.7rem;} .mihoyo-btn .btn-sub{font-size:.45rem;} }
 
-        .card { background:var(--bg-card); border:1px solid var(--border-light); box-shadow:var(--shadow-sm); padding:1.8rem 2rem; transition:box-shadow .3s,border-color .3s,background .3s; border-radius:var(--card-radius); position:relative; }
+        /* ============================================================
+           通用
+           ============================================================ */
+        .card { background:var(--bg-card); border:1px solid var(--border-light); box-shadow:var(--shadow-sm); padding:1.8rem 2rem; transition:box-shadow .3s,border-color .3s; }
         .section-title {
             font-size:clamp(1.5rem,2.8vw,2.2rem); font-weight:700; border-left:4px solid var(--accent);
             padding-left:16px; margin-bottom:clamp(1.5rem,3vw,2.5rem);
             display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; position:relative; z-index:2;
-            color:var(--text-primary); transition:color .3s;
+            color:var(--text-primary);
         }
         .section-title .en { font-size:.8rem; font-weight:400; color:var(--text-secondary); letter-spacing:.5px; opacity:.6; }
 
+        /* ============================================================
+           HERO
+           ============================================================ */
         .hero-wrap { position:relative; min-height:80vh; display:flex; align-items:center; padding:20px 0 40px; z-index:1; }
         .hero-grid { display:grid; grid-template-columns:1.2fr .8fr; gap:clamp(20px,4vw,50px); width:100%; position:relative; align-items:center; }
-        .hero-content { position:relative; z-index:2; transform:translateX(-8px); }
-        .hero-content h1 { font-size:clamp(2.4rem,8vw,5rem); font-weight:800; line-height:1.05; color:var(--text-primary); letter-spacing:-1px; transition:color .3s; }
+        .hero-content { position:relative; z-index:2; }
+        .hero-content h1 { font-size:clamp(2.4rem,8vw,5rem); font-weight:800; line-height:1.05; color:var(--text-primary); letter-spacing:-1px; }
         .hero-content h1 .hl { color:var(--accent); position:relative; display:inline-block; }
-        .hero-content h1 .hl::after { content:''; position:absolute; bottom:2px; left:0; width:100%; height:4px; background:var(--accent); opacity:.2; border-radius:2px; }
-        .hero-content .sub { font-size:clamp(.9rem,1.2vw,1.1rem); color:var(--text-secondary); margin:4px 0 14px; letter-spacing:2px; font-weight:300; transition:color .3s; }
-        .hero-content .desc { color:var(--text-secondary); max-width:440px; line-height:1.9; font-size:clamp(.9rem,1vw,1rem); border-left:3px solid var(--accent); padding-left:18px; transition:color .3s; }
+        .hero-content h1 .hl::after { content:''; position:absolute; bottom:2px; left:0; width:100%; height:4px; background:var(--accent); opacity:.2; }
+        .hero-content .sub { font-size:clamp(.9rem,1.2vw,1.1rem); color:var(--text-secondary); margin:4px 0 14px; letter-spacing:2px; font-weight:300; }
+        .hero-content .desc { color:var(--text-secondary); max-width:440px; line-height:1.9; font-size:clamp(.9rem,1vw,1rem); border-left:3px solid var(--accent); padding-left:18px; }
         .hero-stats { display:flex; flex-wrap:wrap; gap:10px 20px; margin:18px 0 24px; }
-        .hero-stats .stat { background:var(--bg-card); border:1px solid var(--border-light); padding:5px 16px; box-shadow:var(--shadow-sm); transition:all .3s cubic-bezier(.34,1.56,.64,1); cursor:pointer; position:relative; overflow:hidden; }
-        .hero-stats .stat::after { content:''; position:absolute; bottom:0; left:0; width:100%; height:2px; background:var(--accent); transform:scaleX(0); transform-origin:left; transition:transform .4s ease; }
-        .hero-stats .stat:hover::after { transform:scaleX(1); }
-        .hero-stats .stat:hover { transform:translateY(-4px) scale(1.04); box-shadow:var(--shadow-hover); border-color:var(--accent); }
-        .hero-stats .stat .num { font-size:clamp(1.2rem,2vw,1.6rem); font-weight:700; color:var(--accent); font-family:'JetBrains Mono',monospace; display:inline-block; transition:transform .2s; }
-        .hero-stats .stat .lbl { font-size:clamp(.65rem,.8vw,.8rem); color:var(--text-secondary); margin-left:4px; transition:color .3s; }
+        .hero-stats .stat { background:var(--bg-card); border:1px solid var(--border-light); padding:5px 16px; box-shadow:var(--shadow-sm); transition:all .3s; }
+        .hero-stats .stat:hover { transform:translateY(-2px); box-shadow:var(--shadow-hover); border-color:var(--accent); }
+        .hero-stats .stat .num { font-size:clamp(1.2rem,2vw,1.6rem); font-weight:700; color:var(--accent); font-family:'JetBrains Mono',monospace; display:inline-block; }
+        .hero-stats .stat .lbl { font-size:clamp(.65rem,.8vw,.8rem); color:var(--text-secondary); margin-left:4px; }
         .hero-actions { display:flex; flex-wrap:wrap; gap:10px; }
 
-        .hero-side { position:relative; display:flex; justify-content:center; align-items:center; perspective:1200px; margin-right:-20px; margin-top:30px; z-index:1; }
+        .hero-side { position:relative; display:flex; justify-content:center; align-items:center; margin-right:-20px; margin-top:30px; z-index:1; }
         .hero-side .tilt-card {
             background:var(--bg-card); border:2px solid var(--accent); padding:2rem 1.8rem;
-            width:100%; max-width:340px; box-shadow:var(--shadow-xl);
-            text-align:center; transform-style:preserve-3d; will-change:transform; backface-visibility:visible;
-            transition:box-shadow .3s,background .3s; position:relative; transform:rotate(2deg) translateY(-10px);
+            width:100%; max-width:340px; box-shadow:var(--shadow-hover);
+            text-align:center; transition:box-shadow .3s; position:relative;
             cursor:pointer;
         }
         .hero-side .tilt-card .ascii-bg { font-family:'JetBrains Mono',monospace; font-size:6px; line-height:1.2; color:var(--accent); opacity:.06; white-space:pre; text-align:left; margin-bottom:4px; user-select:none; }
-        .hero-side .tilt-card .name { font-size:clamp(1.1rem,1.6vw,1.4rem); font-weight:700; color:var(--text-primary); transition:color .3s; }
+        .hero-side .tilt-card .name { font-size:clamp(1.1rem,1.6vw,1.4rem); font-weight:700; color:var(--text-primary); }
         .hero-side .tilt-card .title { font-size:clamp(.7rem,.9vw,.85rem); color:var(--accent); letter-spacing:1px; }
-        .hero-side .tilt-card .divider { border-top:1px solid var(--border-light); margin:10px 0 6px; transition:border-color .3s; }
-        .hero-side .tilt-card .attrs { display:flex; gap:14px; justify-content:center; font-size:.7rem; font-weight:600; color:var(--text-secondary); transition:color .3s; }
-        .hero-side .tilt-card .attrs span { color:var(--accent); transition:color .3s; cursor:default; }
-        .hero-side .tilt-card .sync { font-size:.6rem; color:var(--text-secondary); opacity:.25; margin-top:4px; animation:pulseText 2s ease-in-out infinite; transition:color .3s; }
+        .hero-side .tilt-card .divider { border-top:1px solid var(--border-light); margin:10px 0 6px; }
+        .hero-side .tilt-card .attrs { display:flex; gap:14px; justify-content:center; font-size:.7rem; font-weight:600; color:var(--text-secondary); }
+        .hero-side .tilt-card .attrs span { color:var(--accent); cursor:default; }
+        .hero-side .tilt-card .sync { font-size:.6rem; color:var(--text-secondary); opacity:.25; margin-top:4px; animation:pulseText 2s ease-in-out infinite; }
         @keyframes pulseText { 0%,100%{opacity:.25;} 50%{opacity:.6;} }
 
         .hero-float {
             position:absolute; background:var(--bg-card); border:1px solid var(--border-light);
             box-shadow:var(--shadow-hover); padding:.6rem 1.2rem; font-size:.7rem; color:var(--text-secondary);
-            font-family:'JetBrains Mono',monospace; z-index:3; transform-style:preserve-3d; will-change:transform;
-            backface-visibility:visible; transition:all .3s cubic-bezier(.34,1.56,.64,1);
+            font-family:'JetBrains Mono',monospace; z-index:3; transition:all .3s;
             cursor:default; border-color:var(--accent); border-width:2px; background:var(--bg-card);
         }
-        .hero-float:hover { transform:translateY(-6px) scale(1.06)!important; box-shadow:var(--shadow-xl); }
+        .hero-float:hover { transform:translateY(-4px) scale(1.04); box-shadow:var(--shadow-hover); }
         .hero-float .num { color:var(--accent); font-weight:700; font-size:1rem; }
-        .hero-float:nth-child(2) { top:-10px; right:-30px; transform:rotate(6deg); }
-        .hero-float:nth-child(3) { bottom:-8px; left:-20px; transform:rotate(-5deg); }
-        @media(max-width:780px){ .hero-grid{grid-template-columns:1fr;gap:30px;} .hero-side .tilt-card{max-width:100%;} .hero-content .desc{max-width:100%;} .hero-content{transform:translateX(0);} .hero-side{margin-right:0;margin-top:0;} .hero-float{display:none;} }
+        .hero-float:nth-child(2) { top:-10px; right:-30px; }
+        .hero-float:nth-child(3) { bottom:-8px; left:-20px; }
+        @media(max-width:780px){ .hero-grid{grid-template-columns:1fr;gap:30px;} .hero-side .tilt-card{max-width:100%;} .hero-content .desc{max-width:100%;} .hero-side{margin-right:0;margin-top:0;} .hero-float{display:none;} }
 
-        .value-scatter { position:relative; display:flex; flex-wrap:wrap; gap:12px 16px; justify-content:center; padding:20px 0 30px; min-height:420px; }
-        .value-card {
-            background:var(--bg-card); border:1px solid var(--border-light); box-shadow:var(--shadow-sm);
-            padding:1.6rem 1.2rem; transition:all .3s cubic-bezier(.34,1.56,.64,1); text-align:center;
-            display:flex; flex-direction:column; justify-content:center; align-items:center; position:relative;
-            cursor:grab; overflow:hidden; flex:0 1 auto; min-width:140px; max-width:220px;
-            background:var(--bg-card); border-radius:var(--card-radius); touch-action:none;
+        /* ============================================================
+           价值观 — 6个一排，直角，点击展开
+           ============================================================ */
+        .value-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 16px;
+            margin: 2rem 0;
         }
-        .value-card:active { cursor:grabbing; }
-        .value-card.dragging { opacity:.5; transform:scale(.95)!important; z-index:50; transition:opacity .2s,transform .2s; }
-        .value-card.drag-over { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent); transform:scale(1.04); }
-        .value-card:nth-child(1){clip-path:polygon(0% 0%,90% 0%,100% 100%,10% 100%);padding:2rem 1.4rem;min-width:160px;max-width:200px;margin-top:-10px;margin-right:-8px;z-index:2;}
-        .value-card:nth-child(2){clip-path:polygon(10% 0%,100% 0%,90% 100%,0% 100%);padding:2.4rem 1.2rem;min-width:180px;max-width:220px;margin-top:30px;margin-left:-12px;z-index:3;}
-        .value-card:nth-child(3){clip-path:polygon(0% 10%,100% 0%,90% 100%,0% 90%);padding:1.6rem 1.6rem;min-width:150px;max-width:190px;margin-top:-20px;margin-left:10px;z-index:1;}
-        .value-card:nth-child(4){clip-path:polygon(10% 0%,100% 10%,90% 100%,0% 90%);padding:2.2rem 1.2rem;min-width:170px;max-width:210px;margin-top:40px;margin-left:-18px;z-index:4;}
-        .value-card:nth-child(5){clip-path:polygon(0% 0%,95% 5%,100% 100%,5% 95%);padding:1.8rem 1.4rem;min-width:140px;max-width:180px;margin-top:-25px;margin-left:20px;z-index:2;}
-        .value-card:nth-child(6){clip-path:polygon(5% 0%,100% 0%,95% 100%,0% 95%);padding:2.6rem 1.4rem;min-width:190px;max-width:230px;margin-top:15px;margin-left:-20px;z-index:3;}
-        .value-card .glow-dot { position:absolute; width:70px; height:70px; background:radial-gradient(circle,var(--accent),transparent 70%); opacity:.04; border-radius:50%; top:-20px; right:-20px; pointer-events:none; transition:opacity .5s; }
-        .value-card:hover .glow-dot { opacity:.12; }
-        .value-card h3 { font-size:clamp(1.1rem,1.3vw,1.4rem); font-weight:700; color:var(--text-primary); letter-spacing:.5px; transition:color .3s; pointer-events:none; }
-        .value-card:hover h3 { color:var(--accent); transform:translateY(-2px); }
-        .value-card .brief { color:var(--text-secondary); font-size:clamp(.7rem,.8vw,.85rem); line-height:1.6; margin-top:4px; max-width:160px; transition:color .3s,transform .3s; pointer-events:none; }
-        .value-card:hover .brief { transform:translateY(-2px); }
-        .value-card .expand-content { max-height:0; overflow:hidden; transition:max-height .6s cubic-bezier(.34,1.56,.64,1),opacity .5s ease,margin .5s ease; opacity:0; width:100%; margin-top:0; }
-        .value-card .expand-content .inner { padding-top:12px; border-top:1px solid var(--border-light); font-size:clamp(.65rem,.75vw,.8rem); color:var(--text-secondary); line-height:1.7; transition:border-color .3s,color .3s; }
+        .value-card {
+            background:var(--bg-card);
+            border:1px solid var(--border-light);
+            box-shadow:var(--shadow-sm);
+            padding:1.6rem 1rem;
+            text-align:center;
+            transition:all .3s;
+            cursor:pointer;
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+            align-items:center;
+            min-height:140px;
+        }
+        .value-card:hover { box-shadow:var(--shadow-hover); border-color:var(--accent); transform:translateY(-2px); }
+        .value-card h3 { font-size:clamp(1rem,1.2vw,1.3rem); font-weight:700; color:var(--text-primary); margin-bottom:4px; }
+        .value-card .brief { color:var(--text-secondary); font-size:clamp(.7rem,.8vw,.85rem); line-height:1.5; max-width:160px; }
+        .value-card .expand-content {
+            max-height:0; overflow:hidden; transition:max-height .5s ease,opacity .4s ease,margin .4s ease;
+            opacity:0; width:100%; margin-top:0;
+        }
+        .value-card .expand-content .inner {
+            padding-top:10px; border-top:1px solid var(--border-light);
+            font-size:clamp(.65rem,.75vw,.8rem); color:var(--text-secondary); line-height:1.7;
+        }
         .value-card .expand-content .inner .highlight { color:var(--accent); font-weight:600; }
         .value-card.expanded .expand-content { max-height:300px; opacity:1; margin-top:10px; }
-        .value-card.expanded { border-color:var(--accent); box-shadow:var(--shadow-hover); transform:scale(1.03)!important; }
-        .value-card .expand-hint { font-size:.55rem; color:var(--text-secondary); opacity:.3; margin-top:6px; letter-spacing:1px; transition:all .3s; pointer-events:none; }
+        .value-card.expanded { border-color:var(--accent); box-shadow:var(--shadow-hover); }
+        .value-card .expand-hint { font-size:.55rem; color:var(--text-secondary); opacity:.3; margin-top:6px; letter-spacing:1px; transition:all .3s; }
         .value-card:hover .expand-hint { opacity:.7; }
         .value-card.expanded .expand-hint { opacity:.5; }
-        .value-card .drag-hint { position:absolute; bottom:4px; right:8px; font-size:.5rem; color:var(--text-secondary); opacity:.1; pointer-events:none; transition:opacity .3s; }
-        .value-card:hover .drag-hint { opacity:.4; }
-        .value-card::before {
-            content:''; position:absolute; inset:-1px; border:2px solid transparent;
-            border-image:linear-gradient(90deg,var(--accent),var(--accent-glow),var(--accent)); border-image-slice:1;
-            pointer-events:none; opacity:0; transition:opacity .4s; border-radius:var(--card-radius);
-        }
-        .value-card:hover::before { opacity:1; animation:borderFlow 2s linear infinite; }
-        @keyframes borderFlow { 0%{border-image-source:linear-gradient(90deg,var(--accent),var(--accent-glow),var(--accent));} 100%{border-image-source:linear-gradient(450deg,var(--accent),var(--accent-glow),var(--accent));} }
 
-        @media(max-width:780px){
-            .value-scatter{gap:10px;justify-content:center;min-height:auto;}
-            .value-card:nth-child(1),.value-card:nth-child(2),.value-card:nth-child(3),.value-card:nth-child(4),.value-card:nth-child(5),.value-card:nth-child(6){
-                clip-path:none!important;margin:0!important;min-width:130px!important;max-width:170px!important;flex:0 1 45%;border-radius:4px;
-            }
-        }
-        @media(max-width:480px){ .value-card{flex:0 1 100%!important;max-width:100%!important;min-width:0!important;border-radius:4px;} }
+        @media(max-width:1024px){ .value-grid{grid-template-columns:repeat(3,1fr);} }
+        @media(max-width:640px){ .value-grid{grid-template-columns:repeat(2,1fr);gap:10px;} .value-card{padding:1.2rem .8rem;min-height:120px;} }
 
-        .map-constellation { position:relative; padding:10px 0 20px; }
-        .map-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; position:relative; }
+        /* ============================================================
+           创作星图 — 从GitHub拉取（map标签），一行4个，自动轮播
+           ============================================================ */
+        .map-section { padding:40px 0 20px; border-top:1px solid var(--border-light); border-bottom:1px solid var(--border-light); }
+        .map-status {
+            font-size:.7rem; color:var(--text-secondary); opacity:.4; text-align:right; margin-bottom:.8rem;
+        }
+        .map-grid-wrapper {
+            position:relative;
+            overflow:hidden;
+        }
+        .map-grid {
+            display:grid;
+            grid-template-columns:repeat(4, 1fr);
+            gap:16px;
+            transition:opacity .4s ease;
+        }
+        .map-grid.switching { opacity:0.5; }
         .map-item {
-            background:var(--bg-card); border:1px solid var(--border-light); box-shadow:var(--shadow-sm);
-            padding:1.4rem 1.6rem; transition:all .3s cubic-bezier(.34,1.56,.64,1); position:relative;
-            display:flex; flex-direction:column; min-height:260px;
-            background:var(--bg-card); border-radius:var(--card-radius); cursor:pointer; overflow:hidden;
+            background:var(--bg-card);
+            border:1px solid var(--border-light);
+            box-shadow:var(--shadow-sm);
+            padding:1.2rem 1.2rem 1rem;
+            transition:all .3s;
+            display:flex;
+            flex-direction:column;
+            position:relative;
         }
-        .map-item .map-bg {
-            position:absolute; inset:0; pointer-events:none; border-radius:var(--card-radius);
-            background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(95,127,255,.015) 20px,rgba(95,127,255,.015) 21px),
-                       radial-gradient(ellipse at 30% 40%,rgba(95,127,255,.03),transparent 60%);
+        .map-item:hover { box-shadow:var(--shadow-hover); border-color:var(--accent); transform:translateY(-2px); }
+        .map-item .map-cover {
+            width:100%; aspect-ratio:16/9; object-fit:cover; background:var(--bg-primary);
+            border:1px solid var(--border-light); margin-bottom:8px;
         }
-        .map-item:nth-child(1){grid-column:1/2;grid-row:1/3;z-index:3;margin-right:-10px;margin-bottom:-10px;min-height:340px;border-color:var(--accent);border-width:2px;}
-        .map-item:nth-child(2){grid-column:2/3;grid-row:1/2;z-index:2;margin-left:-6px;margin-bottom:-8px;min-height:240px;}
-        .map-item:nth-child(3){grid-column:2/4;grid-row:2/3;z-index:4;margin-left:-20px;margin-top:-6px;min-height:240px;border-color:var(--accent);border-width:2px;background:var(--bg-card);}
-        .map-item::before {
-            content:''; position:absolute; inset:-1px; border:2px solid transparent;
-            border-image:linear-gradient(90deg,var(--accent),var(--accent-glow),var(--accent)); border-image-slice:1;
-            pointer-events:none; opacity:0; transition:opacity .4s; border-radius:var(--card-radius);
+        .map-item .map-cover-placeholder {
+            width:100%; aspect-ratio:16/9; background:var(--accent-light); border:1px solid var(--border-light);
+            display:flex; align-items:center; justify-content:center; font-size:2rem; color:var(--accent); opacity:.3; margin-bottom:8px;
         }
-        .map-item:hover::before { opacity:1; animation:borderFlow 2s linear infinite; }
-        .map-item:hover { box-shadow:var(--shadow-hover); transform:translateY(-4px); }
-        .map-item .map-tag { display:inline-block; font-size:.55rem; font-weight:600; color:var(--accent); background:var(--accent-light); padding:2px 12px; letter-spacing:1px; border:1px solid rgba(95,127,255,.1); position:relative; z-index:2; align-self:flex-start; transition:background .3s,color .3s; pointer-events:none; }
-        body.dark .map-item .map-tag { background:rgba(95,127,255,.1); }
-        .map-item .map-tag.highlight { background:var(--accent); color:#fff; border-color:var(--accent); }
-        .map-item h3 { position:relative; z-index:2; font-size:clamp(1rem,1.2vw,1.3rem); font-weight:700; color:var(--text-primary); letter-spacing:-.3px; margin-top:4px; transition:color .3s,transform .3s; pointer-events:none; }
-        .map-item:hover h3 { transform:translateY(-2px); }
-        .map-item .map-meta { position:relative; z-index:2; display:flex; gap:.8rem 1.2rem; font-size:.55rem; color:var(--text-secondary); font-family:'JetBrains Mono',monospace; margin:2px 0 4px; flex-wrap:wrap; transition:color .3s; pointer-events:none; }
-        .map-item .map-meta span { opacity:.5; }
-        .map-item .map-desc { position:relative; z-index:2; color:var(--text-secondary); font-size:clamp(.7rem,.8vw,.85rem); line-height:1.8; flex:1; transition:color .3s; pointer-events:none; }
-        .map-item .map-progress { position:relative; z-index:2; margin-top:8px; display:flex; align-items:center; gap:10px; cursor:pointer; padding:4px 0; }
-        .map-item .map-progress .bar { flex:1; height:4px; background:var(--border-light); max-width:140px; border-radius:2px; overflow:hidden; transition:background .3s; cursor:pointer; position:relative; }
-        .map-item .map-progress .bar .fill { height:100%; background:var(--accent); width:0%; transition:width .8s cubic-bezier(.34,1.56,.64,1); border-radius:2px; position:relative; cursor:pointer; }
-        .map-item .map-progress .bar .fill::after { content:''; position:absolute; right:-4px; top:-3px; width:10px; height:10px; background:var(--accent); border-radius:50%; opacity:.5; transition:opacity .3s,transform .3s; }
-        .map-item .map-progress:hover .bar .fill::after { opacity:1; transform:scale(1.3); }
-        .map-item .map-progress .label { font-size:.55rem; font-family:'JetBrains Mono',monospace; color:var(--text-secondary); opacity:.4; transition:color .3s; cursor:pointer; min-width:32px; text-align:right; }
-        .map-item .map-stats { display:grid; grid-template-columns:1fr 1fr; gap:2px 12px; margin:4px 0 6px; position:relative; z-index:2; pointer-events:none; }
-        .map-stats .stat-item { border-left:2px solid var(--accent); padding-left:6px; }
-        .map-stats .stat-item .num { font-size:clamp(.9rem,1.1vw,1.2rem); font-weight:700; color:var(--text-primary); font-family:'JetBrains Mono',monospace; display:block; line-height:1.2; transition:color .3s; }
-        .map-stats .stat-item .lbl { font-size:.5rem; color:var(--text-secondary); opacity:.5; letter-spacing:.3px; transition:color .3s; }
-        .map-features { list-style:none; padding:0; margin:4px 0 6px; position:relative; z-index:2; pointer-events:none; }
-        .map-features li { padding:2px 0; border-bottom:1px solid var(--border-light); font-size:.65rem; color:var(--text-secondary); display:flex; justify-content:space-between; transition:border-color .3s,color .3s; }
-        .map-features li .val { color:var(--text-primary); font-weight:500; transition:color .3s; }
-        .map-item .interact-hint { position:relative; z-index:2; margin-top:6px; font-size:.5rem; color:var(--text-secondary); opacity:.2; letter-spacing:.5px; transition:opacity .3s; pointer-events:none; display:flex; align-items:center; gap:4px; }
-        .map-item:hover .interact-hint { opacity:.5; }
-        .map-item .interact-hint .pulse-dot { display:inline-block; width:4px; height:4px; background:var(--accent); border-radius:50%; animation:hintPulse 1.5s ease-in-out infinite; }
-        @keyframes hintPulse { 0%,100%{opacity:.3;transform:scale(1);} 50%{opacity:1;transform:scale(1.5);} }
-        .map-item.resonating { animation:resonate .6s cubic-bezier(.34,1.56,.64,1); }
-        @keyframes resonate { 0%{transform:scale(1);box-shadow:0 0 0 0 rgba(95,127,255,.3);} 50%{transform:scale(1.04);box-shadow:0 0 40px 10px rgba(95,127,255,.15);} 100%{transform:scale(1);box-shadow:0 0 0 0 rgba(95,127,255,0);} }
-        .map-item .explore-flash { position:absolute; inset:0; pointer-events:none; z-index:1; background:radial-gradient(circle at var(--flash-x,50%) var(--flash-y,50%),rgba(95,127,255,.15),transparent 60%); opacity:0; transition:opacity .3s; border-radius:var(--card-radius); }
-        .map-item .explore-flash.active { opacity:1; animation:flashPulse .6s ease-out forwards; }
-        @keyframes flashPulse { 0%{opacity:.8;transform:scale(.5);} 100%{opacity:0;transform:scale(2);} }
-        @media(max-width:780px){
-            .map-grid{grid-template-columns:1fr 1fr;gap:10px;}
-            .map-item:nth-child(1){grid-column:1/2;grid-row:1/2;margin:0;min-height:auto;border-width:1px;}
-            .map-item:nth-child(2){grid-column:2/3;grid-row:1/2;margin:0;min-height:auto;}
-            .map-item:nth-child(3){grid-column:1/3;grid-row:2/3;margin:0;min-height:auto;border-width:1px;}
-            .map-item{padding:1rem 1.2rem;min-height:auto;border-radius:4px;}
-            .map-item .interact-hint{font-size:.45rem;}
+        .map-item .map-title { font-size:1rem; font-weight:700; color:var(--text-primary); margin-bottom:2px; }
+        .map-item .map-author {
+            display:flex; align-items:center; gap:6px; font-size:.7rem; color:var(--text-secondary); opacity:.6;
         }
-        @media(max-width:480px){ .map-grid{grid-template-columns:1fr;} .map-item:nth-child(1),.map-item:nth-child(2),.map-item:nth-child(3){grid-column:1;grid-row:auto;margin:0;} .map-stats{grid-template-columns:1fr 1fr;} .map-item{border-radius:4px;} }
+        .map-item .map-author img { width:18px; height:18px; border-radius:50%; border:1px solid var(--border-light); object-fit:cover; }
+        .map-item .map-desc { font-size:.78rem; color:var(--text-secondary); line-height:1.6; margin:4px 0 6px; flex:1; }
+        .map-item .map-tag {
+            display:inline-block; font-size:.5rem; font-weight:600; color:var(--accent);
+            background:var(--accent-light); padding:1px 10px; letter-spacing:.5px; border:1px solid rgba(95,127,255,.1);
+            align-self:flex-start;
+        }
+        .map-item.switch-in { animation:switchIn .5s ease forwards; }
+        .map-item.switch-out { animation:switchOut .4s ease forwards; }
+        @keyframes switchIn {
+            0% { opacity:0; transform:scale(0.92) translateY(8px); }
+            100% { opacity:1; transform:scale(1) translateY(0); }
+        }
+        @keyframes switchOut {
+            0% { opacity:1; transform:scale(1) translateY(0); }
+            100% { opacity:0; transform:scale(0.92) translateY(-8px); }
+        }
+        .map-grid .map-item { opacity:0; animation:switchIn .5s ease forwards; }
+        .map-grid .map-item:nth-child(1) { animation-delay:0.05s; }
+        .map-grid .map-item:nth-child(2) { animation-delay:0.10s; }
+        .map-grid .map-item:nth-child(3) { animation-delay:0.15s; }
+        .map-grid .map-item:nth-child(4) { animation-delay:0.20s; }
 
+        .map-toggle-btn { text-align:center; margin-top:1rem; }
+        .map-toggle-btn button {
+            background:none; border:1px solid var(--border-light); padding:4px 20px;
+            font-size:.7rem; color:var(--text-secondary); cursor:pointer; transition:.2s; font-family:inherit;
+        }
+        .map-toggle-btn button:hover { border-color:var(--accent); color:var(--accent); }
+
+        .map-empty {
+            text-align:center; padding:2rem 0; color:var(--text-secondary); opacity:.3; font-size:.9rem;
+            grid-column:1 / -1;
+        }
+        .map-loading {
+            text-align:center; padding:2rem 0; color:var(--text-secondary); font-size:.9rem;
+            grid-column:1 / -1;
+        }
+        .map-loading i { display:block; font-size:1.5rem; color:var(--accent); margin-bottom:.5rem; }
+
+        @media(max-width:1024px){ .map-grid{grid-template-columns:repeat(2,1fr);} }
+        @media(max-width:640px){ .map-grid{grid-template-columns:1fr 1fr;gap:10px;} .map-item{padding:.8rem .8rem .6rem;} .map-item .map-title{font-size:.85rem;} }
+
+        /* ============================================================
+           博客 — 4篇最新
+           ============================================================ */
+        .blog-section { padding:40px 0 20px; border-top:1px solid var(--border-light); }
+        .blog-grid {
+            display:grid;
+            grid-template-columns:repeat(4, 1fr);
+            gap:1.2rem;
+            margin:1.5rem 0;
+        }
+        .blog-card {
+            background:var(--bg-card); border:1px solid var(--border-light); box-shadow:var(--shadow-sm);
+            padding:1.2rem 1.2rem 1rem;
+            transition:all .3s;
+            display:flex; flex-direction:column;
+        }
+        .blog-card:hover { box-shadow:var(--shadow-hover); transform:translateY(-2px); border-color:var(--accent); }
+        .blog-card .blog-date { font-size:.6rem; color:var(--text-secondary); opacity:.5; font-family:'JetBrains Mono',monospace; }
+        .blog-card .blog-categories { display:flex; flex-wrap:wrap; gap:3px 6px; margin:3px 0 4px; }
+        .blog-card .blog-categories .cat {
+            font-size:.45rem; padding:1px 8px; color:#fff; background:var(--accent);
+            font-family:'JetBrains Mono',monospace; letter-spacing:.2px;
+        }
+        .blog-card .blog-categories .cat:nth-child(2) { background:#f59e0b; }
+        .blog-card .blog-categories .cat:nth-child(3) { background:#10b981; }
+        .blog-card .blog-categories .cat:nth-child(4) { background:#8b5cf6; }
+        .blog-card .blog-categories .cat:nth-child(5) { background:#ef4444; }
+        .blog-card .blog-title { font-size:.9rem; font-weight:700; color:var(--text-primary); margin:2px 0 4px; line-height:1.3; }
+        .blog-card .blog-summary { color:var(--text-secondary); font-size:.75rem; line-height:1.6; flex:1; overflow:hidden; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; }
+        .blog-card .blog-author { font-size:.55rem; color:var(--text-secondary); opacity:.4; margin-top:6px; display:flex; align-items:center; gap:5px; }
+        .blog-card .blog-author img { width:16px; height:16px; border-radius:50%; border:1px solid var(--border-light); }
+        .blog-card .read-more { display:inline-block; margin-top:6px; color:var(--accent); font-weight:600; font-size:.7rem; text-decoration:none; align-self:flex-start; }
+        .blog-card .read-more:hover { text-decoration:underline; }
+        .blog-loading { text-align:center; padding:2rem 0; color:var(--text-secondary); font-size:.9rem; grid-column:1 / -1; }
+        .blog-loading i { display:block; font-size:1.5rem; color:var(--accent); margin-bottom:.5rem; }
+
+        @media(max-width:1024px){ .blog-grid{grid-template-columns:repeat(2,1fr);} }
+        @media(max-width:640px){ .blog-grid{grid-template-columns:1fr;gap:.8rem;} }
+
+        /* ============================================================
+           加入星能
+           ============================================================ */
         .join-panel { position:relative; padding:10px 0 20px; }
         .join-panel .main-card {
             background:var(--bg-card); border:1px solid var(--border-light); box-shadow:var(--shadow-sm);
             padding:2rem 2.5rem; text-align:center; position:relative; z-index:1;
-            transition:all .3s cubic-bezier(.34,1.56,.64,1); background:var(--bg-card); border-radius:var(--card-radius);
+            transition:all .3s;
         }
-        .join-panel .main-card::before { content:''; position:absolute; inset:0; border:2px solid transparent; border-image:linear-gradient(90deg,var(--accent),var(--accent-glow),var(--accent)); border-image-slice:1; pointer-events:none; opacity:0; transition:opacity .3s; border-radius:var(--card-radius); }
-        .join-panel .main-card:hover::before { opacity:1; animation:borderFlow 2s linear infinite; }
-        .join-panel .main-card:hover { box-shadow:var(--shadow-hover); transform:scale(1.01) translateY(-4px); }
-        .join-panel .main-card h2 { font-size:clamp(1.2rem,2vw,1.6rem); font-weight:700; color:var(--text-primary); transition:color .3s; }
-        .join-panel .main-card p { color:var(--text-secondary); max-width:500px; margin:.3rem auto 1.2rem; font-size:clamp(.85rem,1vw,1rem); transition:color .3s; }
+        .join-panel .main-card:hover { box-shadow:var(--shadow-hover); transform:translateY(-2px); }
+        .join-panel .main-card h2 { font-size:clamp(1.2rem,2vw,1.6rem); font-weight:700; color:var(--text-primary); }
+        .join-panel .main-card p { color:var(--text-secondary); max-width:500px; margin:.3rem auto 1.2rem; font-size:clamp(.85rem,1vw,1rem); }
         .join-panel .main-card .btn-group { display:flex; flex-wrap:wrap; gap:1rem; justify-content:center; }
-        .join-panel .main-card .social-links { display:flex; flex-wrap:wrap; gap:.6rem 1.2rem; justify-content:center; margin-top:1rem; font-size:.7rem; color:var(--text-secondary); opacity:.5; transition:color .3s; }
-        .join-panel .main-card .social-links span { font-family:'JetBrains Mono',monospace; transition:opacity .3s,color .3s; cursor:default; }
-        .join-panel .main-card .social-links span:hover { opacity:1; color:var(--accent); }
+        .join-panel .main-card .social-links { display:flex; flex-wrap:wrap; gap:.6rem 1.2rem; justify-content:center; margin-top:1rem; font-size:.7rem; color:var(--text-secondary); opacity:.5; }
+        .join-panel .main-card .social-links span { font-family:'JetBrains Mono',monospace; }
         .join-panel .float-card {
             position:absolute; background:var(--bg-card); border:2px solid var(--accent);
-            box-shadow:var(--shadow-hover); padding:.7rem 1.2rem; z-index:2; font-size:.7rem;
+            box-shadow:var(--shadow-hover); padding:.6rem 1.2rem; z-index:2; font-size:.7rem;
             color:var(--text-secondary); display:flex; align-items:center; gap:.5rem;
-            border-color:var(--accent); transition:all .3s cubic-bezier(.34,1.56,.64,1);
-            cursor:default; background:var(--bg-card); border-radius:4px;
+            border-color:var(--accent); transition:all .3s;
+            cursor:default; background:var(--bg-card);
         }
         .join-panel .float-card .num { font-weight:700; font-size:1rem; color:var(--accent); font-family:'JetBrains Mono',monospace; }
-        .join-panel .float-card:nth-child(2){top:-14px;right:10px;transform:rotate(3deg);}
-        .join-panel .float-card:nth-child(3){bottom:-10px;left:20px;transform:rotate(-4deg);}
-        .join-panel .float-card:nth-child(4){bottom:20px;right:30px;transform:rotate(5deg);}
-        .join-panel .float-card:hover { transform:rotate(0deg) scale(1.08)!important; box-shadow:0 16px 40px rgba(95,127,255,.15); }
-        @media(max-width:780px){ .join-panel .float-card{display:none;} .join-panel .main-card{padding:1.5rem 1.2rem;border-radius:4px;} .join-panel .main-card .btn-group{gap:.8rem;} }
-        @media(max-width:480px){ .join-panel .main-card .btn-group .mihoyo-btn{width:100%;max-width:200px;} .join-panel .main-card .social-links{flex-direction:column;align-items:center;gap:.3rem;} .join-panel .main-card{border-radius:4px;} }
+        .join-panel .float-card:nth-child(2){top:-14px;right:10px;}
+        .join-panel .float-card:nth-child(3){bottom:-10px;left:20px;}
+        .join-panel .float-card:nth-child(4){bottom:20px;right:30px;}
+        .join-panel .float-card:hover { transform:scale(1.06); box-shadow:0 8px 24px rgba(95,127,255,.12); }
+        @media(max-width:780px){ .join-panel .float-card{display:none;} .join-panel .main-card{padding:1.5rem 1.2rem;} .join-panel .main-card .btn-group{gap:.8rem;} }
+        @media(max-width:480px){ .join-panel .main-card .btn-group .mihoyo-btn{width:100%;max-width:200px;} .join-panel .main-card .social-links{flex-direction:column;align-items:center;gap:.3rem;} }
 
         /* ============================================================
-           ★★★ 博客卡片 - 横向布局（宽高比 4:3） ★★★
+           页尾
            ============================================================ */
-        .blog-section { padding:60px 0 20px; border-top:1px solid var(--border-light); }
-
-        /* 网格：自适应列数，最小宽度 260px */
-        .blog-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        /* 卡片：固定宽高比 4:3，flex 纵向排列 */
-        .blog-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-light);
-            box-shadow: var(--shadow-sm);
-            padding: 1.2rem 1.2rem;
-            transition: all .3s cubic-bezier(.34,1.56,.64,1);
-            border-radius: var(--card-radius);
-            position: relative;
-            overflow: hidden;
-            /* ★ 横向卡片：宽高比 4:3 */
-            aspect-ratio: 4 / 3;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .blog-card::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border: 2px solid transparent;
-            border-image: linear-gradient(90deg, var(--accent), var(--accent-glow), var(--accent));
-            border-image-slice: 1;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity .4s;
-            border-radius: var(--card-radius);
-        }
-        .blog-card:hover::before {
-            opacity: 1;
-            animation: borderFlow 2s linear infinite;
-        }
-        .blog-card:hover {
-            box-shadow: var(--shadow-hover);
-            transform: translateY(-4px);
-            border-color: var(--accent);
-        }
-
-        /* 日期 */
-        .blog-card .blog-date {
-            font-size: .6rem;
-            color: var(--text-secondary);
-            opacity: .5;
-            font-family: 'JetBrains Mono', monospace;
-            flex-shrink: 0;
-        }
-
-        /* ★ 标签展示（在卡片上） */
-        .blog-card .blog-categories {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 3px 6px;
-            margin: 4px 0 4px;
-            flex-shrink: 0;
-        }
-        .blog-card .blog-categories .cat {
-            font-size: .5rem;
-            padding: 1px 8px;
-            border-radius: 0;
-            color: #fff;
-            background: var(--accent);
-            font-family: 'JetBrains Mono', monospace;
-            letter-spacing: .2px;
-            display: inline-block;
-        }
-        .blog-card .blog-categories .cat:nth-child(2) { background: #f59e0b; }
-        .blog-card .blog-categories .cat:nth-child(3) { background: #10b981; }
-        .blog-card .blog-categories .cat:nth-child(4) { background: #8b5cf6; }
-        .blog-card .blog-categories .cat:nth-child(5) { background: #ef4444; }
-        .blog-card .blog-categories .cat:nth-child(6) { background: #06b6d4; }
-        .blog-card .blog-categories .cat:nth-child(7) { background: #ec4899; }
-
-        /* 标题 */
-        .blog-card .blog-title {
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin: 2px 0 4px;
-            line-height: 1.3;
-            flex-shrink: 0;
-        }
-
-        /* ★ 摘要：最多显示 3 行，自动截断 */
-        .blog-card .blog-summary {
-            color: var(--text-secondary);
-            font-size: .8rem;
-            line-height: 1.6;
-            flex: 1;
-            overflow: hidden;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-        }
-
-        /* 作者信息：放在底部 */
-        .blog-card .blog-author {
-            font-size: .6rem;
-            color: var(--text-secondary);
-            opacity: .4;
-            margin-top: 6px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-shrink: 0;
-        }
-        .blog-card .blog-author img {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            border: 1px solid var(--border-light);
-        }
-
-        /* 阅读更多按钮 */
-        .blog-card .read-more {
-            display: inline-block;
-            margin-top: 4px;
-            color: var(--accent);
-            font-weight: 600;
-            font-size: .7rem;
-            text-decoration: none;
-            align-self: flex-start;
-            flex-shrink: 0;
-        }
-        .blog-card .read-more:hover { text-decoration: underline; }
-
-        .blog-loading { text-align:center; padding:3rem 0; color:var(--text-secondary); font-size:1rem; }
-        .blog-loading i { font-size:1.8rem; color:var(--accent); margin-bottom:0.8rem; display:block; }
-        .blog-error { text-align:center; padding:3rem 0; color:var(--text-secondary); font-size:.9rem; }
-        .blog-error i { font-size:1.8rem; color:#ef4444; margin-bottom:0.8rem; display:block; }
-
-        .footer-new { margin-top:2rem; background:#0a0f2a; padding:1.8rem clamp(1rem,3vw,2.5rem); color:#eef5ff; position:relative; z-index:2; transition:background .4s; }
-        body.dark .footer-new { background:#0b1120; }
+        .footer-new { margin-top:2rem; background:#0a0f2a; padding:1.8rem clamp(1rem,3vw,2.5rem); color:#eef5ff; position:relative; z-index:2; }
         .footer-container { max-width:1260px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:2rem; }
         .footer-col h4 { font-size:clamp(1rem,1.2vw,1.2rem); font-weight:700; border-left:3px solid var(--accent); padding-left:12px; margin-bottom:.8rem; color:#fff; }
         .footer-col p,.footer-col a { font-size:clamp(.7rem,.8vw,.85rem); line-height:1.6; color:#b8d0ff; text-decoration:none; display:block; margin-bottom:.2rem; }
@@ -456,6 +361,9 @@
         .update-log-btn button:hover { background:var(--accent); color:#fff; }
         @media(max-width:780px){ .footer-new{padding:1.2rem 1rem;} .footer-container{grid-template-columns:1fr;gap:1.2rem;} }
 
+        /* ============================================================
+           Toast & Modal
+           ============================================================ */
         .toast-message {
             position:fixed; bottom:30px; left:50%; transform:translateX(-50%) scale(.9);
             background:rgba(0,0,0,.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
@@ -468,39 +376,51 @@
 
         .modal {
             display:none; position:fixed; inset:0; background:rgba(0,0,0,.5);
-            backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:200;
+            backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); z-index:200;
             justify-content:center; align-items:center;
         }
         .modal-content {
             background:var(--bg-card); border:1px solid var(--accent); padding:2rem;
             color:var(--text-primary); max-width:500px; width:90%; position:relative;
-            animation:fadeUp .4s cubic-bezier(.34,1.56,.64,1); box-shadow:var(--shadow-hover);
-            max-height:90vh; overflow-y:auto; border-radius:4px; transition:background .3s,color .3s;
+            animation:fadeUp .3s ease; box-shadow:var(--shadow-hover); max-height:90vh; overflow-y:auto;
         }
-        @keyframes fadeUp { from{opacity:0;transform:translateY(30px) scale(.95);} to{opacity:1;transform:translateY(0) scale(1);} }
-        .modal-close { position:absolute; top:12px; right:16px; font-size:24px; cursor:pointer; color:var(--text-secondary); background:none; border:none; transition:transform .3s; }
-        .modal-close:hover { transform:rotate(90deg); }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+        .modal-close { position:absolute; top:12px; right:16px; font-size:24px; cursor:pointer; color:var(--text-secondary); background:none; border:none; }
         .contact-line { margin:.8rem 0; border-left:3px solid var(--accent); padding-left:1rem; }
 
+        /* ============================================================
+           响应式
+           ============================================================ */
         @media(max-width:1024px){ body{padding-top:64px;} .navbar{min-height:60px;} }
         @media(max-width:780px){
-            body{padding-top:60px;} .navbar{min-height:56px;padding:.4rem 1rem;}
+            body{padding-top:60px; overflow-x:hidden; -webkit-overflow-scrolling:touch; }
+            .navbar{min-height:56px;padding:.4rem 1rem;}
             .nav-links{display:none;width:100%;flex-direction:column;gap:0;margin:0;padding:.8rem 0;border-top:1px solid var(--border-light);order:3;}
             .nav-links.open{display:flex;}
             .nav-link{padding:.6rem 1.2rem;width:100%;text-align:center;font-size:.9rem;}
-            .menu-toggle{display:block;} .section-title{padding-left:12px;}
-            .blog-grid{grid-template-columns:1fr;}
-            .blog-card { aspect-ratio: auto; min-height: 140px; }
+            .menu-toggle{display:block;}
+            .section-title{padding-left:12px;}
+            .container{overflow-x:hidden;}
         }
         @media(max-width:480px){
-            body{padding-top:54px;} .navbar{min-height:50px;padding:.3rem .8rem;}
+            body{padding-top:54px; overflow-x:hidden; -webkit-overflow-scrolling:touch; }
+            .navbar{min-height:50px;padding:.3rem .8rem;}
             .logo-img{height:18px;} .logo-text{font-size:.8rem;}
-            .container{padding:0 12px;} .card{padding:1rem 1.2rem;}
-            .section-title{font-size:1.2rem;padding-left:10px;margin-bottom:1rem;} .section-title .en{font-size:.6rem;}
-            .blog-card { min-height: 120px; }
+            .container{padding:0 12px; overflow-x:hidden;}
+            .card{padding:1rem 1.2rem;}
+            .section-title{font-size:1.2rem;padding-left:10px;margin-bottom:1rem;}
+            .section-title .en{font-size:.6rem;}
+        }
+        .slide, .hero-wrap, .post-detail, .blog-section, .map-section {
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-y pinch-zoom;
+        }
+        body, html {
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .animate-item { opacity:0; transform:translateY(24px); transition:opacity .6s cubic-bezier(.34,1.56,.64,1),transform .6s cubic-bezier(.34,1.56,.64,1); }
+        .animate-item { opacity:0; transform:translateY(16px); transition:opacity .6s ease,transform .6s ease; }
         .animate-item.animate { opacity:1; transform:translateY(0); }
     </style>
 </head>
@@ -512,6 +432,9 @@
     <div class="grid-overlay"></div>
     <div class="tech-line"></div>
 
+    <!-- ============================================================
+       导航栏
+       ============================================================ -->
     <nav class="navbar" id="navbar">
         <div class="logo">
             <img class="logo-img" src="https://user-assets.sxlcdn.com/images/1138507/FnkoMkeJ40vIQkdFDyBwHQDTIWcI.png?imageMogr2/strip/auto-orient/thumbnail/300x300%3E/quality/90!/format/png" alt="星能工作室Logo" loading="lazy" onerror="this.style.display='none'">
@@ -527,6 +450,9 @@
         </div>
     </nav>
 
+    <!-- ============================================================
+    HERO
+    ============================================================ -->
     <section id="hero" class="hero-wrap">
         <div class="container">
             <div class="hero-grid">
@@ -535,9 +461,9 @@
                     <div class="sub">以创作为星，照亮彼此</div>
                     <div class="desc">星能工作室 —— 一群因《迷你世界》相遇的创作者。我们用地图承载想象，用代码编织世界，让每一个灵感都化作星能，驱动未来。</div>
                     <div class="hero-stats">
-                        <div class="stat" onclick="bounceNumber(this)"><span class="num" id="statStar">128</span><span class="lbl">创意星点</span></div>
-                        <div class="stat" onclick="bounceNumber(this)"><span class="num" id="statWork">47</span><span class="lbl">创造星图</span></div>
-                        <div class="stat" onclick="bounceNumber(this)"><span class="num" id="statMember">36</span><span class="lbl">创新星维</span></div>
+                        <div class="stat"><span class="num" id="statYear">2021</span><span class="lbl">年</span></div>
+                        <div class="stat"><span class="num" id="statMonth">4</span><span class="lbl">月</span></div>
+                        <div class="stat"><span class="num" id="statDay">11</span><span class="lbl">日</span></div>
                     </div>
                     <div class="hero-actions">
                         <div class="mihoyo-btn" onclick="document.getElementById('maps').scrollIntoView({behavior:'smooth'})">
@@ -558,120 +484,99 @@
                         <div class="attrs"><span>创意 </span><span>协作 </span><span>思维 </span></div>
                         <div class="sync">// 星光同步</div>
                     </div>
-                    <div class="hero-float" style="top:-10px;right:-30px;transform:rotate(6deg);"><span class="num">✦</span> 星群核心</div>
-                    <div class="hero-float" style="bottom:-8px;left:-20px;transform:rotate(-5deg);"><span class="num">⍟</span> 创意枢纽</div>
+                    <div class="hero-float" style="top:-10px;right:-30px;"><span class="num">✦</span> 星群核心</div>
+                    <div class="hero-float" style="bottom:-8px;left:-20px;"><span class="num">⍟</span> 创意枢纽</div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- ============================================================
+    价值观
+    ============================================================ -->
     <section id="values" style="padding:40px 0 20px;border-top:1px solid var(--border-light);border-bottom:1px solid var(--border-light);">
         <div class="container">
-            <div class="section-title"><span>星核价值</span><span class="en">// 单击展开  拖拽重组</span></div>
-            <div class="value-scatter" id="valueScatter">
-                <div class="value-card draggable-card" onclick="toggleValue(event,this)" data-value="热爱">
-                    <div class="glow-dot"></div>
+            <div class="section-title"><span>星核价值</span><span class="en">// 单击展开</span></div>
+            <div class="value-grid" id="valueGrid">
+                <div class="value-card" onclick="toggleValue(this)" data-value="热爱">
                     <h3>热爱</h3>
                     <div class="brief">以赤诚之心投入创作</div>
                     <div class="expand-content"><div class="inner">让每一份作品都饱含温度，<span class="highlight">用热情点燃星火</span>，在创作的路上永不停歇。</div></div>
                     <div class="expand-hint">▼ 点击展开</div>
-                    <div class="drag-hint">↕ 拖动</div>
                 </div>
-                <div class="value-card draggable-card" onclick="toggleValue(event,this)" data-value="勇敢">
-                    <div class="glow-dot"></div>
+                <div class="value-card" onclick="toggleValue(this)" data-value="勇敢">
                     <h3>勇敢</h3>
                     <div class="brief">敢于尝试新想法</div>
                     <div class="expand-content"><div class="inner">在未知的星域中开辟道路，<span class="highlight">不惧失败</span>，每一次尝试都是向星光靠近的一步。</div></div>
                     <div class="expand-hint">▼ 点击展开</div>
-                    <div class="drag-hint">↕ 拖动</div>
                 </div>
-                <div class="value-card draggable-card" onclick="toggleValue(event,this)" data-value="突破">
-                    <div class="glow-dot"></div>
+                <div class="value-card" onclick="toggleValue(this)" data-value="突破">
                     <h3>突破</h3>
                     <div class="brief">不断超越自我</div>
                     <div class="expand-content"><div class="inner">让创意在碰撞中进化，<span class="highlight">打破边界</span>，从平凡中创造非凡。</div></div>
                     <div class="expand-hint">▼ 点击展开</div>
-                    <div class="drag-hint">↕ 拖动</div>
                 </div>
-                <div class="value-card draggable-card" onclick="toggleValue(event,this)" data-value="创造">
-                    <div class="glow-dot"></div>
+                <div class="value-card" onclick="toggleValue(this)" data-value="创造">
                     <h3>创造</h3>
                     <div class="brief">用想象力编织世界</div>
                     <div class="expand-content"><div class="inner">让星光从指尖流淌，<span class="highlight">把脑海中的星图</span>变成触手可及的现实。</div></div>
                     <div class="expand-hint">▼ 点击展开</div>
-                    <div class="drag-hint">↕ 拖动</div>
                 </div>
-                <div class="value-card draggable-card" onclick="toggleValue(event,this)" data-value="同行">
-                    <div class="glow-dot"></div>
+                <div class="value-card" onclick="toggleValue(this)" data-value="同行">
                     <h3>同行</h3>
                     <div class="brief">在星能大家庭中彼此照亮</div>
                     <div class="expand-content"><div class="inner"><span class="highlight">共同成长</span>，一个人的星光微弱，一群人的星光足以照亮整片夜空。</div></div>
                     <div class="expand-hint">▼ 点击展开</div>
-                    <div class="drag-hint">↕ 拖动</div>
                 </div>
-                <div class="value-card draggable-card" onclick="toggleValue(event,this)" data-value="无限">
-                    <div class="glow-dot"></div>
+                <div class="value-card" onclick="toggleValue(this)" data-value="无限">
                     <h3>无限</h3>
                     <div class="brief">创作没有边界</div>
                     <div class="expand-content"><div class="inner">星光终将汇聚成银河，<span class="highlight">相信可能</span>，每一个想法都值得被实现。</div></div>
                     <div class="expand-hint">▼ 点击展开</div>
-                    <div class="drag-hint">↕ 拖动</div>
                 </div>
             </div>
-            <div style="text-align:center;margin-top:4px;font-size:.55rem;color:var(--text-secondary);opacity:.3;letter-spacing:1px;">✦ 拖拽重组 · 单击展开 ✦</div>
+            <div style="text-align:center;margin-top:4px;font-size:.55rem;color:var(--text-secondary);opacity:.3;letter-spacing:1px;">✦ 单击卡片展开 ✦</div>
         </div>
     </section>
 
-    <section id="maps" style="padding:40px 0 20px;border-bottom:1px solid var(--border-light);">
+    <!-- ============================================================
+    创作星图
+    ============================================================ -->
+    <section id="maps" class="map-section">
         <div class="container">
-            <div class="section-title"><span>创作星图</span><span class="en">// 轻触卡片  点亮星能</span></div>
-            <div class="map-constellation">
-                <div class="map-grid">
-                    <div class="map-item map-clickable" data-map="city" style="border-color:var(--accent);border-width:2px;">
-                        <div class="map-bg"></div><div class="explore-flash" id="flash-city"></div>
-                        <span class="map-tag">策划中</span><h3>星空之城</h3>
-                        <div class="map-meta"><span>作者：凌骁</span><span>迷你号：1776969760</span></div>
-                        <div class="map-desc">悬浮云端的现代化城市，融合科技与幻想。空中列车、星空观测站、城市光影秀。</div>
-                        <div class="map-stats"><div class="stat-item"><span class="num">12</span><span class="lbl">探索区域</span></div><div class="stat-item"><span class="num">8</span><span class="lbl">互动设施</span></div></div>
-                        <div class="map-progress" data-progress="city"><div class="bar"><div class="fill" id="progress-city" style="width:35%;"></div></div><span class="label" id="label-city">35%</span></div>
-                        <div class="interact-hint"><span class="pulse-dot"></span> </div>
-                    </div>
-                    <div class="map-item map-clickable" data-map="fangte">
-                        <div class="map-bg"></div><div class="explore-flash" id="flash-fangte"></div>
-                        <span class="map-tag">开发中</span><h3>方特主题乐园</h3>
-                        <div class="map-meta"><span>作者：三个句号</span><span>迷你号：102575971</span></div>
-                        <div class="map-desc">还原主题乐园的欢乐氛围，过山车、旋转木马、烟花表演等互动设施。</div>
-                        <div class="map-stats"><div class="stat-item"><span class="num">9</span><span class="lbl">游乐设施</span></div><div class="stat-item"><span class="num">6</span><span class="lbl">互动关卡</span></div></div>
-                        <div class="map-progress" data-progress="fangte"><div class="bar"><div class="fill" id="progress-fangte" style="width:72%;"></div></div><span class="label" id="label-fangte">72%</span></div>
-                        <div class="interact-hint"><span class="pulse-dot"></span> </div>
-                    </div>
-                    <div class="map-item map-clickable" data-map="workshop" style="border-color:var(--accent);border-width:2px;background:var(--bg-card);">
-                        <div class="map-bg"></div><div class="explore-flash" id="flash-workshop"></div>
-                        <span class="map-tag highlight">测试中</span><h3>星能工坊</h3>
-                        <div class="map-meta"><span>作者：星能团队</span><span>迷你号：1776969761</span></div>
-                        <div class="map-stats"><div class="stat-item"><span class="num">24</span><span class="lbl">创意组件</span></div><div class="stat-item"><span class="num">1.2k</span><span class="lbl">下载量</span></div></div>
-                        <ul class="map-features"><li><span>核心玩法</span><span class="val">自由建造  共同使用</span></li><li><span>设计风格</span><span class="val">极简、高效</span></li></ul>
-                        <div class="map-progress" data-progress="workshop"><div class="bar"><div class="fill" id="progress-workshop" style="width:100%;"></div></div><span class="label" id="label-workshop">100%</span></div>
-                        <div class="interact-hint"><span class="pulse-dot"></span> </div>
-                    </div>
+            <div class="section-title"><span>创作星群</span><span class="en">// 来自创作者的地图</span></div>
+
+            <div class="map-status" id="mapStatus">加载中...</div>
+            <div class="map-grid-wrapper">
+                <div class="map-grid" id="mapGrid">
+                    <div class="map-loading"><i class="fas fa-spinner fa-pulse"></i>加载地图中...</div>
                 </div>
             </div>
-            <div style="text-align:center;margin-top:12px;font-size:.55rem;color:var(--text-secondary);opacity:.3;letter-spacing:.5px;"></div>
+
+            <div class="map-toggle-btn" id="mapToggleWrap" style="display:none;">
+                <button id="mapToggleBtn">展开更多</button>
+            </div>
         </div>
     </section>
 
-    <section id="blog" class="blog-section">
+    <!-- ============================================================
+    博客
+    ============================================================ -->
+    <section id="blog" style="padding:40px 0 20px; border-top:1px solid var(--border-light);">
         <div class="container">
             <div class="section-title"><span>星能博客</span><span class="en">// 最新文章</span></div>
             <div id="blogContainer">
                 <div class="blog-loading"><i class="fas fa-spinner fa-pulse"></i>加载博客中...</div>
             </div>
-            <div style="text-align:center;margin-top:1.5rem;font-size:.75rem;color:var(--text-secondary);opacity:.4;">
+            <div style="text-align:center;margin-top:1.2rem;font-size:.7rem;color:var(--text-secondary);opacity:.4;">
                 <a href="blog/" style="color:var(--accent);text-decoration:none;">查看全部博客 →</a>
             </div>
         </div>
     </section>
 
+    <!-- ============================================================
+    加入星能
+    ============================================================ -->
     <section id="join" style="padding:40px 0 20px;">
         <div class="container">
             <div class="section-title"><span>加入星能</span><span class="en">// 成为星光的一部分</span></div>
@@ -685,13 +590,14 @@
                     </div>
                     <div class="social-links"><span>交流群：966926112</span><span>频道号：pd90272831</span><span>stellarCN2020@outlook.com</span></div>
                 </div>
-                <div class="float-card" style="top:-14px;right:10px;transform:rotate(3deg);"><span class="num">128</span> 创意星点</div>
-                <div class="float-card" style="bottom:-10px;left:20px;transform:rotate(-4deg);"><span class="num">47</span> 创造星图</div>
-                <div class="float-card" style="bottom:20px;right:30px;transform:rotate(5deg);"><span class="num">36</span> 创意星维</div>
+                <div class="float-card" style="top:-14px;right:10px;"><span class="num">128</span> 创意星点</div>
+                <div class="float-card" style="bottom:-10px;left:20px;"><span class="num">47</span> 创造星图</div>
+                <div class="float-card" style="bottom:20px;right:30px;"><span class="num">36</span> 创意星维</div>
             </div>
         </div>
     </section>
 
+    <!-- ===== 页尾 ===== -->
     <footer class="footer-new">
         <div class="footer-container">
             <div class="footer-col"><h4>星能工作室</h4><p>始于2021年，专注迷你世界地图创作与青少年技术交流。</p><p>星光点缀黑暗，用创意点亮彼此。</p><p>以热爱驱动创造，以勇气挑战未知。</p></div>
@@ -705,13 +611,17 @@
         </div>
     </footer>
 
+    <!-- ===== Modals ===== -->
     <div id="groupModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeGroupModal">&times;</button><h3>加入群聊</h3><div class="contact-line">QQ交流群：966926112</div><div class="contact-line">欢迎入群，与众多创作者一起交流地图心得。</div><div style="margin-top:1.2rem;text-align:center;"><button class="mihoyo-btn-simple" id="copyGroupBtn"><span class="simple-bg"></span><span class="simple-text">复制群号</span></button></div></div></div>
     <div id="channelModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeChannelModal">&times;</button><h3>加入频道</h3><div class="contact-line">官方频道号：pd90272831</div><div class="contact-line">在QQ频道中获取最新动态、活动资讯。</div><div style="margin-top:1.2rem;text-align:center;"><button class="mihoyo-btn-simple" id="copyChannelBtn"><span class="simple-bg"></span><span class="simple-text">复制频道号</span></button></div></div></div>
-    <div id="updateLogModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeUpdateLogModal">&times;</button><h3>网站更新报告</h3><div style="margin-top:1rem;"><p><strong>v22.1 (2026.07.11)</strong></p><ul style="list-style:none;padding:0;"><li>• 博客卡片改为横向布局 (4:3)</li><li>• 标签在预览卡片上展示</li><li>• 摘要限制3行显示</li><li>• 卡片更紧凑美观</li></ul><p style="margin-top:1rem;">愿星光守护每一个创作者。</p></div></div></div>
+    <div id="updateLogModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeUpdateLogModal">&times;</button><h3>网站更新报告</h3><div style="margin-top:1rem;"><p><strong>v26.0 (2026.07.20)</strong></p><ul style="list-style:none;padding:0;"><li>• 主页数字改为：年、月、日</li><li>• 移除点击递增互动</li><li>• 移除"自动轮播"显摆文字</li><li>• 地图从GitHub Issues拉取</li><li>• 直角正向排版</li></ul><p style="margin-top:1rem;">愿星光守护每一个创作者。</p></div></div></div>
 
     <div class="toast-message" id="toastMessage"></div>
 
     <script>
+        // ============================================================
+        // Toast
+        // ============================================================
         function showToast(msg, duration) {
             duration = duration || 2000;
             var t = document.getElementById('toastMessage');
@@ -723,25 +633,260 @@
             }, duration);
         }
 
-        function bounceNumber(el) {
-            var numEl = el.querySelector('.num');
-            if (!numEl) return;
-            var orig = parseInt(numEl.textContent) || 0;
-            var add = Math.floor(Math.random() * 5) + 1;
-            var newVal = orig + add;
-            numEl.textContent = newVal;
-            numEl.style.transform = 'scale(1.3)';
-            setTimeout(function() {
-                numEl.style.transform = 'scale(1)';
-            }, 300);
-            showToast('星光 +' + add + '！');
+        // ============================================================
+        // 价值观展开
+        // ============================================================
+        function toggleValue(el) {
+            var allCards = document.querySelectorAll('.value-card');
+            allCards.forEach(function(c) {
+                if (c !== el && c.classList.contains('expanded')) {
+                    c.classList.remove('expanded');
+                    var hint = c.querySelector('.expand-hint');
+                    if (hint) hint.textContent = '▼ 点击展开';
+                }
+            });
+            el.classList.toggle('expanded');
+            var hint = el.querySelector('.expand-hint');
+            if (hint) {
+                hint.textContent = el.classList.contains('expanded') ? '▲ 收起' : '▼ 点击展开';
+            }
+            if (el.classList.contains('expanded')) {
+                setTimeout(function() {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            }
         }
 
-        (function loadBlog() {
-            var container = document.getElementById('blogContainer');
+        // ============================================================
+        // 创作星图 — 从GitHub拉取（map标签）
+        // ============================================================
+        var DEFAULT_AVATAR = 'https://user-assets.sxlcdn.com/images/1138507/FgFRcBKLtlCQgTv7_h1E5hv5Ay2F.png?imageMogr2/strip/auto-orient/thumbnail/300x300%3E/quality/90!/format/png';
+        var mapIssues = [];
+        var isMapExpanded = false;
+        var mapSwitchTimer = null;
+        var mapIsSwitching = false;
+        var mapPaused = false;
+        var mapGrid = document.getElementById('mapGrid');
+        var mapStatus = document.getElementById('mapStatus');
+        var mapToggleWrap = document.getElementById('mapToggleWrap');
+        var mapToggleBtn = document.getElementById('mapToggleBtn');
+
+        function parseMapIssue(issue) {
+            var title = issue.title || '未命名地图';
+            var body = issue.body || '';
+            var author = '';
+            var cover = '';
+            var desc = '';
+            var tag = '';
+            var minid = '';
+
+            var authorMatch = body.match(/^作者[：:]\s*(.+?)\s*[\n\r]/i);
+            if (authorMatch) author = authorMatch[1].trim();
+
+            var coverMatch = body.match(/^封面[：:]\s*(.+?)\s*[\n\r]/i);
+            if (coverMatch) cover = coverMatch[1].trim();
+
+            var descMatch = body.match(/^描述[：:]\s*(.+?)\s*[\n\r]/i);
+            if (descMatch) desc = descMatch[1].trim();
+
+            var tagMatch = body.match(/^标签[：:]\s*(.+?)\s*[\n\r]/i);
+            if (tagMatch) tag = tagMatch[1].trim();
+
+            var minidMatch = body.match(/^迷你号[：:]\s*(.+?)\s*[\n\r]/i);
+            if (minidMatch) minid = minidMatch[1].trim();
+
+            if (!author) author = issue.user.login;
+
+            return {
+                id: issue.number,
+                title: title,
+                author: author,
+                cover: cover,
+                desc: desc || '暂无描述',
+                tag: tag || '',
+                minid: minid || '',
+                created_at: issue.created_at
+            };
+        }
+
+        function renderMaps(issues) {
+            if (!issues || issues.length === 0) {
+                mapGrid.innerHTML = '<div class="map-empty">暂无地图，在 GitHub Issues 中创建带 map 标签的文章</div>';
+                mapStatus.textContent = '共 0 张地图';
+                mapToggleWrap.style.display = 'none';
+                return;
+            }
+
+            var sorted = issues.slice().sort(function(a, b) {
+                return new Date(b.created_at) - new Date(a.created_at);
+            });
+
+            mapStatus.textContent = '共 ' + sorted.length + ' 张地图';
+
+            var displayItems = [];
+            if (isMapExpanded) {
+                displayItems = sorted;
+            } else {
+                displayItems = sorted.slice(0, 4);
+            }
+
+            if (sorted.length <= 4) {
+                displayItems = sorted;
+                mapToggleWrap.style.display = 'none';
+            } else {
+                mapToggleWrap.style.display = 'block';
+                mapToggleBtn.textContent = isMapExpanded ? '收起' : '展开更多 (' + (sorted.length - 4) + '张)';
+            }
+
+            if (displayItems.length === 0) {
+                mapGrid.innerHTML = '<div class="map-empty">暂无地图</div>';
+                return;
+            }
+
+            var html = '';
+            displayItems.forEach(function(item, index) {
+                var coverHtml = item.cover && item.cover.trim() !== ''
+                    ? '<img class="map-cover" src="' + item.cover + '" alt="' + item.title + '" loading="lazy" onerror="this.style.display=\'none\'">'
+                    : '<div class="map-cover-placeholder">✦</div>';
+
+                html += '<div class="map-item" data-id="' + item.id + '" style="animation-delay:' + (index * 0.05) + 's">';
+                html += coverHtml;
+                html += '<div class="map-title">' + item.title + '</div>';
+                html += '<div class="map-author"><img src="' + DEFAULT_AVATAR + '" alt="' + item.author + '"> ' + item.author + '</div>';
+                html += '<div class="map-desc">' + item.desc + '</div>';
+                if (item.tag) {
+                    html += '<span class="map-tag">' + item.tag + '</span>';
+                }
+                html += '</div>';
+            });
+
+            mapGrid.innerHTML = html;
+
+            if (isMapExpanded) {
+                pauseMapSwitch();
+            } else {
+                resumeMapSwitch();
+            }
+        }
+
+        // ============================================================
+        // 地图轮播切换
+        // ============================================================
+        function startMapSwitch() {
+            if (mapSwitchTimer) clearInterval(mapSwitchTimer);
+            if (mapIsSwitching) return;
+            if (mapIssues.length <= 4) return;
+            if (isMapExpanded) return;
+            if (mapPaused) return;
+
+            mapSwitchTimer = setInterval(function() {
+                if (mapIsSwitching) return;
+                if (isMapExpanded) return;
+                if (mapPaused) return;
+                if (mapIssues.length <= 4) return;
+                doMapSwitch();
+            }, 5000);
+        }
+
+        function doMapSwitch() {
+            mapIsSwitching = true;
+            var grid = document.getElementById('mapGrid');
+
+            var currentIds = [];
+            grid.querySelectorAll('.map-item').forEach(function(el) {
+                var id = parseInt(el.dataset.id);
+                if (!isNaN(id)) currentIds.push(id);
+            });
+
+            var available = mapIssues.filter(function(m) {
+                return currentIds.indexOf(m.id) === -1;
+            });
+
+            if (available.length === 0) {
+                mapIsSwitching = false;
+                return;
+            }
+
+            var shuffled = available.slice().sort(function() { return Math.random() - 0.5; });
+            var newItems = shuffled.slice(0, Math.min(4, shuffled.length));
+
+            while (newItems.length < 4 && newItems.length < mapIssues.length) {
+                var extra = mapIssues.filter(function(m) {
+                    return newItems.indexOf(m) === -1 && currentIds.indexOf(m.id) === -1;
+                });
+                if (extra.length === 0) break;
+                newItems.push(extra[Math.floor(Math.random() * extra.length)]);
+            }
+
+            newItems.sort(function(a, b) {
+                return new Date(b.created_at) - new Date(a.created_at);
+            });
+
+            var items = grid.querySelectorAll('.map-item');
+            items.forEach(function(el, idx) {
+                el.classList.add('switch-out');
+                setTimeout(function() {
+                    el.remove();
+                }, 400);
+            });
+
+            setTimeout(function() {
+                var html = '';
+                newItems.forEach(function(item, index) {
+                    var coverHtml = item.cover && item.cover.trim() !== ''
+                        ? '<img class="map-cover" src="' + item.cover + '" alt="' + item.title + '" loading="lazy" onerror="this.style.display=\'none\'">'
+                        : '<div class="map-cover-placeholder">✦</div>';
+
+                    html += '<div class="map-item switch-in" data-id="' + item.id + '" style="animation-delay:' + (index * 0.08) + 's">';
+                    html += coverHtml;
+                    html += '<div class="map-title">' + item.title + '</div>';
+                    html += '<div class="map-author"><img src="' + DEFAULT_AVATAR + '" alt="' + item.author + '"> ' + item.author + '</div>';
+                    html += '<div class="map-desc">' + item.desc + '</div>';
+                    if (item.tag) {
+                        html += '<span class="map-tag">' + item.tag + '</span>';
+                    }
+                    html += '</div>';
+                });
+
+                grid.innerHTML = html;
+                mapIsSwitching = false;
+            }, 450);
+        }
+
+        function pauseMapSwitch() {
+            mapPaused = true;
+            if (mapSwitchTimer) {
+                clearInterval(mapSwitchTimer);
+                mapSwitchTimer = null;
+            }
+        }
+
+        function resumeMapSwitch() {
+            mapPaused = false;
+            if (!mapSwitchTimer && mapIssues.length > 4 && !isMapExpanded) {
+                startMapSwitch();
+            }
+        }
+
+        function toggleMapExpand() {
+            isMapExpanded = !isMapExpanded;
+            if (isMapExpanded) {
+                pauseMapSwitch();
+            } else {
+                resumeMapSwitch();
+            }
+            renderMaps(mapIssues);
+        }
+
+        mapToggleBtn.addEventListener('click', toggleMapExpand);
+
+        // ============================================================
+        // 加载地图数据
+        // ============================================================
+        function loadMaps() {
             var REPO_OWNER = 'stellarcn2020';
             var REPO_NAME = 'st';
-            var apiUrl = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues?labels=blog&state=open&sort=created&direction=desc&per_page=3';
+            var apiUrl = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues?labels=map&state=open&sort=created&direction=desc&per_page=100';
 
             fetch(apiUrl)
                 .then(function(res) {
@@ -750,7 +895,43 @@
                 })
                 .then(function(issues) {
                     if (!issues || issues.length === 0) {
-                        container.innerHTML = '<div class="blog-loading"><i class="fas fa-inbox"></i>暂无博客文章<br><span style="font-size:.8rem;opacity:.6;">在 <a href="https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/issues" target="_blank" style="color:var(--accent);">GitHub Issues</a> 中创建带 blog 标签的文章</span></div>';
+                        mapIssues = [];
+                        renderMaps([]);
+                        return;
+                    }
+                    var parsed = issues.map(function(issue) {
+                        return parseMapIssue(issue);
+                    });
+                    mapIssues = parsed;
+                    renderMaps(parsed);
+                    if (parsed.length > 4) {
+                        startMapSwitch();
+                    }
+                })
+                .catch(function(err) {
+                    console.warn('地图加载失败:', err);
+                    mapGrid.innerHTML = '<div class="map-empty">加载失败，请稍后重试</div>';
+                    mapStatus.textContent = '加载失败';
+                });
+        }
+
+        // ============================================================
+        // 博客加载（4篇最新）
+        // ============================================================
+        (function loadBlog() {
+            var container = document.getElementById('blogContainer');
+            var REPO_OWNER = 'stellarcn2020';
+            var REPO_NAME = 'st';
+            var apiUrl = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues?labels=blog&state=open&sort=created&direction=desc&per_page=4';
+
+            fetch(apiUrl)
+                .then(function(res) {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                })
+                .then(function(issues) {
+                    if (!issues || issues.length === 0) {
+                        container.innerHTML = '<div class="blog-loading"><i class="fas fa-inbox"></i>暂无博客文章</div>';
                         return;
                     }
 
@@ -799,55 +980,35 @@
                 })
                 .catch(function(err) {
                     console.warn('博客加载失败:', err);
-                    container.innerHTML = '<div class="blog-error"><i class="fas fa-exclamation-circle"></i>加载失败，请稍后重试<br><span style="font-size:.8rem;opacity:.6;">' + err.message + '</span></div>';
+                    container.innerHTML = '<div class="blog-loading"><i class="fas fa-exclamation-circle"></i>加载失败，请稍后重试</div>';
                 });
         })();
 
-        (function initDefaultPage() {
-            window.scrollTo(0, 0);
-            var heroLink = document.querySelector('.nav-link[href="#hero"]');
-            var allNavLinks = document.querySelectorAll('.nav-link');
-            if (heroLink) {
-                allNavLinks.forEach(function(link) {
-                    link.classList.remove('active');
-                });
-                heroLink.classList.add('active');
-            }
-        })();
-
+        // ============================================================
+        // HERO 按压倾斜
+        // ============================================================
         (function initHeroPress() {
             var heroCard = document.getElementById('heroTiltCard');
             if (!heroCard) return;
-            var MAX_ANGLE = 28;
-            var MAX_DEPTH = 6;
             var isHovering = false;
             heroCard.addEventListener('mouseenter', function() {
                 isHovering = true;
-                this.style.transition = 'transform 0.12s cubic-bezier(.34,1.56,.64,1)';
-                this.style.transform = 'translateZ(-' + (MAX_DEPTH * 0.4) + 'px) scale(0.98)';
-                this.style.borderColor = 'var(--accent)';
             });
             heroCard.addEventListener('mousemove', function(e) {
                 if (!isHovering) return;
                 var rect = this.getBoundingClientRect();
                 var cx = (e.clientX - rect.left) / rect.width - 0.5;
                 var cy = (e.clientY - rect.top) / rect.height - 0.5;
-                var dist = Math.sqrt(cx * cx + cy * cy);
-                var maxDist = 0.8;
-                var strength = Math.min(1, dist / maxDist);
-                var smoothStrength = strength * strength * (3 - 2 * strength);
-                var rotY = cx * MAX_ANGLE * smoothStrength;
-                var rotX = -cy * MAX_ANGLE * smoothStrength;
-                var depth = MAX_DEPTH * (1 - smoothStrength * 0.6);
-                var scale = 0.98 + smoothStrength * 0.02;
+                var rotY = cx * 12;
+                var rotX = -cy * 12;
                 this.style.transition = 'transform 0.04s ease-out';
-                this.style.transform = 'translateZ(-' + depth + 'px) scale(' + scale + ') rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg)';
-                this.style.borderColor = 'rgba(95, 127, 255, ' + (0.4 + smoothStrength * 0.6) + ')';
+                this.style.transform = 'rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg) scale(1.02)';
+                this.style.borderColor = 'var(--accent)';
             });
             heroCard.addEventListener('mouseleave', function() {
                 isHovering = false;
                 this.style.transition = 'transform 0.6s cubic-bezier(.34,1.56,.64,1), border-color 0.3s ease';
-                this.style.transform = 'translateZ(0) scale(1) rotateX(0deg) rotateY(0deg)';
+                this.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
             });
             var touchActive = false;
             heroCard.addEventListener('touchstart', function(e) {
@@ -856,15 +1017,10 @@
                 var rect = this.getBoundingClientRect();
                 var cx = (touch.clientX - rect.left) / rect.width - 0.5;
                 var cy = (touch.clientY - rect.top) / rect.height - 0.5;
-                var dist = Math.sqrt(cx * cx + cy * cy);
-                var strength = Math.min(1, dist / 0.8);
-                var smooth = strength * strength * (3 - 2 * strength);
-                var rotY = cx * MAX_ANGLE * smooth;
-                var rotX = -cy * MAX_ANGLE * smooth;
-                var depth = MAX_DEPTH * (1 - smooth * 0.6);
-                var scale = 0.98 + smooth * 0.02;
+                var rotY = cx * 12;
+                var rotX = -cy * 12;
                 this.style.transition = 'transform 0.1s ease-out';
-                this.style.transform = 'translateZ(-' + depth + 'px) scale(' + scale + ') rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg)';
+                this.style.transform = 'rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg) scale(1.02)';
                 this.style.borderColor = 'var(--accent)';
             }, { passive: true });
             heroCard.addEventListener('touchmove', function(e) {
@@ -873,382 +1029,21 @@
                 var rect = this.getBoundingClientRect();
                 var cx = (touch.clientX - rect.left) / rect.width - 0.5;
                 var cy = (touch.clientY - rect.top) / rect.height - 0.5;
-                var dist = Math.sqrt(cx * cx + cy * cy);
-                var strength = Math.min(1, dist / 0.8);
-                var smooth = strength * strength * (3 - 2 * strength);
-                var rotY = cx * MAX_ANGLE * smooth;
-                var rotX = -cy * MAX_ANGLE * smooth;
-                var depth = MAX_DEPTH * (1 - smooth * 0.6);
-                var scale = 0.98 + smooth * 0.02;
+                var rotY = cx * 12;
+                var rotX = -cy * 12;
                 this.style.transition = 'transform 0.04s ease-out';
-                this.style.transform = 'translateZ(-' + depth + 'px) scale(' + scale + ') rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg)';
+                this.style.transform = 'rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg) scale(1.02)';
             }, { passive: true });
             heroCard.addEventListener('touchend', function() {
                 touchActive = false;
                 this.style.transition = 'transform 0.6s cubic-bezier(.34,1.56,.64,1), border-color 0.3s ease';
-                this.style.transform = 'translateZ(0) scale(1) rotateX(0deg) rotateY(0deg)';
+                this.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
             }, { passive: true });
         })();
 
-        (function initMapInteractions() {
-            var mapItems = document.querySelectorAll('.map-item.map-clickable');
-            mapItems.forEach(function(item) {
-                item.addEventListener('click', function(e) {
-                    if (e.target.closest('.map-progress')) return;
-                    var mapName = this.dataset.map || 'unknown';
-                    showToast('✦ 星能共鸣 · ' + mapName);
-                    this.classList.add('resonating');
-                    setTimeout(function() {
-                        this.classList.remove('resonating');
-                    }.bind(this), 600);
-                    mapItems.forEach(function(other, idx) {
-                        if (other === this) return;
-                        var delay = 150 + idx * 120;
-                        setTimeout(function() {
-                            other.classList.add('resonating');
-                            setTimeout(function() {
-                                other.classList.remove('resonating');
-                            }, 600);
-                        }, delay);
-                    }.bind(this));
-                });
-                var progressEl = item.querySelector('.map-progress');
-                if (progressEl) {
-                    var bar = progressEl.querySelector('.bar .fill');
-                    var label = progressEl.querySelector('.label');
-                    progressEl.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        var current = parseInt(label.textContent) || 0;
-                        if (current >= 100) {
-                            showToast('这片星域已完全探索！');
-                            return;
-                        }
-                        var add = 5;
-                        var newVal = Math.min(current + add, 100);
-                        bar.style.width = newVal + '%';
-                        label.textContent = newVal + '%';
-                        var flash = item.querySelector('.explore-flash');
-                        if (flash) {
-                            flash.classList.remove('active');
-                            void flash.offsetWidth;
-                            flash.classList.add('active');
-                            setTimeout(function() {
-                                flash.classList.remove('active');
-                            }, 700);
-                        }
-                        if (newVal >= 100) {
-                            showToast('星域完全探索！');
-                        } else {
-                            showToast('探索度 +' + add + '%');
-                        }
-                    });
-                }
-            });
-        })();
-
-        function toggleValue(e, el) {
-            if (el.classList.contains('dragging')) return;
-            e.stopPropagation();
-            var allCards = document.querySelectorAll('.value-card');
-            allCards.forEach(function(c) {
-                if (c !== el && c.classList.contains('expanded')) {
-                    c.classList.remove('expanded');
-                    var hint = c.querySelector('.expand-hint');
-                    if (hint) hint.textContent = '▼ 点击展开';
-                }
-            });
-            el.classList.toggle('expanded');
-            var hint = el.querySelector('.expand-hint');
-            if (hint) {
-                hint.textContent = el.classList.contains('expanded') ? '▲ 收起' : '▼ 点击展开';
-            }
-            if (el.classList.contains('expanded')) {
-                setTimeout(function() {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 100);
-            }
-        }
-
-        (function initDragDrop() {
-            var cards = document.querySelectorAll('.value-card.draggable-card');
-            var dragEl = null,
-                dragClone = null,
-                offsetX = 0,
-                offsetY = 0,
-                startX = 0,
-                startY = 0,
-                isDragging = false;
-            cards.forEach(function(card) {
-                card.addEventListener('mousedown', function(e) {
-                    if (e.target.closest('.expand-content') || e.target.closest('.expand-hint')) return;
-                    if (card.classList.contains('expanded')) return;
-                    var rect = card.getBoundingClientRect();
-                    startX = e.clientX;
-                    startY = e.clientY;
-                    offsetX = e.clientX - rect.left;
-                    offsetY = e.clientY - rect.top;
-                    dragEl = card;
-                    isDragging = false;
-                    var onMove = function(e) {
-                        var dx = e.clientX - startX,
-                            dy = e.clientY - startY;
-                        if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
-                            isDragging = true;
-                            if (!dragClone) {
-                                dragClone = card.cloneNode(true);
-                                dragClone.style.position = 'fixed';
-                                dragClone.style.width = rect.width + 'px';
-                                dragClone.style.height = rect.height + 'px';
-                                dragClone.style.pointerEvents = 'none';
-                                dragClone.style.zIndex = '1000';
-                                dragClone.style.opacity = '.85';
-                                dragClone.style.transform = 'scale(1.04) rotate(2deg)';
-                                dragClone.style.boxShadow = 'var(--shadow-xl)';
-                                dragClone.style.borderColor = 'var(--accent)';
-                                dragClone.style.borderWidth = '2px';
-                                dragClone.style.background = 'var(--bg-card)';
-                                document.body.appendChild(dragClone);
-                                card.classList.add('dragging');
-                            }
-                            dragClone.style.left = (e.clientX - offsetX) + 'px';
-                            dragClone.style.top = (e.clientY - offsetY) + 'px';
-                            cards.forEach(function(c) {
-                                if (c === card) return;
-                                var r = c.getBoundingClientRect();
-                                if (e.clientX > r.left && e.clientX < r.right && e.clientY > r.top && e.clientY < r.bottom) {
-                                    c.classList.add('drag-over');
-                                } else {
-                                    c.classList.remove('drag-over');
-                                }
-                            });
-                        }
-                    };
-                    var onUp = function(e) {
-                        document.removeEventListener('mousemove', onMove);
-                        document.removeEventListener('mouseup', onUp);
-                        if (dragClone) {
-                            dragClone.remove();
-                            dragClone = null;
-                        }
-                        card.classList.remove('dragging');
-                        cards.forEach(function(c) {
-                            c.classList.remove('drag-over');
-                        });
-                        if (isDragging) {
-                            var target = null;
-                            cards.forEach(function(c) {
-                                if (c === card) return;
-                                var r = c.getBoundingClientRect();
-                                if (e.clientX > r.left && e.clientX < r.right && e.clientY > r.top && e.clientY < r.bottom) {
-                                    target = c;
-                                }
-                            });
-                            if (target) {
-                                var parent = card.parentNode;
-                                var cardsArray = Array.from(parent.children);
-                                var idxA = cardsArray.indexOf(card),
-                                    idxB = cardsArray.indexOf(target);
-                                if (idxA !== -1 && idxB !== -1 && idxA !== idxB) {
-                                    var temp = document.createElement('div');
-                                    parent.insertBefore(temp, card);
-                                    parent.insertBefore(card, target);
-                                    parent.insertBefore(target, temp);
-                                    temp.remove();
-                                    showToast('✦ 星群已重组');
-                                }
-                            }
-                        }
-                        isDragging = false;
-                        dragEl = null;
-                    };
-                    document.addEventListener('mousemove', onMove);
-                    document.addEventListener('mouseup', onUp);
-                });
-            });
-        })();
-
-        (function initConstellation() {
-            var canvas = document.getElementById('constellationCanvas');
-            var ctx = canvas.getContext('2d');
-            var w, h,
-                points = [],
-                maxPoints = 100,
-                mouseX = -9999,
-                mouseY = -9999,
-                isDrawing = false;
-
-            function resize() {
-                w = canvas.width = window.innerWidth;
-                h = canvas.height = window.innerHeight;
-            }
-            window.addEventListener('resize', resize);
-            resize();
-            for (var i = 0; i < 40; i++) {
-                points.push({ x: Math.random() * w, y: Math.random() * h, vx: (Math.random() - .5) * .15, vy: (Math.random() - .5) * .15, life: .5 + Math.random() * .5, targetX: null, targetY: null });
-            }
-            document.addEventListener('mousemove', function(e) {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-                if (isDrawing) {
-                    for (var i = 0; i < 2; i++) {
-                        points.push({ x: mouseX + (Math.random() - .5) * 10, y: mouseY + (Math.random() - .5) * 10, vx: (Math.random() - .5) * .3, vy: (Math.random() - .5) * .3, life: .7 + Math.random() * .3, targetX: null, targetY: null });
-                        if (points.length > maxPoints) points.splice(0, 10);
-                    }
-                }
-            });
-            document.addEventListener('mousedown', function() {
-                isDrawing = true;
-            });
-            document.addEventListener('mouseup', function() {
-                isDrawing = false;
-            });
-            document.addEventListener('touchmove', function(e) {
-                var t = e.touches[0];
-                mouseX = t.clientX;
-                mouseY = t.clientY;
-                if (isDrawing) {
-                    points.push({ x: mouseX + (Math.random() - .5) * 12, y: mouseY + (Math.random() - .5) * 12, vx: (Math.random() - .5) * .25, vy: (Math.random() - .5) * .25, life: .6 + Math.random() * .4, targetX: null, targetY: null });
-                    if (points.length > maxPoints) points.splice(0, 10);
-                }
-            }, { passive: true });
-            document.addEventListener('touchstart', function() {
-                isDrawing = true;
-            }, { passive: true });
-            document.addEventListener('touchend', function() {
-                isDrawing = false;
-            }, { passive: true });
-            setInterval(function() {
-                if (points.length < 30) {
-                    points.push({ x: Math.random() * w, y: Math.random() * h, vx: (Math.random() - .5) * .1, vy: (Math.random() - .5) * .1, life: .4 + Math.random() * .6, targetX: null, targetY: null });
-                }
-            }, 2000);
-
-            function animate() {
-                ctx.clearRect(0, 0, w, h);
-                for (var i = points.length - 1; i >= 0; i--) {
-                    var p = points[i];
-                    if (p.targetX !== null) {
-                        p.x += (p.targetX - p.x) * .005;
-                        p.y += (p.targetY - p.y) * .005;
-                    }
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.life -= .0004;
-                    if (p.x < 0 || p.x > w) p.vx *= -.5;
-                    if (p.y < 0 || p.y > h) p.vy *= -.5;
-                    p.x = Math.max(0, Math.min(w, p.x));
-                    p.y = Math.max(0, Math.min(h, p.y));
-                    if (p.life <= 0) {
-                        points.splice(i, 1);
-                        continue;
-                    }
-                }
-                for (var i = 0; i < points.length; i++) {
-                    for (var j = i + 1; j < points.length; j++) {
-                        var dx = points[i].x - points[j].x,
-                            dy = points[i].y - points[j].y,
-                            dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < 130) {
-                            var alpha = .06 * (1 - dist / 130) * points[i].life * points[j].life;
-                            ctx.beginPath();
-                            ctx.moveTo(points[i].x, points[i].y);
-                            ctx.lineTo(points[j].x, points[j].y);
-                            ctx.strokeStyle = 'rgba(95, 127, 255, ' + alpha + ')';
-                            ctx.lineWidth = .5 + .5 * (1 - dist / 130);
-                            ctx.stroke();
-                        }
-                    }
-                }
-                for (var i = 0; i < points.length; i++) {
-                    var p = points[i];
-                    var alpha = .12 * p.life;
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, 1.2 + .5 * p.life, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(95, 127, 255, ' + alpha + ')';
-                    ctx.fill();
-                    if (p.life > .6) {
-                        ctx.beginPath();
-                        ctx.arc(p.x, p.y, 3 * p.life, 0, Math.PI * 2);
-                        ctx.fillStyle = 'rgba(95, 127, 255, ' + alpha * .2 + ')';
-                        ctx.fill();
-                    }
-                }
-                requestAnimationFrame(animate);
-            }
-            animate();
-            window.addEventListener('resize', function() {
-                resize();
-                for (var i = 0; i < points.length; i++) {
-                    points[i].x = Math.min(Math.max(points[i].x, 0), w);
-                    points[i].y = Math.min(Math.max(points[i].y, 0), h);
-                }
-            });
-        })();
-
-        (function initStarfield() {
-            var canvas = document.getElementById('starfield');
-            var ctx = canvas.getContext('2d');
-            var w, h,
-                stars = [],
-                count = 60;
-
-            function resize() {
-                w = canvas.width = window.innerWidth;
-                h = canvas.height = window.innerHeight;
-            }
-            window.addEventListener('resize', resize);
-            resize();
-            var Star = function() {
-                this.reset = function() {
-                    this.x = Math.random() * w;
-                    this.y = Math.random() * h;
-                    this.size = Math.random() * 1.6 + .3;
-                    this.speed = .03 + Math.random() * .1;
-                    this.opacity = Math.random() * .25 + .06;
-                    this.twinkle = Math.random() * Math.PI * 2;
-                };
-                this.update = function() {
-                    this.y += this.speed;
-                    this.twinkle += .02;
-                    if (this.y > h) {
-                        this.y = 0;
-                        this.x = Math.random() * w;
-                    }
-                };
-                this.draw = function() {
-                    var alpha = this.opacity * (.5 + .5 * Math.sin(this.twinkle));
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(95, 127, 255, ' + alpha + ')';
-                    ctx.shadowColor = 'rgba(95, 127, 255, .03)';
-                    ctx.shadowBlur = 2;
-                    ctx.fill();
-                    ctx.shadowBlur = 0;
-                };
-                this.reset();
-            };
-            for (var i = 0; i < count; i++) {
-                stars.push(new Star());
-            }
-
-            function animate() {
-                ctx.clearRect(0, 0, w, h);
-                for (var i = 0; i < stars.length; i++) {
-                    stars[i].update();
-                    stars[i].draw();
-                }
-                requestAnimationFrame(animate);
-            }
-            animate();
-            window.addEventListener('resize', function() {
-                resize();
-                for (var i = 0; i < stars.length; i++) {
-                    stars[i].x = Math.random() * w;
-                    stars[i].y = Math.random() * h;
-                }
-            });
-        })();
-
+        // ============================================================
+        // 导航
+        // ============================================================
         var navbar = document.getElementById('navbar');
         window.addEventListener('scroll', function() {
             if (window.scrollY > 60) {
@@ -1290,35 +1085,13 @@
             });
         });
 
-        var sections = document.querySelectorAll('section[id]');
-        var navLinksAll = document.querySelectorAll('.nav-link');
+        // ============================================================
+        // Modals
+        // ============================================================
+        var groupModal = document.getElementById('groupModal');
+        var channelModal = document.getElementById('channelModal');
+        var updateLogModal = document.getElementById('updateLogModal');
 
-        window.addEventListener('scroll', function() {
-            var current = '';
-            var scrollY = window.scrollY;
-
-            if (scrollY < 100) {
-                current = 'hero';
-            } else {
-                sections.forEach(function(sec) {
-                    var top = sec.offsetTop - 120;
-                    if (scrollY >= top) {
-                        current = sec.id;
-                    }
-                });
-            }
-
-            navLinksAll.forEach(function(link) {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === '#' + current) {
-                    link.classList.add('active');
-                }
-            });
-        });
-
-        var groupModal = document.getElementById('groupModal'),
-            channelModal = document.getElementById('channelModal'),
-            updateLogModal = document.getElementById('updateLogModal');
         document.getElementById('joinGroupBtn').addEventListener('click', function() {
             groupModal.style.display = 'flex';
         });
@@ -1328,6 +1101,7 @@
         document.getElementById('updateLogBtn').addEventListener('click', function() {
             updateLogModal.style.display = 'flex';
         });
+
         document.getElementById('closeGroupModal').addEventListener('click', function() {
             groupModal.style.display = 'none';
         });
@@ -1337,11 +1111,13 @@
         document.getElementById('closeUpdateLogModal').addEventListener('click', function() {
             updateLogModal.style.display = 'none';
         });
+
         window.addEventListener('click', function(e) {
             if (e.target === groupModal) groupModal.style.display = 'none';
             if (e.target === channelModal) channelModal.style.display = 'none';
             if (e.target === updateLogModal) updateLogModal.style.display = 'none';
         });
+
         document.getElementById('copyGroupBtn').addEventListener('click', function() {
             navigator.clipboard.writeText('966926112').then(function() {
                 showToast('群号已复制');
@@ -1357,6 +1133,9 @@
             });
         });
 
+        // ============================================================
+        // 入场动画
+        // ============================================================
         var items = document.querySelectorAll('.animate-item');
         var observer = new IntersectionObserver(function(entries) {
             entries.forEach(function(entry) {
@@ -1369,9 +1148,213 @@
             observer.observe(item);
         });
 
-        console.log('>> 星能主站');
+        // ============================================================
+        // 导航高亮
+        // ============================================================
+        var sections = document.querySelectorAll('section[id]');
+        var navLinksAll = document.querySelectorAll('.nav-link');
+        window.addEventListener('scroll', function() {
+            var current = '';
+            var scrollY = window.scrollY;
+            if (scrollY < 100) {
+                current = 'hero';
+            } else {
+                sections.forEach(function(sec) {
+                    var top = sec.offsetTop - 120;
+                    if (scrollY >= top) {
+                        current = sec.id;
+                    }
+                });
+            }
+            navLinksAll.forEach(function(link) {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // ============================================================
+        // 星群连线 Canvas
+        // ============================================================
+        (function initConstellation() {
+            var canvas = document.getElementById('constellationCanvas');
+            var ctx = canvas.getContext('2d');
+            var w, h, points = [],
+                maxPoints = 80,
+                mouseX = -9999,
+                mouseY = -9999,
+                isDrawing = false;
+
+            function resize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+            for (var i = 0; i < 30; i++) {
+                points.push({ x: Math.random() * w, y: Math.random() * h, vx: (Math.random() - .5) * .1, vy: (Math.random() - .5) * .1,
+                    life: .5 + Math.random() * .5, targetX: null, targetY: null });
+            }
+            document.addEventListener('mousemove', function(e) {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                if (isDrawing) {
+                    for (var i = 0; i < 2; i++) {
+                        points.push({ x: mouseX + (Math.random() - .5) * 8, y: mouseY + (Math.random() - .5) * 8,
+                            vx: (Math.random() - .5) * .2, vy: (Math.random() - .5) * .2, life: .7 + Math.random() *
+                                .3, targetX: null, targetY: null });
+                        if (points.length > maxPoints) points.splice(0, 10);
+                    }
+                }
+            });
+            document.addEventListener('mousedown', function() { isDrawing = true; });
+            document.addEventListener('mouseup', function() { isDrawing = false; });
+            document.addEventListener('touchmove', function(e) {
+                var t = e.touches[0];
+                mouseX = t.clientX;
+                mouseY = t.clientY;
+                if (isDrawing) {
+                    points.push({ x: mouseX + (Math.random() - .5) * 10, y: mouseY + (Math.random() - .5) * 10,
+                        vx: (Math.random() - .5) * .2, vy: (Math.random() - .5) * .2, life: .6 + Math.random() *
+                            .4, targetX: null, targetY: null });
+                    if (points.length > maxPoints) points.splice(0, 10);
+                }
+            }, { passive: true });
+            document.addEventListener('touchstart', function() { isDrawing = true; }, { passive: true });
+            document.addEventListener('touchend', function() { isDrawing = false; }, { passive: true });
+
+            function animate() {
+                ctx.clearRect(0, 0, w, h);
+                for (var i = points.length - 1; i >= 0; i--) {
+                    var p = points[i];
+                    if (p.targetX !== null) {
+                        p.x += (p.targetX - p.x) * .005;
+                        p.y += (p.targetY - p.y) * .005;
+                    }
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.life -= .0004;
+                    if (p.x < 0 || p.x > w) p.vx *= -.5;
+                    if (p.y < 0 || p.y > h) p.vy *= -.5;
+                    p.x = Math.max(0, Math.min(w, p.x));
+                    p.y = Math.max(0, Math.min(h, p.y));
+                    if (p.life <= 0) { points.splice(i, 1); continue; }
+                }
+                for (var i = 0; i < points.length; i++) {
+                    for (var j = i + 1; j < points.length; j++) {
+                        var dx = points[i].x - points[j].x,
+                            dy = points[i].y - points[j].y,
+                            dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 120) {
+                            var alpha = .04 * (1 - dist / 120) * points[i].life * points[j].life;
+                            ctx.beginPath();
+                            ctx.moveTo(points[i].x, points[i].y);
+                            ctx.lineTo(points[j].x, points[j].y);
+                            ctx.strokeStyle = 'rgba(95, 127, 255, ' + alpha + ')';
+                            ctx.lineWidth = .4;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                for (var i = 0; i < points.length; i++) {
+                    var p = points[i];
+                    var alpha = .08 * p.life;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, 1 + .5 * p.life, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(95, 127, 255, ' + alpha + ')';
+                    ctx.fill();
+                    if (p.life > .5) {
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, 2.5 * p.life, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(95, 127, 255, ' + alpha * .2 + ')';
+                        ctx.fill();
+                    }
+                }
+                requestAnimationFrame(animate);
+            }
+            animate();
+            window.addEventListener('resize', function() {
+                resize();
+                for (var i = 0; i < points.length; i++) {
+                    points[i].x = Math.min(Math.max(points[i].x, 0), w);
+                    points[i].y = Math.min(Math.max(points[i].y, 0), h);
+                }
+            });
+        })();
+
+        // ============================================================
+        // 星空粒子背景
+        // ============================================================
+        (function initStarfield() {
+            var canvas = document.getElementById('starfield');
+            var ctx = canvas.getContext('2d');
+            var w, h, stars = [],
+                count = 50;
+
+            function resize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            var Star = function() {
+                this.reset = function() {
+                    this.x = Math.random() * w;
+                    this.y = Math.random() * h;
+                    this.size = Math.random() * 1.6 + .3;
+                    this.speed = .03 + Math.random() * .1;
+                    this.opacity = Math.random() * .25 + .06;
+                    this.twinkle = Math.random() * Math.PI * 2;
+                };
+                this.update = function() {
+                    this.y += this.speed;
+                    this.twinkle += .02;
+                    if (this.y > h) { this.y = 0;
+                        this.x = Math.random() * w; }
+                };
+                this.draw = function() {
+                    var alpha = this.opacity * (.5 + .5 * Math.sin(this.twinkle));
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(95, 127, 255, ' + alpha + ')';
+                    ctx.shadowColor = 'rgba(95, 127, 255, .02)';
+                    ctx.shadowBlur = 2;
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                };
+                this.reset();
+            };
+            for (var i = 0; i < count; i++) stars.push(new Star());
+
+            function animate() {
+                ctx.clearRect(0, 0, w, h);
+                for (var i = 0; i < stars.length; i++) {
+                    stars[i].update();
+                    stars[i].draw();
+                }
+                requestAnimationFrame(animate);
+            }
+            animate();
+            window.addEventListener('resize', function() {
+                resize();
+                for (var i = 0; i < stars.length; i++) {
+                    stars[i].x = Math.random() * w;
+                    stars[i].y = Math.random() * h;
+                }
+            });
+        })();
+
+        // ============================================================
+        // 初始化
+        // ============================================================
+        loadMaps();
+
+        console.log('>> 星能工作室（2021.4.11）');
         console.log('>> 主站: https://stellarcn2020.github.io/st');
         console.log('>> 博客: https://stellarcn2020.github.io/st/blog');
+        console.log('>> 地图标签: map');
     </script>
 </body>
 </html>
