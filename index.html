@@ -280,20 +280,40 @@
         @media(max-width:640px){ .map-grid{grid-template-columns:1fr 1fr;gap:10px;} .map-item{padding:.8rem .8rem .6rem;} .map-item .map-title{font-size:.85rem;} }
 
         /* ============================================================
-           博客 — 4篇最新
+           博客 — 横向滑动 (展示最新6篇)
            ============================================================ */
         .blog-section { padding:40px 0 20px; border-top:1px solid var(--border-light); }
+        .blog-scroll-wrapper {
+            overflow-x: auto;
+            overflow-y: visible;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+            padding-bottom: 10px;
+            margin: 0 -4px;
+        }
+        .blog-scroll-wrapper::-webkit-scrollbar {
+            height: 6px;
+            background: var(--border-light);
+            border-radius: 3px;
+        }
+        .blog-scroll-wrapper::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 3px;
+        }
         .blog-grid {
-            display:grid;
-            grid-template-columns:repeat(4, 1fr);
-            gap:1.2rem;
-            margin:1.5rem 0;
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 1.2rem;
+            width: max-content;
+            padding: 0 4px;
         }
         .blog-card {
             background:var(--bg-card); border:1px solid var(--border-light); box-shadow:var(--shadow-sm);
             padding:1.2rem 1.2rem 1rem;
             transition:all .3s;
             display:flex; flex-direction:column;
+            flex: 0 0 280px;
+            max-width: 90vw;
         }
         .blog-card:hover { box-shadow:var(--shadow-hover); transform:translateY(-2px); border-color:var(--accent); }
         .blog-card .blog-date { font-size:.6rem; color:var(--text-secondary); opacity:.5; font-family:'JetBrains Mono',monospace; }
@@ -312,11 +332,7 @@
         .blog-card .blog-author img { width:16px; height:16px; border-radius:50%; border:1px solid var(--border-light); }
         .blog-card .read-more { display:inline-block; margin-top:6px; color:var(--accent); font-weight:600; font-size:.7rem; text-decoration:none; align-self:flex-start; }
         .blog-card .read-more:hover { text-decoration:underline; }
-        .blog-loading { text-align:center; padding:2rem 0; color:var(--text-secondary); font-size:.9rem; grid-column:1 / -1; }
-        .blog-loading i { display:block; font-size:1.5rem; color:var(--accent); margin-bottom:.5rem; }
-
-        @media(max-width:1024px){ .blog-grid{grid-template-columns:repeat(2,1fr);} }
-        @media(max-width:640px){ .blog-grid{grid-template-columns:1fr;gap:.8rem;} }
+        .blog-loading { text-align:center; padding:2rem 0; color:var(--text-secondary); font-size:.9rem; }
 
         /* ============================================================
            加入星能
@@ -401,6 +417,8 @@
             .menu-toggle{display:block;}
             .section-title{padding-left:12px;}
             .container{overflow-x:hidden;}
+            /* 移动端隐藏星能S-7卡片 */
+            .hero-side .tilt-card { display:none; }
         }
         @media(max-width:480px){
             body{padding-top:54px; overflow-x:hidden; -webkit-overflow-scrolling:touch; }
@@ -422,6 +440,16 @@
 
         .animate-item { opacity:0; transform:translateY(16px); transition:opacity .6s ease,transform .6s ease; }
         .animate-item.animate { opacity:1; transform:translateY(0); }
+
+        /* ===== 修复：移除导航点击蓝色焦点框 ===== */
+        .nav-link:focus {
+            outline: none;
+        }
+
+        /* ===== 修复：移除页尾链接点击蓝色焦点框 ===== */
+        .footer-new a:focus {
+            outline: none;
+        }
     </style>
 </head>
 <body>
@@ -461,9 +489,9 @@
                     <div class="sub">以创作为星，照亮彼此</div>
                     <div class="desc">星能工作室 —— 一群因《迷你世界》相遇的创作者。我们用地图承载想象，用代码编织世界，让每一个灵感都化作星能，驱动未来。</div>
                     <div class="hero-stats">
-                        <div class="stat"><span class="num" id="statYear">2021</span><span class="lbl">年</span></div>
-                        <div class="stat"><span class="num" id="statMonth">4</span><span class="lbl">月</span></div>
-                        <div class="stat"><span class="num" id="statDay">11</span><span class="lbl">日</span></div>
+                        <div class="stat"><span class="num" id="statYear">2021</span><span class="lbl" style="display:none;">年</span></div>
+                        <div class="stat"><span class="num" id="statMonth">4</span><span class="lbl" style="display:none;">月</span></div>
+                        <div class="stat"><span class="num" id="statDay">11</span><span class="lbl" style="display:none;">日</span></div>
                     </div>
                     <div class="hero-actions">
                         <div class="mihoyo-btn" onclick="document.getElementById('maps').scrollIntoView({behavior:'smooth'})">
@@ -560,13 +588,15 @@
     </section>
 
     <!-- ============================================================
-    博客
+    博客 (横向滑动，最新6篇)
     ============================================================ -->
     <section id="blog" style="padding:40px 0 20px; border-top:1px solid var(--border-light);">
         <div class="container">
             <div class="section-title"><span>星能博客</span><span class="en">// 最新文章</span></div>
-            <div id="blogContainer">
-                <div class="blog-loading"><i class="fas fa-spinner fa-pulse"></i>加载博客中...</div>
+            <div class="blog-scroll-wrapper" id="blogScrollWrapper">
+                <div id="blogContainer" style="display:flex; flex-wrap:nowrap; gap:1.2rem;">
+                    <div class="blog-loading"><i class="fas fa-spinner fa-pulse"></i>加载博客中...</div>
+                </div>
             </div>
             <div style="text-align:center;margin-top:1.2rem;font-size:.7rem;color:var(--text-secondary);opacity:.4;">
                 <a href="blog/" style="color:var(--accent);text-decoration:none;">查看全部博客 →</a>
@@ -614,7 +644,12 @@
     <!-- ===== Modals ===== -->
     <div id="groupModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeGroupModal">&times;</button><h3>加入群聊</h3><div class="contact-line">QQ交流群：966926112</div><div class="contact-line">欢迎入群，与众多创作者一起交流地图心得。</div><div style="margin-top:1.2rem;text-align:center;"><button class="mihoyo-btn-simple" id="copyGroupBtn"><span class="simple-bg"></span><span class="simple-text">复制群号</span></button></div></div></div>
     <div id="channelModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeChannelModal">&times;</button><h3>加入频道</h3><div class="contact-line">官方频道号：pd90272831</div><div class="contact-line">在QQ频道中获取最新动态、活动资讯。</div><div style="margin-top:1.2rem;text-align:center;"><button class="mihoyo-btn-simple" id="copyChannelBtn"><span class="simple-bg"></span><span class="simple-text">复制频道号</span></button></div></div></div>
-    <div id="updateLogModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeUpdateLogModal">&times;</button><h3>网站更新报告</h3><div style="margin-top:1rem;"><p><strong>v26.0 (2026.07.20)</strong></p><ul style="list-style:none;padding:0;"><li>• 主页数字改为：年、月、日</li><li>• 移除点击递增互动</li><li>• 移除"自动轮播"显摆文字</li><li>• 地图从GitHub Issues拉取</li><li>• 直角正向排版</li></ul><p style="margin-top:1rem;">愿星光守护每一个创作者。</p></div></div></div>
+    <div id="updateLogModal" class="modal"><div class="modal-content"><button class="modal-close" id="closeUpdateLogModal">&times;</button><h3>网站更新报告</h3><div style="margin-top:1rem;"><p><strong>v27.0 (2026.07.21)</strong></p><ul style="list-style:none;padding:0;">
+        <li>• 主页日期改为实时显示（年、月、日数字）</li>
+        <li>• 移动端隐藏星能 S-7 卡片</li>
+        <li>• 星能博客改为横向滑动浏览（展示最新6篇）</li>
+        <li>• 修复导航及页尾点击蓝色焦点框</li>
+    </ul><p style="margin-top:1rem;">愿星光守护每一个创作者。</p></div></div></div>
 
     <div class="toast-message" id="toastMessage"></div>
 
@@ -916,13 +951,13 @@
         }
 
         // ============================================================
-        // 博客加载（4篇最新）
+        // 博客加载（横向滑动，最新6篇）
         // ============================================================
         (function loadBlog() {
             var container = document.getElementById('blogContainer');
             var REPO_OWNER = 'stellarcn2020';
             var REPO_NAME = 'st';
-            var apiUrl = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues?labels=blog&state=open&sort=created&direction=desc&per_page=4';
+            var apiUrl = 'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/issues?labels=blog&state=open&sort=created&direction=desc&per_page=6';
 
             fetch(apiUrl)
                 .then(function(res) {
@@ -935,7 +970,7 @@
                         return;
                     }
 
-                    var html = '<div class="blog-grid">';
+                    var html = '';
                     issues.forEach(function(issue) {
                         var titleMatch = issue.title.match(/^(\d{4}-\d{2}-\d{2})[- ]?(.*)/);
                         var dateStr = titleMatch ? titleMatch[1] : '未知日期';
@@ -975,7 +1010,6 @@
                         html += '<a class="read-more" href="blog/post.html?id=' + issue.number + '">阅读全文 →</a>';
                         html += '</div>';
                     });
-                    html += '</div>';
                     container.innerHTML = html;
                 })
                 .catch(function(err) {
@@ -1344,6 +1378,19 @@
                     stars[i].y = Math.random() * h;
                 }
             });
+        })();
+
+        // ============================================================
+        // 实时日期更新
+        // ============================================================
+        (function updateDate() {
+            var now = new Date();
+            var year = now.getFullYear();
+            var month = now.getMonth() + 1;
+            var day = now.getDate();
+            document.getElementById('statYear').textContent = year;
+            document.getElementById('statMonth').textContent = month;
+            document.getElementById('statDay').textContent = day;
         })();
 
         // ============================================================
