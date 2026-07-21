@@ -406,6 +406,21 @@
         .footer-col a:hover { color:#fff; text-decoration:underline; }
         .footer-col a:focus { outline:none; }
 
+        /* 关联地图样式 */
+        .post-map-link {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-light);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .post-map-link a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .post-map-link a:hover { text-decoration: underline; }
+
         @media(max-width:1024px){ .post-toc { width: 200px; } }
         @media(max-width:860px){
             .post-wrapper { flex-direction: column; }
@@ -506,11 +521,18 @@
             return urlParams.get(name);
         }
 
+        // ★★★ 解析元数据（支持作者、分类、头像、地图） ★★★
         function parseMetadata(body) {
-            // ★★★ 修复：确保 body 为字符串 ★★★
             body = body || '';
-            var result = { author: null, categories: [], cleanBody: body };
+            var result = {
+                author: null,
+                categories: [],
+                avatar: null,    // 自定义头像链接
+                map: null,       // 关联地图 Issue 编号或字符串
+                cleanBody: body
+            };
 
+            // 提取作者
             var authorMatch = body.match(/^作者[：:]\s*(.+?)\s*[\n\r]/i);
             if (!authorMatch) authorMatch = body.match(/^author[：:]\s*(.+?)\s*[\n\r]/i);
             if (authorMatch && authorMatch[1]) {
@@ -519,10 +541,29 @@
                 result.cleanBody = result.cleanBody.replace(/^author[：:]\s*.+?[\n\r]/, '');
             }
 
+            // 提取分类
             var catMatch = result.cleanBody.match(/^分类[：:]\s*(.+?)\s*[\n\r]/i);
             if (catMatch && catMatch[1]) {
                 result.categories = catMatch[1].split(/[,，、\s]+/).filter(function(c) { return c.trim().length > 0; });
                 result.cleanBody = result.cleanBody.replace(/^分类[：:]\s*.+?[\n\r]/, '');
+            }
+
+            // ★ 提取头像
+            var avatarMatch = result.cleanBody.match(/^头像[：:]\s*(.+?)\s*[\n\r]/i);
+            if (!avatarMatch) avatarMatch = result.cleanBody.match(/^avatar[：:]\s*(.+?)\s*[\n\r]/i);
+            if (avatarMatch && avatarMatch[1]) {
+                result.avatar = avatarMatch[1].trim();
+                result.cleanBody = result.cleanBody.replace(/^头像[：:]\s*.+?[\n\r]/, '');
+                result.cleanBody = result.cleanBody.replace(/^avatar[：:]\s*.+?[\n\r]/, '');
+            }
+
+            // ★ 提取关联地图
+            var mapMatch = result.cleanBody.match(/^地图[：:]\s*(.+?)\s*[\n\r]/i);
+            if (!mapMatch) mapMatch = result.cleanBody.match(/^map[：:]\s*(.+?)\s*[\n\r]/i);
+            if (mapMatch && mapMatch[1]) {
+                result.map = mapMatch[1].trim();
+                result.cleanBody = result.cleanBody.replace(/^地图[：:]\s*.+?[\n\r]/, '');
+                result.cleanBody = result.cleanBody.replace(/^map[：:]\s*.+?[\n\r]/, '');
             }
 
             return result;
@@ -709,7 +750,7 @@
         resizeObserver.observe(document.body);
 
         // ============================================================
-        // 加载文章（修复 text.match 报错）
+        // 加载文章（支持自定义头像和关联地图）
         // ============================================================
         var issueNumber = getQueryParam('id');
         var container = document.getElementById('postContainer');
@@ -731,14 +772,17 @@
                     var dateStr = titleMatch ? titleMatch[1] : '未知日期';
                     var displayTitle = titleMatch ? titleMatch[2] || issue.title : issue.title;
 
-                    var body = issue.body || ''; // ★ 确保是字符串
+                    var body = issue.body || '';
                     var meta = parseMetadata(body);
-                    var cleanBody = meta.cleanBody || ''; // ★ 再次确保
+                    var cleanBody = meta.cleanBody || '';
                     var customAuthor = meta.author;
                     var categories = meta.categories;
+                    var customAvatar = meta.avatar;   // 自定义头像链接
+                    var mapLink = meta.map;            // 关联地图标识
 
+                    // 作者与头像：自定义头像优先，否则用 GitHub 头像
                     var authorName = customAuthor || issue.user.login;
-                    var authorAvatar = issue.user.avatar_url;
+                    var authorAvatar = customAvatar || issue.user.avatar_url;
 
                     // 使用自定义渲染器
                     var renderer = createCustomRenderer();
@@ -752,7 +796,7 @@
                         return '<div class="table-wrap"><table' + match.substring(6) + '</table></div>';
                     });
 
-                    // 构建页面
+                    // ★ 构建页面（包含关联地图显示） ★
                     var html = '';
                     html += '<div class="post-wrapper">';
                     html += '<div class="post-main">';
@@ -770,16 +814,34 @@
                         });
                         html += '</div>';
                     }
-                    html += '</div>';
+                    html += '</div>'; // .post-header
+
                     html += '<div class="post-body">' + htmlContent + '</div>';
-                    html += '</div>';
+
+                    // ★ 如果有关联地图，在地图部分显示链接
+                    if (mapLink) {
+                        // 如果 mapLink 是纯数字，可能对应地图 Issue 编号，可以生成链接到地图详情页（需自行定义）
+                        // 这里简单显示为文本链接，可以跳转到某个页面，例如 ../maps/map.html?id=xxx
+                        // 或直接链接到 GitHub Issue
+                        var mapUrl = 'https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/issues/' + mapLink;
+                        // 检测是否为纯数字
+                        if (/^\d+$/.test(mapLink)) {
+                            mapUrl = 'https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/issues/' + mapLink;
+                        }
+                        html += '<div class="post-map-link">';
+                        html += '<i class="fas fa-map-marked-alt" style="margin-right:6px;"></i> 关联地图：<a href="' + mapUrl +
+                            '" target="_blank">' + mapLink + '</a>';
+                        html += '</div>';
+                    }
+
+                    html += '</div>'; // .post-main
 
                     html += '<div class="post-toc" id="postTOC">';
                     html += '<div class="toc-title"><i class="fas fa-list-ul"></i> 目录</div>';
                     html += '<ul class="toc-list"></ul>';
                     html += '</div>';
 
-                    html += '</div>';
+                    html += '</div>'; // .post-wrapper
 
                     container.innerHTML = html;
                     document.title = displayTitle + ' · 星能博客';
@@ -887,7 +949,7 @@
             });
         })();
 
-        console.log('>> 星能博客 · 文章详情页（修复 text.match 报错）');
+        console.log('>> 星能博客 · 文章详情页（支持自定义头像、关联地图）');
         console.log('>> 用法: [html-embed width="80%" height="600px"]...[/html-embed]');
     </script>
 </body>
