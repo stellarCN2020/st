@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* ===== 样式不变，与之前完全相同 ===== */
+        /* ===== 原有样式不变，仅新增全屏模式相关样式 ===== */
         :root {
             --bg-primary: #f5f7fc;
             --bg-card: #ffffff;
@@ -152,6 +152,31 @@
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
+        /* 全屏嵌入模式：移除内外边距，让iframe占满 */
+        .embed-fullscreen .post-body {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .embed-fullscreen .post-body .html-embed-wrapper {
+            margin: 0 !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+        }
+        .embed-fullscreen .post-body iframe {
+            display: block;
+            width: 100%;
+            height: calc(100vh - 180px); /* 粗略减去导航+页尾高度，可根据需要调整 */
+            border: none !important;
+            border-radius: 0 !important;
+        }
+        /* 全屏模式隐藏目录 */
+        .embed-fullscreen .post-toc,
+        .embed-fullscreen .toc-mobile,
+        .embed-fullscreen .toc-float-btn {
+            display: none !important;
+        }
+
         .post-body h1 { font-size:2rem; font-weight:700; margin:1.8rem 0 .8rem; border-bottom:2px solid var(--border-light); padding-bottom:.3rem; scroll-margin-top:80px; }
         .post-body h2 { font-size:1.6rem; font-weight:700; margin:1.6rem 0 .6rem; scroll-margin-top:80px; }
         .post-body h3 { font-size:1.3rem; font-weight:600; margin:1.4rem 0 .4rem; scroll-margin-top:80px; }
@@ -197,35 +222,13 @@
         }
         .post-body .table-wrap table { margin: 0; }
 
+        /* 干净的嵌入框（无header） */
         .html-embed-wrapper {
             border: 2px solid var(--accent);
             border-radius: 4px;
             overflow: hidden;
             margin: 1.2rem 0;
             box-shadow: 0 8px 24px rgba(95,127,255,0.08);
-        }
-        .html-embed-wrapper .html-embed-header {
-            background: var(--accent-light);
-            padding: 4px 16px;
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            font-family: 'JetBrains Mono', monospace;
-            border-bottom: 1px solid var(--border-light);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 4px 8px;
-        }
-        .html-embed-wrapper .html-embed-header .badge {
-            opacity: 0.4;
-            font-size: 0.6rem;
-        }
-        .html-embed-wrapper .html-embed-header .size-tag {
-            font-size: 0.6rem;
-            color: var(--accent);
-            opacity: 0.6;
-            font-weight: 600;
         }
         .html-embed-wrapper iframe {
             display: block;
@@ -426,6 +429,8 @@
             .post-toc { display: none !important; }
             .toc-mobile, .toc-float-btn { display: block; }
             .toc-mobile { display: block; }
+            /* 移动端全屏嵌入时隐藏浮窗按钮 */
+            .embed-fullscreen .toc-float-btn { display: none !important; }
         }
         @media(max-width:780px){
             body{padding-top:60px;} .navbar{min-height:56px;padding:.4rem 1rem;}
@@ -449,10 +454,16 @@
             .toc-float-btn { bottom:12px; right:12px; width:40px; height:40px; font-size:0.9rem; }
             .post-body table { font-size: 0.7rem; min-width: 260px; }
             .post-body table th, .post-body table td { padding: 0.2rem 0.4rem; }
+            .embed-fullscreen .post-body iframe {
+                height: calc(100vh - 160px);
+            }
         }
         @media(max-width:360px){
             .toc-mobile .toc-list li.toc-h3 { padding-left: 10px; }
             .post-body table { min-width: 200px; font-size: 0.65rem; }
+            .embed-fullscreen .post-body iframe {
+                height: calc(100vh - 150px);
+            }
         }
     </style>
 </head>
@@ -574,14 +585,13 @@
         }
 
         // ============================================================
-        // ★★★ 使用 HTML 注释作为占位符（稳定，不被 Markdown 破坏） ★★★
+        // 渲染正文（去掉header，只返回iframe）
         // ============================================================
         function renderWithEmbeds(rawBody) {
             rawBody = typeof rawBody === 'string' ? rawBody : '';
 
             var embedMap = {};
 
-            // 提取 [html-embed] 块，替换为 HTML 注释占位符
             var processed = rawBody.replace(
                 /\[html-embed\s*([^\]]*)\]([\s\S]*?)\[\/html-embed\]/g,
                 function(match, paramsStr, content) {
@@ -593,12 +603,10 @@
                     content = content.replace(/```\s*/g, '');
                     content = content.trim();
                     embedMap[uid] = { width: width, height: height, content: content };
-                    // 使用 HTML 注释，marked 会原样保留
                     return '<!--' + uid + '-->';
                 }
             );
 
-            // 渲染 Markdown
             var htmlContent = '';
             try {
                 htmlContent = marked.parse(processed, { gfm: true });
@@ -607,7 +615,7 @@
                 htmlContent = '<pre>' + processed.replace(/</g, '&lt;') + '</pre>';
             }
 
-            // 还原占位符
+            // 还原占位符，不再包裹额外header
             for (var uid in embedMap) {
                 var embed = embedMap[uid];
                 var escaped = embed.content
@@ -616,23 +624,16 @@
                     .replace(/'/g, '&#39;')
                     .replace(/</g, '&lt;')
                     .replace(/>/g, '&gt;');
-                var sizeLabel = embed.width + ' × ' + embed.height;
                 var iframeHtml =
                     '<div class="html-embed-wrapper">' +
-                    '<div class="html-embed-header">' +
-                    '<span>✦ 嵌入页面</span>' +
-                    '<span class="size-tag">' + sizeLabel + '</span>' +
-                    '<span class="badge">iframe</span>' +
-                    '</div>' +
                     '<iframe srcdoc="' + escaped + '" width="' + embed.width + '" height="' + embed.height +
                     '" style="display:block; border:none; background:#fff; width:' + embed.width + '; height:' + embed.height +
                     ';" sandbox="allow-scripts allow-same-origin allow-modals"></iframe>' +
                     '</div>';
-                // 用 replace 还原注释占位符
                 htmlContent = htmlContent.replace('<!--' + uid + '-->', iframeHtml);
             }
 
-            // 为表格添加滚动容器
+            // 表格容器
             htmlContent = htmlContent.replace(/<table([\s\S]*?)<\/table>/g, function(match) {
                 return '<div class="table-wrap"><table' + match.substring(6) + '</table></div>';
             });
@@ -641,7 +642,7 @@
         }
 
         // ============================================================
-        // 生成目录
+        // 生成目录（略，与之前相同）
         // ============================================================
         function generateTOC() {
             var postBody = document.querySelector('.post-body');
@@ -716,7 +717,7 @@
         }
 
         // ============================================================
-        // 移动端目录控制
+        // 移动端目录控制（同前）
         // ============================================================
         var tocMobile = document.getElementById('tocMobile');
         var tocFloatBtn = document.getElementById('tocFloatBtn');
@@ -766,7 +767,7 @@
         resizeObserver.observe(document.body);
 
         // ============================================================
-        // ★★★ 加载文章 ★★★
+        // ★★★ 加载文章（自动检测纯嵌入模式） ★★★
         // ============================================================
         var issueNumber = getQueryParam('id');
         var container = document.getElementById('postContainer');
@@ -799,12 +800,19 @@
                     var authorName = customAuthor || issue.user.login;
                     var authorAvatar = customAvatar || issue.user.avatar_url;
 
-                    // ★ 渲染正文 ★
+                    // ★ 检测是否仅包含一个 [html-embed]（前后只有空白）
+                    var isOnlyEmbed = false;
+                    var trimmed = cleanBody.trim();
+                    if (trimmed.match(/^\[html-embed\s*[^\]]*\][\s\S]*\[\/html-embed\]\s*$/)) {
+                        isOnlyEmbed = true;
+                    }
+
+                    // 渲染正文
                     var htmlContent = renderWithEmbeds(cleanBody);
 
                     // 构建页面
                     var html = '';
-                    html += '<div class="post-wrapper">';
+                    html += '<div class="post-wrapper' + (isOnlyEmbed ? ' embed-fullscreen' : '') + '">';
                     html += '<div class="post-main">';
                     html += '<div class="post-header">';
                     html += '<div class="post-title">' + displayTitle + '</div>';
@@ -820,7 +828,7 @@
                         });
                         html += '</div>';
                     }
-                    html += '</div>';
+                    html += '</div>'; // .post-header
 
                     html += '<div class="post-body">' + htmlContent + '</div>';
 
@@ -835,19 +843,30 @@
                         html += '</div>';
                     }
 
-                    html += '</div>';
+                    html += '</div>'; // .post-main
 
-                    html += '<div class="post-toc" id="postTOC">';
-                    html += '<div class="toc-title"><i class="fas fa-list-ul"></i> 目录</div>';
-                    html += '<ul class="toc-list"></ul>';
-                    html += '</div>';
+                    // 如果不是纯嵌入，显示目录
+                    if (!isOnlyEmbed) {
+                        html += '<div class="post-toc" id="postTOC">';
+                        html += '<div class="toc-title"><i class="fas fa-list-ul"></i> 目录</div>';
+                        html += '<ul class="toc-list"></ul>';
+                        html += '</div>';
+                    } else {
+                        // 纯嵌入模式：隐藏移动端目录浮窗（由 CSS 处理）
+                    }
 
-                    html += '</div>';
+                    html += '</div>'; // .post-wrapper
 
                     container.innerHTML = html;
                     document.title = displayTitle + ' · 星能博客';
 
-                    setTimeout(generateTOC, 100);
+                    // 如果不是纯嵌入，生成目录
+                    if (!isOnlyEmbed) {
+                        setTimeout(generateTOC, 100);
+                    } else {
+                        // 纯嵌入模式下，关闭可能的移动端目录
+                        closeMobileTOC();
+                    }
                 })
                 .catch(function(err) {
                     console.warn('文章加载失败:', err);
@@ -950,7 +969,8 @@
             });
         })();
 
-        console.log('>> 星能博客 · 文章详情页（HTML注释占位符，稳定版）');
+        console.log('>> 星能博客 · 文章详情页');
+        console.log('>> 若文章只有 [html-embed]，将自动全屏显示并隐藏目录');
     </script>
 </body>
 </html>
