@@ -105,7 +105,7 @@
         }
         .blog-toolbar .search-box button:hover { color:var(--accent); }
 
-        /* ===== 分类筛选（固定分类按钮） ===== */
+        /* ===== 分类筛选（固定分类按钮，新增“测试”） ===== */
         .blog-categories-filter {
             display:flex; flex-wrap:wrap; gap:6px 10px; margin-bottom:1.5rem;
         }
@@ -192,7 +192,7 @@
             gap: 4px 6px;
             margin: 2px 0 4px;
             flex-shrink: 0;
-            padding-bottom: 2px; /* 为滚动条留空间 */
+            padding-bottom: 2px;
             scrollbar-width: thin;
             -webkit-overflow-scrolling: touch;
         }
@@ -426,15 +426,14 @@
             <button class="modal-close" id="closeUpdateLogModal">&times;</button>
             <h3>博客站更新报告</h3>
             <div style="margin-top:1rem;">
-                <p><strong>v1.9 (2026.07.21)</strong></p>
+                <p><strong>v2.0 (2026.07.21)</strong></p>
                 <ul style="list-style:none;padding:0;">
-                    <li>• 标签移至标题下方，一行横向滚动显示</li>
-                    <li>• 标签字体加粗加大，蓝边框蓝字透明背景</li>
+                    <li>• 新增分类按钮：「测试」</li>
+                    <li>• 预设分类扩展为：日常、教程、开发、随笔、测试</li>
+                    <li>• “其他”自动归拢未命中以上任何预设分类的文章</li>
+                    <li>• 标签统一为蓝边框蓝字透明背景</li>
+                    <li>• 标签置于标题下方，一行横向滚动</li>
                     <li>• 分类信息可从正文任意位置读取</li>
-                    <li>• 分类按钮固定：全部、日常、教程、开发、随笔、其他</li>
-                    <li>• 直接从文章正文读取「分类：」字段进行筛选（支持多标签）</li>
-                    <li>• “其他”自动归拢未命中预设分类的文章</li>
-                    <li>• 点击分类有高亮反馈并刷新文章</li>
                     <li>• 导航栏与页尾样式统一至主站，移除焦点框</li>
                 </ul>
                 <p style="margin-top:1rem;">愿星光守护每一个创作者。</p>
@@ -452,8 +451,8 @@
         var selectedCategory = '全部';
         var searchKeyword = '';
 
-        // 固定的预设分类（用于“其他”的判断）
-        var PRESET_CATEGORIES = ['日常', '教程', '开发', '随笔'];
+        // ★★★ 预设分类（扩展为五个） ★★★
+        var PRESET_CATEGORIES = ['日常', '教程', '开发', '随笔', '测试'];
 
         var container = document.getElementById('blogContainer');
         var pagination = document.getElementById('pagination');
@@ -500,9 +499,7 @@
         function extractSummary(body, maxLen) {
             maxLen = maxLen || 200;
             var clean = body || '';
-            // 移除所有包含“分类：”的行
             clean = clean.replace(/^.*分类[：:].*$/gm, '');
-            // 移除作者等
             clean = clean.replace(/^作者[：:]\s*.+?[\n\r]/gm, '');
             clean = clean.replace(/^author[：:]\s*.+?[\n\r]/gm, '');
             clean = clean.replace(/<[^>]*>/g, ' ');
@@ -538,7 +535,7 @@
         }
 
         // ============================================================
-        // 渲染文章（调整顺序：日期 → 标题 → 标签 → 摘要 → ...）
+        // 渲染文章（顺序：日期 → 标题 → 标签 → 摘要 → ...）
         // ============================================================
         function renderArticles(articles) {
             if (!articles || articles.length === 0) {
@@ -552,7 +549,6 @@
                 html += '<div class="blog-card">';
                 html += '<div class="blog-date">' + data.date + '</div>';
                 html += '<div class="blog-title">' + data.title + '</div>';
-                // 标签放在标题下面
                 if (data.categories.length > 0) {
                     html += '<div class="blog-categories">';
                     data.categories.forEach(function(cat) {
@@ -570,10 +566,10 @@
         }
 
         // ============================================================
-        // 渲染分类（固定按钮 + 高亮当前选中）
+        // 渲染分类（固定按钮：全部、日常、教程、开发、随笔、测试、其他）
         // ============================================================
         function renderCategories() {
-            var allCats = ['全部', '日常', '教程', '开发', '随笔', '其他'];
+            var allCats = ['全部', '日常', '教程', '开发', '随笔', '测试', '其他'];
             var html = '';
             allCats.forEach(function(cat) {
                 var active = (selectedCategory === cat) ? ' active' : '';
@@ -594,7 +590,7 @@
         }
 
         // ============================================================
-        // 筛选逻辑（直接从文章分类字段匹配）
+        // 筛选逻辑（扩展预设，包含“测试”）
         // ============================================================
         function getFilteredIssues() {
             var filtered = allIssues.filter(function(issue) {
@@ -610,7 +606,7 @@
                     });
                     if (hasPreset) return false;
                 } else {
-                    // 预设分类：文章分类列表中必须包含该分类
+                    // 预设分类（包括“测试”）：文章分类列表中必须包含该分类
                     if (articleCats.indexOf(selectedCategory) === -1) return false;
                 }
 
@@ -869,7 +865,7 @@
         // ============================================================
         loadBlog();
 
-        console.log('>> 星能博客');
+        console.log('>> 星能博客（v2.0 新增“测试”分类）');
         console.log('>> 博客地址: https://stellarcn2020.github.io/st/blog');
     </script>
 </body>
