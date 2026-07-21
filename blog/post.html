@@ -406,7 +406,6 @@
         .footer-col a:hover { color:#fff; text-decoration:underline; }
         .footer-col a:focus { outline:none; }
 
-        /* 关联地图样式 */
         .post-map-link {
             margin-top: 1.5rem;
             padding-top: 1rem;
@@ -523,12 +522,13 @@
 
         // ★★★ 解析元数据（支持作者、分类、头像、地图） ★★★
         function parseMetadata(body) {
-            body = body || '';
+            // 确保 body 是字符串
+            body = typeof body === 'string' ? body : '';
             var result = {
                 author: null,
                 categories: [],
-                avatar: null,    // 自定义头像链接
-                map: null,       // 关联地图 Issue 编号或字符串
+                avatar: null,
+                map: null,
                 cleanBody: body
             };
 
@@ -548,7 +548,7 @@
                 result.cleanBody = result.cleanBody.replace(/^分类[：:]\s*.+?[\n\r]/, '');
             }
 
-            // ★ 提取头像
+            // 提取头像
             var avatarMatch = result.cleanBody.match(/^头像[：:]\s*(.+?)\s*[\n\r]/i);
             if (!avatarMatch) avatarMatch = result.cleanBody.match(/^avatar[：:]\s*(.+?)\s*[\n\r]/i);
             if (avatarMatch && avatarMatch[1]) {
@@ -557,7 +557,7 @@
                 result.cleanBody = result.cleanBody.replace(/^avatar[：:]\s*.+?[\n\r]/, '');
             }
 
-            // ★ 提取关联地图
+            // 提取地图
             var mapMatch = result.cleanBody.match(/^地图[：:]\s*(.+?)\s*[\n\r]/i);
             if (!mapMatch) mapMatch = result.cleanBody.match(/^map[：:]\s*(.+?)\s*[\n\r]/i);
             if (mapMatch && mapMatch[1]) {
@@ -580,48 +580,68 @@
         }
 
         // ============================================================
-        // 使用 marked 自定义渲染器处理 [html-embed]
+        // ★★★ 安全渲染：先占位替换，再 Markdown，最后还原 ★★★
         // ============================================================
-        function createCustomRenderer() {
-            var renderer = new marked.Renderer();
+        function renderWithEmbeds(rawBody) {
+            // 确保 rawBody 为字符串
+            rawBody = typeof rawBody === 'string' ? rawBody : '';
 
-            var originalParagraph = renderer.paragraph.bind(renderer);
-            renderer.paragraph = function(text) {
-                var match = text.match(/^\[html-embed\s*([^\]]*)\]([\s\S]*?)\[\/html-embed\]$/);
-                if (match) {
-                    var paramsStr = match[1];
-                    var content = match[2];
+            // 第一步：提取所有 [html-embed] 块，替换为唯一占位符
+            var embedMap = {};
+            var processed = rawBody.replace(
+                /\[html-embed\s*([^\]]*)\]([\s\S]*?)\[\/html-embed\]/g,
+                function(match, paramsStr, content) {
+                    var uid = 'EMBED_' + Math.random().toString(36).substring(2, 10);
                     var params = parseEmbedParams(paramsStr);
                     var width = params.width || '100%';
                     var height = params.height || '500px';
-
                     content = content.replace(/```html\s*/g, '');
                     content = content.replace(/```\s*/g, '');
                     content = content.trim();
-
-                    var escaped = content
-                        .replace(/&/g, '&amp;')
-                        .replace(/"/g, '&quot;')
-                        .replace(/'/g, '&#39;')
-                        .replace(/</g, '&lt;')
-                        .replace(/>/g, '&gt;');
-
-                    var sizeLabel = width + ' × ' + height;
-                    return '<div class="html-embed-wrapper">' +
-                        '<div class="html-embed-header">' +
-                        '<span>✦ 嵌入页面</span>' +
-                        '<span class="size-tag">' + sizeLabel + '</span>' +
-                        '<span class="badge">iframe</span>' +
-                        '</div>' +
-                        '<iframe srcdoc="' + escaped + '" width="' + width + '" height="' + height +
-                        '" style="display:block; border:none; background:#fff; width:' + width + '; height:' + height +
-                        ';" sandbox="allow-scripts allow-same-origin allow-modals"></iframe>' +
-                        '</div>';
+                    embedMap[uid] = { width: width, height: height, content: content };
+                    return '___' + uid + '___';
                 }
-                return originalParagraph(text);
-            };
+            );
 
-            return renderer;
+            // 第二步：渲染 Markdown
+            var htmlContent = '';
+            try {
+                htmlContent = marked.parse(processed, { gfm: true });
+            } catch (e) {
+                console.warn('Markdown 解析失败，使用原始文本', e);
+                htmlContent = '<pre>' + processed.replace(/</g, '&lt;') + '</pre>';
+            }
+
+            // 第三步：还原占位符为 iframe
+            for (var uid in embedMap) {
+                var embed = embedMap[uid];
+                var escaped = embed.content
+                    .replace(/&/g, '&amp;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+                var sizeLabel = embed.width + ' × ' + embed.height;
+                var iframeHtml =
+                    '<div class="html-embed-wrapper">' +
+                    '<div class="html-embed-header">' +
+                    '<span>✦ 嵌入页面</span>' +
+                    '<span class="size-tag">' + sizeLabel + '</span>' +
+                    '<span class="badge">iframe</span>' +
+                    '</div>' +
+                    '<iframe srcdoc="' + escaped + '" width="' + embed.width + '" height="' + embed.height +
+                    '" style="display:block; border:none; background:#fff; width:' + embed.width + '; height:' + embed.height +
+                    ';" sandbox="allow-scripts allow-same-origin allow-modals"></iframe>' +
+                    '</div>';
+                htmlContent = htmlContent.split('___' + uid + '___').join(iframeHtml);
+            }
+
+            // 为表格添加滚动容器
+            htmlContent = htmlContent.replace(/<table([\s\S]*?)<\/table>/g, function(match) {
+                return '<div class="table-wrap"><table' + match.substring(6) + '</table></div>';
+            });
+
+            return htmlContent;
         }
 
         // ============================================================
@@ -750,7 +770,7 @@
         resizeObserver.observe(document.body);
 
         // ============================================================
-        // 加载文章（支持自定义头像和关联地图）
+        // ★★★ 加载文章（稳定版） ★★★
         // ============================================================
         var issueNumber = getQueryParam('id');
         var container = document.getElementById('postContainer');
@@ -768,35 +788,27 @@
                     return res.json();
                 })
                 .then(function(issue) {
+                    // 提取标题和日期
                     var titleMatch = issue.title.match(/^(\d{4}-\d{2}-\d{2})[- ]?(.*)/);
                     var dateStr = titleMatch ? titleMatch[1] : '未知日期';
                     var displayTitle = titleMatch ? titleMatch[2] || issue.title : issue.title;
 
+                    // 获取正文，确保字符串
                     var body = issue.body || '';
                     var meta = parseMetadata(body);
                     var cleanBody = meta.cleanBody || '';
                     var customAuthor = meta.author;
                     var categories = meta.categories;
-                    var customAvatar = meta.avatar;   // 自定义头像链接
-                    var mapLink = meta.map;            // 关联地图标识
+                    var customAvatar = meta.avatar;
+                    var mapLink = meta.map;
 
-                    // 作者与头像：自定义头像优先，否则用 GitHub 头像
                     var authorName = customAuthor || issue.user.login;
                     var authorAvatar = customAvatar || issue.user.avatar_url;
 
-                    // 使用自定义渲染器
-                    var renderer = createCustomRenderer();
-                    var htmlContent = marked.parse(cleanBody, {
-                        renderer: renderer,
-                        gfm: true
-                    });
+                    // ★ 渲染正文（安全） ★
+                    var htmlContent = renderWithEmbeds(cleanBody);
 
-                    // 为表格添加滚动容器
-                    htmlContent = htmlContent.replace(/<table([\s\S]*?)<\/table>/g, function(match) {
-                        return '<div class="table-wrap"><table' + match.substring(6) + '</table></div>';
-                    });
-
-                    // ★ 构建页面（包含关联地图显示） ★
+                    // 构建页面
                     var html = '';
                     html += '<div class="post-wrapper">';
                     html += '<div class="post-main">';
@@ -818,13 +830,9 @@
 
                     html += '<div class="post-body">' + htmlContent + '</div>';
 
-                    // ★ 如果有关联地图，在地图部分显示链接
+                    // 关联地图
                     if (mapLink) {
-                        // 如果 mapLink 是纯数字，可能对应地图 Issue 编号，可以生成链接到地图详情页（需自行定义）
-                        // 这里简单显示为文本链接，可以跳转到某个页面，例如 ../maps/map.html?id=xxx
-                        // 或直接链接到 GitHub Issue
                         var mapUrl = 'https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/issues/' + mapLink;
-                        // 检测是否为纯数字
                         if (/^\d+$/.test(mapLink)) {
                             mapUrl = 'https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/issues/' + mapLink;
                         }
@@ -949,8 +957,7 @@
             });
         })();
 
-        console.log('>> 星能博客 · 文章详情页（支持自定义头像、关联地图）');
-        console.log('>> 用法: [html-embed width="80%" height="600px"]...[/html-embed]');
+        console.log('>> 星能博客 · 文章详情页（稳定版，占位符方式）');
     </script>
 </body>
 </html>
