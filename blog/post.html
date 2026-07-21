@@ -58,6 +58,7 @@
         #starfield { position:fixed; inset:0; z-index:-1; pointer-events:none; }
         .container { max-width:1340px; margin:0 auto; padding:0 clamp(16px,3vw,40px); position:relative; }
 
+        /* ===== 导航栏（与主站统一，移除焦点框） ===== */
         .navbar {
             position:fixed; top:0; left:0; width:100%; z-index:100;
             display:flex; align-items:center; padding:.6rem clamp(1rem,3vw,2.5rem);
@@ -76,6 +77,7 @@
         .nav-link::after { content:''; position:absolute; bottom:0; left:0; width:0; height:2px; background:var(--accent); transition:width .3s ease; }
         .nav-link:hover::after,.nav-link.active::after { width:100%; }
         .nav-link:hover,.nav-link.active { color:var(--accent); }
+        .nav-link:focus { outline:none; } /* 移除焦点框 */
         .menu-toggle { display:none; font-size:1.4rem; color:var(--text-primary); background:none; border:none; cursor:pointer; padding:4px 8px; transition:color .3s; }
 
         .section-title {
@@ -121,22 +123,27 @@
         }
         .post-meta .author { display:flex; align-items:center; gap:6px; }
         .post-meta .author img { width:24px; height:24px; border-radius:50%; border:1px solid var(--border-light); }
-        .post-categories { display:flex; flex-wrap:wrap; gap:4px 8px; margin:8px 0 0; }
-        .post-categories .cat {
-            font-size:.6rem;
-            padding:2px 12px;
-            border-radius:0;
-            color:#fff;
-            background:var(--accent);
-            font-family:'JetBrains Mono',monospace;
-            letter-spacing:.3px;
+
+        /* ★ 分类标签样式：与列表页统一，蓝边框蓝字透明背景 ★ */
+        .post-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 8px;
+            margin: 8px 0 0;
         }
-        .post-categories .cat:nth-child(2) { background:#f59e0b; }
-        .post-categories .cat:nth-child(3) { background:#10b981; }
-        .post-categories .cat:nth-child(4) { background:#8b5cf6; }
-        .post-categories .cat:nth-child(5) { background:#ef4444; }
-        .post-categories .cat:nth-child(6) { background:#06b6d4; }
-        .post-categories .cat:nth-child(7) { background:#ec4899; }
+        .post-categories .cat {
+            font-size: .7rem;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 0;
+            color: var(--accent);
+            background: transparent;
+            border: 1px solid var(--accent);
+            font-family: 'Inter', sans-serif;
+            letter-spacing: .2px;
+            display: inline-block;
+            white-space: nowrap;
+        }
 
         .post-body {
             font-size:1.05rem;
@@ -392,12 +399,14 @@
         }
         .toc-float-btn:active { transform: scale(0.94); }
 
+        /* ===== 页尾（统一，移除焦点框） ===== */
         .footer-new { margin-top:2rem; background:#0a0f2a; padding:1.8rem clamp(1rem,3vw,2.5rem); color:#eef5ff; position:relative; z-index:2; transition:background .4s; }
         body.dark .footer-new { background:#0b1120; }
         .footer-container { max-width:1260px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:2rem; }
         .footer-col h4 { font-size:clamp(1rem,1.2vw,1.2rem); font-weight:700; border-left:3px solid var(--accent); padding-left:12px; margin-bottom:.8rem; color:#fff; }
         .footer-col p,.footer-col a { font-size:clamp(.7rem,.8vw,.85rem); line-height:1.6; color:#b8d0ff; text-decoration:none; display:block; margin-bottom:.2rem; }
         .footer-col a:hover { color:#fff; text-decoration:underline; }
+        .footer-col a:focus { outline:none; }
 
         @media(max-width:1024px){ .post-toc { width: 200px; } }
         @media(max-width:860px){
@@ -527,6 +536,56 @@
         }
 
         // ============================================================
+        // ★★★ 使用 marked 自定义渲染器处理 [html-embed] ★★★
+        // ============================================================
+        function createCustomRenderer() {
+            var renderer = new marked.Renderer();
+
+            // 覆盖段落解析，拦截 [html-embed] 标签
+            var originalParagraph = renderer.paragraph.bind(renderer);
+            renderer.paragraph = function(text) {
+                // 检测是否包含 [html-embed] 标签
+                var match = text.match(/^\[html-embed\s*([^\]]*)\]([\s\S]*?)\[\/html-embed\]$/);
+                if (match) {
+                    var paramsStr = match[1];
+                    var content = match[2];
+                    var params = parseEmbedParams(paramsStr);
+                    var width = params.width || '100%';
+                    var height = params.height || '500px';
+
+                    // 清理内容（去除可能的 ```html 包裹）
+                    content = content.replace(/```html\s*/g, '');
+                    content = content.replace(/```\s*/g, '');
+                    content = content.trim();
+
+                    // 转义 HTML 用于 srcdoc
+                    var escaped = content
+                        .replace(/&/g, '&amp;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&#39;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;');
+
+                    var sizeLabel = width + ' × ' + height;
+                    return '<div class="html-embed-wrapper">' +
+                        '<div class="html-embed-header">' +
+                        '<span>✦ 嵌入页面</span>' +
+                        '<span class="size-tag">' + sizeLabel + '</span>' +
+                        '<span class="badge">iframe</span>' +
+                        '</div>' +
+                        '<iframe srcdoc="' + escaped + '" width="' + width + '" height="' + height +
+                        '" style="display:block; border:none; background:#fff; width:' + width + '; height:' + height +
+                        ';" sandbox="allow-scripts allow-same-origin allow-modals"></iframe>' +
+                        '</div>';
+                }
+                // 否则正常渲染段落
+                return originalParagraph(text);
+            };
+
+            return renderer;
+        }
+
+        // ============================================================
         // ★★★ 生成目录 ★★★
         // ============================================================
         function generateTOC() {
@@ -652,7 +711,7 @@
         resizeObserver.observe(document.body);
 
         // ============================================================
-        // ★★★ 加载文章（修复占位符替换） ★★★
+        // ★★★ 加载文章（使用自定义渲染器） ★★★
         // ============================================================
         var issueNumber = getQueryParam('id');
         var container = document.getElementById('postContainer');
@@ -683,70 +742,19 @@
                     var authorName = customAuthor || issue.user.login;
                     var authorAvatar = issue.user.avatar_url;
 
-                    // ============================================================
-                    // ★★★ 核心修复：使用随机占位符，确保不被 Markdown 破坏 ★★★
-                    // ============================================================
-                    var embedMap = {};
-                    var processedBody = cleanBody;
+                    // ★★★ 使用自定义渲染器解析 Markdown ★★★
+                    var renderer = createCustomRenderer();
+                    var htmlContent = marked.parse(cleanBody, {
+                        renderer: renderer,
+                        gfm: true
+                    });
 
-                    processedBody = processedBody.replace(
-                        /\[html-embed\s*([^\]]*)\]([\s\S]*?)\[\/html-embed\]/g,
-                        function(match, paramsStr, content) {
-                            var uid = 'EMBED_' + Math.random().toString(36).substring(2, 10);
-                            var params = parseEmbedParams(paramsStr);
-                            var width = params.width || '100%';
-                            var height = params.height || '500px';
-
-                            content = content.replace(/```html\s*/g, '');
-                            content = content.replace(/```\s*/g, '');
-                            content = content.trim();
-
-                            embedMap[uid] = {
-                                width: width,
-                                height: height,
-                                content: content
-                            };
-
-                            return '___' + uid + '___';
-                        }
-                    );
-
-                    // ★★★ 渲染 Markdown ★★★
-                    var htmlContent = marked.parse(processedBody, { gfm: true });
-
-                    // ★★★ 恢复占位符 ★★★
-                    for (var uid in embedMap) {
-                        var embed = embedMap[uid];
-                        var escaped = embed.content
-                            .replace(/&/g, '&amp;')
-                            .replace(/"/g, '&quot;')
-                            .replace(/'/g, '&#39;')
-                            .replace(/</g, '&lt;')
-                            .replace(/>/g, '&gt;');
-
-                        var sizeLabel = embed.width + ' × ' + embed.height;
-
-                        var iframeHtml =
-                            '<div class="html-embed-wrapper">' +
-                            '<div class="html-embed-header">' +
-                            '<span>✦ 嵌入页面</span>' +
-                            '<span class="size-tag">' + sizeLabel + '</span>' +
-                            '<span class="badge">iframe</span>' +
-                            '</div>' +
-                            '<iframe srcdoc="' + escaped + '" width="' + embed.width + '" height="' + embed.height +
-                            '" style="display:block; border:none; background:#fff; width:' + embed.width + '; height:' +
-                            embed.height + ';" sandbox="allow-scripts allow-same-origin allow-modals"></iframe>' +
-                            '</div>';
-
-                        htmlContent = htmlContent.split('___' + uid + '___').join(iframeHtml);
-                    }
-
-                    // ★★★ 为表格添加滚动容器 ★★★
+                    // 为表格添加滚动容器
                     htmlContent = htmlContent.replace(/<table([\s\S]*?)<\/table>/g, function(match) {
                         return '<div class="table-wrap"><table' + match.substring(6) + '</table></div>';
                     });
 
-                    // ★★★ 构建页面 ★★★
+                    // 构建页面
                     var html = '';
                     html += '<div class="post-wrapper">';
                     html += '<div class="post-main">';
@@ -881,7 +889,7 @@
             });
         })();
 
-        console.log('>> 星能博客 · 文章详情页（修复占位符）');
+        console.log('>> 星能博客 · 文章详情页（自定义渲染器修复嵌入）');
         console.log('>> 用法: [html-embed width="80%" height="600px"]...[/html-embed]');
     </script>
 </body>
