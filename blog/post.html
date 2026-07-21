@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* ===== 样式（与之前完全一致，未改动） ===== */
+        /* ===== 样式不变，与之前完全相同 ===== */
         :root {
             --bg-primary: #f5f7fc;
             --bg-card: #ffffff;
@@ -520,9 +520,7 @@
             return urlParams.get(name);
         }
 
-        // ★★★ 解析元数据（支持作者、分类、头像、地图） ★★★
         function parseMetadata(body) {
-            // 确保 body 是字符串
             body = typeof body === 'string' ? body : '';
             var result = {
                 author: null,
@@ -532,7 +530,6 @@
                 cleanBody: body
             };
 
-            // 提取作者
             var authorMatch = body.match(/^作者[：:]\s*(.+?)\s*[\n\r]/i);
             if (!authorMatch) authorMatch = body.match(/^author[：:]\s*(.+?)\s*[\n\r]/i);
             if (authorMatch && authorMatch[1]) {
@@ -541,14 +538,12 @@
                 result.cleanBody = result.cleanBody.replace(/^author[：:]\s*.+?[\n\r]/, '');
             }
 
-            // 提取分类
             var catMatch = result.cleanBody.match(/^分类[：:]\s*(.+?)\s*[\n\r]/i);
             if (catMatch && catMatch[1]) {
                 result.categories = catMatch[1].split(/[,，、\s]+/).filter(function(c) { return c.trim().length > 0; });
                 result.cleanBody = result.cleanBody.replace(/^分类[：:]\s*.+?[\n\r]/, '');
             }
 
-            // 提取头像
             var avatarMatch = result.cleanBody.match(/^头像[：:]\s*(.+?)\s*[\n\r]/i);
             if (!avatarMatch) avatarMatch = result.cleanBody.match(/^avatar[：:]\s*(.+?)\s*[\n\r]/i);
             if (avatarMatch && avatarMatch[1]) {
@@ -557,7 +552,6 @@
                 result.cleanBody = result.cleanBody.replace(/^avatar[：:]\s*.+?[\n\r]/, '');
             }
 
-            // 提取地图
             var mapMatch = result.cleanBody.match(/^地图[：:]\s*(.+?)\s*[\n\r]/i);
             if (!mapMatch) mapMatch = result.cleanBody.match(/^map[：:]\s*(.+?)\s*[\n\r]/i);
             if (mapMatch && mapMatch[1]) {
@@ -580,14 +574,14 @@
         }
 
         // ============================================================
-        // ★★★ 安全渲染：先占位替换，再 Markdown，最后还原 ★★★
+        // ★★★ 使用 HTML 注释作为占位符（稳定，不被 Markdown 破坏） ★★★
         // ============================================================
         function renderWithEmbeds(rawBody) {
-            // 确保 rawBody 为字符串
             rawBody = typeof rawBody === 'string' ? rawBody : '';
 
-            // 第一步：提取所有 [html-embed] 块，替换为唯一占位符
             var embedMap = {};
+
+            // 提取 [html-embed] 块，替换为 HTML 注释占位符
             var processed = rawBody.replace(
                 /\[html-embed\s*([^\]]*)\]([\s\S]*?)\[\/html-embed\]/g,
                 function(match, paramsStr, content) {
@@ -599,20 +593,21 @@
                     content = content.replace(/```\s*/g, '');
                     content = content.trim();
                     embedMap[uid] = { width: width, height: height, content: content };
-                    return '___' + uid + '___';
+                    // 使用 HTML 注释，marked 会原样保留
+                    return '<!--' + uid + '-->';
                 }
             );
 
-            // 第二步：渲染 Markdown
+            // 渲染 Markdown
             var htmlContent = '';
             try {
                 htmlContent = marked.parse(processed, { gfm: true });
             } catch (e) {
-                console.warn('Markdown 解析失败，使用原始文本', e);
+                console.warn('Markdown 解析失败', e);
                 htmlContent = '<pre>' + processed.replace(/</g, '&lt;') + '</pre>';
             }
 
-            // 第三步：还原占位符为 iframe
+            // 还原占位符
             for (var uid in embedMap) {
                 var embed = embedMap[uid];
                 var escaped = embed.content
@@ -633,7 +628,8 @@
                     '" style="display:block; border:none; background:#fff; width:' + embed.width + '; height:' + embed.height +
                     ';" sandbox="allow-scripts allow-same-origin allow-modals"></iframe>' +
                     '</div>';
-                htmlContent = htmlContent.split('___' + uid + '___').join(iframeHtml);
+                // 用 replace 还原注释占位符
+                htmlContent = htmlContent.replace('<!--' + uid + '-->', iframeHtml);
             }
 
             // 为表格添加滚动容器
@@ -770,7 +766,7 @@
         resizeObserver.observe(document.body);
 
         // ============================================================
-        // ★★★ 加载文章（稳定版） ★★★
+        // ★★★ 加载文章 ★★★
         // ============================================================
         var issueNumber = getQueryParam('id');
         var container = document.getElementById('postContainer');
@@ -788,12 +784,10 @@
                     return res.json();
                 })
                 .then(function(issue) {
-                    // 提取标题和日期
                     var titleMatch = issue.title.match(/^(\d{4}-\d{2}-\d{2})[- ]?(.*)/);
                     var dateStr = titleMatch ? titleMatch[1] : '未知日期';
                     var displayTitle = titleMatch ? titleMatch[2] || issue.title : issue.title;
 
-                    // 获取正文，确保字符串
                     var body = issue.body || '';
                     var meta = parseMetadata(body);
                     var cleanBody = meta.cleanBody || '';
@@ -805,7 +799,7 @@
                     var authorName = customAuthor || issue.user.login;
                     var authorAvatar = customAvatar || issue.user.avatar_url;
 
-                    // ★ 渲染正文（安全） ★
+                    // ★ 渲染正文 ★
                     var htmlContent = renderWithEmbeds(cleanBody);
 
                     // 构建页面
@@ -826,11 +820,10 @@
                         });
                         html += '</div>';
                     }
-                    html += '</div>'; // .post-header
+                    html += '</div>';
 
                     html += '<div class="post-body">' + htmlContent + '</div>';
 
-                    // 关联地图
                     if (mapLink) {
                         var mapUrl = 'https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/issues/' + mapLink;
                         if (/^\d+$/.test(mapLink)) {
@@ -842,14 +835,14 @@
                         html += '</div>';
                     }
 
-                    html += '</div>'; // .post-main
+                    html += '</div>';
 
                     html += '<div class="post-toc" id="postTOC">';
                     html += '<div class="toc-title"><i class="fas fa-list-ul"></i> 目录</div>';
                     html += '<ul class="toc-list"></ul>';
                     html += '</div>';
 
-                    html += '</div>'; // .post-wrapper
+                    html += '</div>';
 
                     container.innerHTML = html;
                     document.title = displayTitle + ' · 星能博客';
@@ -957,7 +950,7 @@
             });
         })();
 
-        console.log('>> 星能博客 · 文章详情页（稳定版，占位符方式）');
+        console.log('>> 星能博客 · 文章详情页（HTML注释占位符，稳定版）');
     </script>
 </body>
 </html>
